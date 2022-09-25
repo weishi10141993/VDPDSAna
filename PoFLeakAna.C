@@ -1,26 +1,78 @@
 #include <fstream>
 #include <iostream>
+#include <math.h>
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
 
-void v2_and_v3_various_levels_various_lasers_20220917(){
+// Total variation noise filter: https://hal.archives-ouvertes.fr/hal-00675043v2/document
+void TV1D_denoise(vector<Double_t>& input, vector<Double_t>& output, const int width, const Double_t lambda){
+  if (width>0) {                /*to avoid invalid memory access to input[0]*/
+    int k=0, k0=0;            /*k: current sample location, k0: beginning of current segment*/
+    Double_t umin=lambda, umax=-lambda;    /*u is the dual variable*/
+    Double_t vmin=input[0]-lambda, vmax=input[0]+lambda;    /*bounds for the segment's value*/
+    int kplus=0, kminus=0;     /*last positions where umax=-lambda, umin=lambda, respectively*/
+    const Double_t twolambda=2.0*lambda;    /*auxiliary variable*/
+    const Double_t minlambda=-lambda;        /*auxiliary variable*/
+    for (;;) {                /*simple loop, the exit test is inside*/
+      while (k==width-1) {    /*we use the right boundary condition*/
+	if (umin<0.0) {            /*vmin is too high -> negative jump necessary*/
+	  do output[k0++]=vmin; while (k0<=kminus);
+	  umax=(vmin=input[kminus=k=k0])+(umin=lambda)-vmax;
+	} else if (umax>0.0) {    /*vmax is too low -> positive jump necessary*/
+	  do output[k0++]=vmax; while (k0<=kplus);
+	  umin=(vmax=input[kplus=k=k0])+(umax=minlambda)-vmin;
+	} else {
+	  vmin+=umin/(k-k0+1);
+	  do output[k0++]=vmin; while(k0<=k);
+	  return;
+	}
+      }
+      if ((umin+=input[k+1]-vmin)<minlambda) {        /*negative jump necessary*/
+	do output[k0++]=vmin; while (k0<=kminus);
+	vmax=(vmin=input[kplus=kminus=k=k0])+twolambda;
+	umin=lambda; umax=minlambda;
+      } else if ((umax+=input[k+1]-vmax)>lambda) {    /*positive jump necessary*/
+	do output[k0++]=vmax; while (k0<=kplus);
+	vmin=(vmax=input[kplus=kminus=k=k0])-twolambda;
+	umin=lambda; umax=minlambda;
+      } else {     /*no jump necessary, we continue*/
+	k++;
+	if (umin>=lambda) {        /*update of vmin*/
+	  vmin+=(umin-lambda)/((kminus=k)-k0+1);
+	  umin=lambda;
+	}
+	if (umax<=minlambda) {    /*update of vmax*/
+	  vmax+=(umax+lambda)/((kplus=k)-k0+1);
+	  umax=minlambda;
+	}
+      }
+    }
+  }
+}
+
+void PoFLeakAna(){
   int headbin; // to store headers
-  int nbytes_headers = 4; // 4 bytes (32 bits) for each head 
+  int nbytes_headers = 4; // 4 bytes (32 bits) for each head
   int nbytes_data = 2; // 2 bytes (16 bits) per sample
-  int memorydepth = 0; // size of waveforms 
+  int memorydepth = 0; // size of waveforms
   uint32_t valbin = 0; // to read data
   vector<Double_t> raw; // waveform as vector
+  vector<Double_t> denoised; // denoised waveform as vector
 
   int waveNum = 0;//To record num of waveforms; Added by szhang; 20220720---
 
   Double_t nbits = 14; // ADC is a 14 bits, 2 Vpp
-  Double_t samplingRate = 500.e6; // 250 MSamples/s for DT5725
+  Double_t samplingRate = 250.e6; // 250 MSamples/s for DT5725
   Double_t nADCs = pow(2,nbits); // number of digital channels
   Double_t inVolts = 2./nADCs; // Multiply by this number to have the amplitude in volts;
   Double_t dtime = (1/samplingRate)*1e9; // steps in nanoseconds
-  
+
   Bool_t first_line = true; // so we can set the length of the vector
 
-
-//======General Variables====================  
+//======General Variables====================
   double level[8] = {0};
   double Count0[8] = {0};
   double Count1[8] = {0};
@@ -39,20 +91,25 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
       level[i] = level[0]+25*i;
   }
 
+  // Single waveform
+  TH1D *h1;
+  TH1D *h2; // denoised
 
 //======Read No Laser========================
   ifstream fin;
-  fin.open("/afs/cern.ch/work/s/shuaixia/public/Coldbox_Data_2022/Sep_Test/light_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only/wave5.dat", ios::in | ios::binary);
+  fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only/wave5.dat", ios::in | ios::binary);
 
   if(fin.good() && fin.is_open()){ // Ok
     cout << "Reading file" << endl;
   }
   else{ // emergency shutdown
     cout << "File did not open!!" << endl;
-    return;      
+    return;
   }
-  while(!fin.fail()){ 
-    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head 
+
+  // Loop over waveforms
+  while(!fin.fail()){
+    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head
       fin.read((char *) &headbin, nbytes_headers);
       // header0 will be EventSize, so: you can do
       if(ln==0){
@@ -64,31 +121,52 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
     if(first_line){
       printf("Waveform size: %d \n",memorydepth);
       raw.resize(memorydepth);
+      denoised.resize(memorydepth);
       first_line=false;
+      //auto g1 = new TGraph(memorydepth, x, raw);
+      //h1 = new TH1D("h1", "h1", memorydepth, 0, memorydepth*dtime);
+      //h2 = new TH1D("h2", "h2", memorydepth, 0, memorydepth*dtime);
+      h1 = new TH1D("h1", "h1", memorydepth, 0, memorydepth);
+      h2 = new TH1D("h2", "h2", memorydepth, 0, memorydepth);
     }
+
+    // Store each waveform
     for(int j = 0; j < memorydepth; j++) {
         fin.read((char *) &valbin, nbytes_data); // 2 bytes (16 bits) per sample
         if(fin.bad() || fin.fail()){
           break;
         }
         raw[j] = valbin;
-//        h->Fill(j*dtime,raw[j]);
-        //printf("%d %.0f \n",j,raw[j]);
+        denoised[j] = raw[j];
     }
-    
-    for(int i=0; i<8; ++i){
-        for(int j=0; j<1750; j++){
-            if((raw[j] - level[i])<0 && (raw[j+1] - level[i])>0){
-	        Count0[i] += 1;
-	    }
-        }   
-    }  
 
+    // Apply noise filter
+    TV1D_denoise(raw, denoised, memorydepth, 50);
+
+    // Calculate up-crossing in each waveform
+    for(int i=0; i<8; ++i){
+      for(int j=0; j<1750; j++){
+        if((denoised[j] - level[i])<0 && (denoised[j+1] - level[i])>0){
+          Count0[i] += 1;
+        }
+      }
+    }
 
     waveNum += 1;
-    printf("Wavenum: %d\n", waveNum);
+    if (waveNum %10000 == 0) printf("Wavenum: %d\n", waveNum);
 
-  }
+    // Plot single waveform
+    if(waveNum == 19470) {
+      for(int j=0; j<2500; j++){
+        h1->Fill(j, raw[j]);
+        h2->Fill(j, denoised[j]);
+      }
+    } // end plot single waveform
+
+    //raw.clear();
+    //denoised.clear();
+
+  } // End loop over waveforms
 
   cout<<"==========Result of No Laser:=========== "<<endl;
   for(int i=0; i<8; ++i){
@@ -98,17 +176,17 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
   fin.close();//Very Important------
 
 //======Read v2 Switch A========================
-  fin.open("/afs/cern.ch/work/s/shuaixia/public/Coldbox_Data_2022/Sep_Test/light_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_argon_read/wave5.dat", ios::in | ios::binary);
+  fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_argon_read/wave5.dat", ios::in | ios::binary);
 
   if(fin.good() && fin.is_open()){ // Ok
     cout << "Reading file" << endl;
   }
   else{ // emergency shutdown
     cout << "File did not open!!" << endl;
-    return;      
+    return;
   }
-  while(!fin.fail()){ 
-    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head 
+  while(!fin.fail()){
+    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head
       fin.read((char *) &headbin, nbytes_headers);
       // header0 will be EventSize, so: you can do
       if(ln==0){
@@ -128,15 +206,19 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
           break;
         }
         raw[j] = valbin;
+        denoised[j] = raw[j];
     }
-    
+
+    // Apply noise filter
+    TV1D_denoise(raw, denoised, memorydepth, 50);
+
     for(int i=0; i<8; ++i){
         for(int j=0; j<1750; j++){
-            if((raw[j] - level[i])<0 && (raw[j+1] - level[i])>0){
+            if((denoised[j] - level[i])<0 && (denoised[j+1] - level[i])>0){
 	        Count1[i] += 1;
 	    }
-        }   
-    }  
+        }
+    }
 
   }
 
@@ -148,17 +230,17 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
   fin.close();
 
 //======Read v2 Switch B========================
-  fin.open("/afs/cern.ch/work/s/shuaixia/public/Coldbox_Data_2022/Sep_Test/light_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchB_argon_read/wave5.dat", ios::in | ios::binary);
+  fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchB_argon_read/wave5.dat", ios::in | ios::binary);
 
   if(fin.good() && fin.is_open()){ // Ok
     cout << "Reading file" << endl;
   }
   else{ // emergency shutdown
     cout << "File did not open!!" << endl;
-    return;      
+    return;
   }
-  while(!fin.fail()){ 
-    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head 
+  while(!fin.fail()){
+    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head
       fin.read((char *) &headbin, nbytes_headers);
       // header0 will be EventSize, so: you can do
       if(ln==0){
@@ -178,15 +260,19 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
           break;
         }
         raw[j] = valbin;
+        denoised[j] = raw[j];
     }
-    
+
+    // Apply noise filter
+    TV1D_denoise(raw, denoised, memorydepth, 50);
+
     for(int i=0; i<8; ++i){
         for(int j=0; j<1750; j++){
-            if((raw[j] - level[i])<0 && (raw[j+1] - level[i])>0){
+            if((denoised[j] - level[i])<0 && (denoised[j+1] - level[i])>0){
 	        Count2[i] += 1;
 	    }
-        }   
-    }  
+        }
+    }
 
   }
 
@@ -198,17 +284,17 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
   fin.close();
 
 //======Read v2 SwitchA & SwitchB========================
-  fin.open("/afs/cern.ch/work/s/shuaixia/public/Coldbox_Data_2022/Sep_Test/light_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_and_switchB_argon_read/wave5.dat", ios::in | ios::binary);
+  fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_and_switchB_argon_read/wave5.dat", ios::in | ios::binary);
 
   if(fin.good() && fin.is_open()){ // Ok
     cout << "Reading file" << endl;
   }
   else{ // emergency shutdown
     cout << "File did not open!!" << endl;
-    return;      
+    return;
   }
-  while(!fin.fail()){ 
-    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head 
+  while(!fin.fail()){
+    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head
       fin.read((char *) &headbin, nbytes_headers);
       // header0 will be EventSize, so: you can do
       if(ln==0){
@@ -228,15 +314,19 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
           break;
         }
         raw[j] = valbin;
+        denoised[j] = raw[j];
     }
-    
+
+    // Apply noise filter
+    TV1D_denoise(raw, denoised, memorydepth, 50);
+
     for(int i=0; i<8; ++i){
         for(int j=0; j<1750; j++){
-            if((raw[j] - level[i])<0 && (raw[j+1] - level[i])>0){
+            if((denoised[j] - level[i])<0 && (denoised[j+1] - level[i])>0){
 	        Count3[i] += 1;
 	    }
-        }   
-    }  
+        }
+    }
 
   }
 
@@ -249,17 +339,17 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
 
 
 //======Read all lasers of v2 & v3========================
-  fin.open("/afs/cern.ch/work/s/shuaixia/public/Coldbox_Data_2022/Sep_Test/light_leakage_check/20220917_v2_and_v3_all_lasers/wave5.dat", ios::in | ios::binary);
+  fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_and_v3_all_lasers/wave5.dat", ios::in | ios::binary);
 
   if(fin.good() && fin.is_open()){ // Ok
     cout << "Reading file" << endl;
   }
   else{ // emergency shutdown
     cout << "File did not open!!" << endl;
-    return;      
+    return;
   }
-  while(!fin.fail()){ 
-    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head 
+  while(!fin.fail()){
+    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head
       fin.read((char *) &headbin, nbytes_headers);
       // header0 will be EventSize, so: you can do
       if(ln==0){
@@ -279,15 +369,19 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
           break;
         }
         raw[j] = valbin;
+        denoised[j] = raw[j];
     }
-    
+
+    // Apply noise filter
+    TV1D_denoise(raw, denoised, memorydepth, 50);
+
     for(int i=0; i<8; ++i){
         for(int j=0; j<1750; j++){
-            if((raw[j] - level[i])<0 && (raw[j+1] - level[i])>0){
+            if((denoised[j] - level[i])<0 && (denoised[j+1] - level[i])>0){
 	        Count123[i] += 1;
 	    }
-        }   
-    }  
+        }
+    }
 
   }
 
@@ -319,30 +413,30 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
 
   TCanvas *c = new TCanvas();
   TMultiGraph *mg = new TMultiGraph();
-  
+
   dis0->SetMarkerSize(0.8);
   dis0->SetMarkerStyle(21);
   dis0->SetMarkerColor(1);
   dis0->SetLineColor(1);
- 
+
   dis1->SetMarkerSize(0.8);
   dis1->SetMarkerStyle(21);
-  dis1->SetMarkerColor(2); 
+  dis1->SetMarkerColor(2);
   dis1->SetLineColor(2);
 
   dis2->SetMarkerSize(0.8);
   dis2->SetMarkerStyle(21);
-  dis2->SetMarkerColor(3); 
+  dis2->SetMarkerColor(3);
   dis2->SetLineColor(3);
 
   dis3->SetMarkerSize(0.8);
   dis3->SetMarkerStyle(21);
-  dis3->SetMarkerColor(41); 
+  dis3->SetMarkerColor(41);
   dis3->SetLineColor(41);
 
   dis123->SetMarkerSize(0.8);
   dis123->SetMarkerStyle(3);
-  dis123->SetMarkerColor(6); 
+  dis123->SetMarkerColor(6);
   dis123->SetLineColor(6);
 
   mg->Add(dis0);
@@ -363,6 +457,7 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
 
   mg->Draw("AP");
   leg->Draw();
+  c->SaveAs("up-crossing_count.png");
 
 
 //======Drawing Gain==================
@@ -376,24 +471,24 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
 
   diff1->SetMarkerSize(0.8);
   diff1->SetMarkerStyle(21);
-  diff1->SetMarkerColor(2); 
+  diff1->SetMarkerColor(2);
   diff1->SetLineColor(2);
 
   diff2->SetMarkerSize(0.8);
   diff2->SetMarkerStyle(21);
-  diff2->SetMarkerColor(3); 
+  diff2->SetMarkerColor(3);
   diff2->SetLineColor(3);
 
   diff3->SetMarkerSize(0.8);
   diff3->SetMarkerStyle(21);
-  diff3->SetMarkerColor(41); 
+  diff3->SetMarkerColor(41);
   diff3->SetLineColor(41);
 
   diff123->SetMarkerSize(0.8);
   diff123->SetMarkerStyle(3);
-  diff123->SetMarkerColor(6); 
+  diff123->SetMarkerColor(6);
   diff123->SetLineColor(6);
-  
+
   mg2->Add(diff1);
   mg2->Add(diff2);
   mg2->Add(diff3);
@@ -410,8 +505,16 @@ void v2_and_v3_various_levels_various_lasers_20220917(){
 
   mg2->Draw("AP");
   leg2->Draw();
+  c2->SaveAs("extra_up-crossing_per10us_count.png");
 
-
-//  c1->SaveAs("disADC6.png");
+  TCanvas *c3 = new TCanvas();
+  h1->SetLineColor(2);
+  h1->Draw("HIST");
+  h1->GetXaxis()->SetTitle("Time tick (4ns)");
+  h1->GetYaxis()->SetTitle("Amplitude (ADC Channels)");
+  h2->SetLineColor(4);
+  h2->SetLineStyle(7);
+  h2->Draw("HIST SAME");
+  c3->SaveAs("single_waveform.png");
 
 }
