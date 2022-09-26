@@ -18,62 +18,77 @@ void TV1D_denoise(vector<Double_t>& input, vector<Double_t>& output, const int w
     const Double_t minlambda=-lambda;        /*auxiliary variable*/
     for (;;) {                /*simple loop, the exit test is inside*/
       while (k==width-1) {    /*we use the right boundary condition*/
-	if (umin<0.0) {            /*vmin is too high -> negative jump necessary*/
-	  do output[k0++]=vmin; while (k0<=kminus);
-	  umax=(vmin=input[kminus=k=k0])+(umin=lambda)-vmax;
-	} else if (umax>0.0) {    /*vmax is too low -> positive jump necessary*/
-	  do output[k0++]=vmax; while (k0<=kplus);
-	  umin=(vmax=input[kplus=k=k0])+(umax=minlambda)-vmin;
-	} else {
-	  vmin+=umin/(k-k0+1);
-	  do output[k0++]=vmin; while(k0<=k);
-	  return;
-	}
+        if (umin<0.0) {            /*vmin is too high -> negative jump necessary*/
+          do output[k0++]=vmin; while (k0<=kminus);
+          umax=(vmin=input[kminus=k=k0])+(umin=lambda)-vmax;
+        } else if (umax>0.0) {    /*vmax is too low -> positive jump necessary*/
+          do output[k0++]=vmax; while (k0<=kplus);
+          umin=(vmax=input[kplus=k=k0])+(umax=minlambda)-vmin;
+        } else {
+          vmin+=umin/(k-k0+1);
+          do output[k0++]=vmin; while(k0<=k);
+          return;
+        }
       }
       if ((umin+=input[k+1]-vmin)<minlambda) {        /*negative jump necessary*/
-	do output[k0++]=vmin; while (k0<=kminus);
-	vmax=(vmin=input[kplus=kminus=k=k0])+twolambda;
-	umin=lambda; umax=minlambda;
+        do output[k0++]=vmin; while (k0<=kminus);
+        vmax=(vmin=input[kplus=kminus=k=k0])+twolambda;
+        umin=lambda; umax=minlambda;
       } else if ((umax+=input[k+1]-vmax)>lambda) {    /*positive jump necessary*/
-	do output[k0++]=vmax; while (k0<=kplus);
-	vmin=(vmax=input[kplus=kminus=k=k0])-twolambda;
-	umin=lambda; umax=minlambda;
+        do output[k0++]=vmax; while (k0<=kplus);
+        vmin=(vmax=input[kplus=kminus=k=k0])-twolambda;
+        umin=lambda; umax=minlambda;
       } else {     /*no jump necessary, we continue*/
-	k++;
-	if (umin>=lambda) {        /*update of vmin*/
-	  vmin+=(umin-lambda)/((kminus=k)-k0+1);
-	  umin=lambda;
-	}
-	if (umax<=minlambda) {    /*update of vmax*/
-	  vmax+=(umax+lambda)/((kplus=k)-k0+1);
-	  umax=minlambda;
-	}
+        k++;
+        if (umin>=lambda) {        /*update of vmin*/
+          vmin+=(umin-lambda)/((kminus=k)-k0+1);
+          umin=lambda;
+        }
+        if (umax<=minlambda) {    /*update of vmax*/
+          vmax+=(umax+lambda)/((kplus=k)-k0+1);
+          umax=minlambda;
+        }
       }
     }
   }
 }
 
 void PoFLeakAna(){
+  //=============
+  // User config
+  //=============
+  Bool_t first_line = true; // so we can set the length of the vector
+  Bool_t filternoise = true; // apply noise filter if true (most likely you need)
+  int example_waveform = 19470; // the example waveform number you want to plot: can't exceed maximum waveforms
+
+  //==========================
+  // Digitizer config
+  //     usually no change
+  //==========================
   int headbin; // to store headers
   int nbytes_headers = 4; // 4 bytes (32 bits) for each head
   int nbytes_data = 2; // 2 bytes (16 bits) per sample
   int memorydepth = 0; // size of waveforms
   uint32_t valbin = 0; // to read data
-  vector<Double_t> raw; // waveform as vector
-  vector<Double_t> denoised; // denoised waveform as vector
 
   int waveNum = 0;//To record num of waveforms; Added by szhang; 20220720---
 
-  Double_t nbits = 14; // ADC is a 14 bits, 2 Vpp
+  Int_t nbits = 14; // ADC is a 14 bits, 2 Vpp
   Double_t samplingRate = 250.e6; // 250 MSamples/s for DT5725
-  Double_t nADCs = pow(2,nbits); // number of digital channels
+  Int_t nADCs = pow(2, nbits); // number of digital channels
   Double_t inVolts = 2./nADCs; // Multiply by this number to have the amplitude in volts;
   Double_t dtime = (1/samplingRate)*1e9; // steps in nanoseconds
 
-  Bool_t first_line = true; // so we can set the length of the vector
+  //===================
+  // General Variables
+  //===================
+  vector<Double_t> raw; // waveform as vector
+  vector<Double_t> denoised; // denoised waveform as vector
+  Double_t baseline_ADC;
+  Int_t baseline_ADC_bin;
 
-//======General Variables====================
   double level[8] = {0};
+  double delta_ADC[8] = {0};
   double Count0[8] = {0};
   double Count1[8] = {0};
   double Count2[8] = {0};
@@ -85,26 +100,29 @@ void PoFLeakAna(){
   double Gain3[8] = {0};
   double Gain123[8] = {0};
 
+  // delta ADC above baseline as threshold
+  delta_ADC[0] = 50;
   level[0] = 3385;//for wave5, baseline=3335---
 //  level[0] = 2590;//for wave6, baseline=2540---
   for(int i=0; i<8; ++i){
       level[i] = level[0]+25*i;
+      delta_ADC[i] = delta_ADC[0] + 25*i;
   }
 
   // Single waveform
   TH1D *h1;
   TH1D *h2; // denoised
 
-//======Read No Laser========================
+  //=================
+  // Read No Laser
+  //=================
   ifstream fin;
   fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only/wave5.dat", ios::in | ios::binary);
 
-  if(fin.good() && fin.is_open()){ // Ok
-    cout << "Reading file" << endl;
-  }
-  else{ // emergency shutdown
+  if(fin.good() && fin.is_open()) cout << "Reading file" << endl;
+  else{
     cout << "File did not open!!" << endl;
-    return;
+    exit(1);
   }
 
   // Loop over waveforms
@@ -123,9 +141,6 @@ void PoFLeakAna(){
       raw.resize(memorydepth);
       denoised.resize(memorydepth);
       first_line=false;
-      //auto g1 = new TGraph(memorydepth, x, raw);
-      //h1 = new TH1D("h1", "h1", memorydepth, 0, memorydepth*dtime);
-      //h2 = new TH1D("h2", "h2", memorydepth, 0, memorydepth*dtime);
       h1 = new TH1D("h1", "h1", memorydepth, 0, memorydepth);
       h2 = new TH1D("h2", "h2", memorydepth, 0, memorydepth);
     }
@@ -141,30 +156,43 @@ void PoFLeakAna(){
     }
 
     // Apply noise filter
-    TV1D_denoise(raw, denoised, memorydepth, 50);
+    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 50);
+
+    // Evaluate single waveform baseline
+    baseline_ADC = 0.;
+    baseline_ADC_bin = -1;
+    TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
+    for(int j = 0; j < memorydepth; j++) ADC_hist->Fill(denoised[j]);
+    baseline_ADC_bin = ADC_hist->GetMaximumBin();
+    baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
+    if(waveNum == example_waveform) {
+      cout << "baseline_ADC: "<< baseline_ADC <<endl;
+      TCanvas *tmp = new TCanvas();
+      ADC_hist->Draw();
+      tmp->SaveAs("example_ADC_hist.png");
+      delete tmp;
+    }
+    delete ADC_hist;
 
     // Calculate up-crossing in each waveform
     for(int i=0; i<8; ++i){
       for(int j=0; j<1750; j++){
-        if((denoised[j] - level[i])<0 && (denoised[j+1] - level[i])>0){
+        if( ( denoised[j] - (baseline_ADC+delta_ADC[i]) )<0 && ( denoised[j+1] - (baseline_ADC+delta_ADC[i]) )>0 ){
           Count0[i] += 1;
         }
       }
     }
 
     waveNum += 1;
-    if (waveNum %10000 == 0) printf("Wavenum: %d\n", waveNum);
+    if (waveNum % 10000 == 0) printf("Wavenum: %d\n", waveNum);
 
     // Plot single waveform
-    if(waveNum == 19470) {
+    if(waveNum == example_waveform) {
       for(int j=0; j<2500; j++){
         h1->Fill(j, raw[j]);
         h2->Fill(j, denoised[j]);
       }
     } // end plot single waveform
-
-    //raw.clear();
-    //denoised.clear();
 
   } // End loop over waveforms
 
@@ -210,11 +238,20 @@ void PoFLeakAna(){
     }
 
     // Apply noise filter
-    TV1D_denoise(raw, denoised, memorydepth, 50);
+    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 50);
+
+    // Evaluate single waveform baseline
+    baseline_ADC = 0.;
+    baseline_ADC_bin = -1;
+    TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
+    for(int j = 0; j < memorydepth; j++) ADC_hist->Fill(denoised[j]);
+    baseline_ADC_bin = ADC_hist->GetMaximumBin();
+    baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
+    delete ADC_hist;
 
     for(int i=0; i<8; ++i){
         for(int j=0; j<1750; j++){
-            if((denoised[j] - level[i])<0 && (denoised[j+1] - level[i])>0){
+            if( ( denoised[j] - (baseline_ADC+delta_ADC[i]) )<0 && ( denoised[j+1] - (baseline_ADC+delta_ADC[i]) )>0 ){
 	        Count1[i] += 1;
 	    }
         }
@@ -264,11 +301,20 @@ void PoFLeakAna(){
     }
 
     // Apply noise filter
-    TV1D_denoise(raw, denoised, memorydepth, 50);
+    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 50);
+
+    // Evaluate single waveform baseline
+    baseline_ADC = 0.;
+    baseline_ADC_bin = -1;
+    TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
+    for(int j = 0; j < memorydepth; j++) ADC_hist->Fill(denoised[j]);
+    baseline_ADC_bin = ADC_hist->GetMaximumBin();
+    baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
+    delete ADC_hist;
 
     for(int i=0; i<8; ++i){
         for(int j=0; j<1750; j++){
-            if((denoised[j] - level[i])<0 && (denoised[j+1] - level[i])>0){
+            if( ( denoised[j] - (baseline_ADC+delta_ADC[i]) )<0 && ( denoised[j+1] - (baseline_ADC+delta_ADC[i]) )>0 ){
 	        Count2[i] += 1;
 	    }
         }
@@ -318,11 +364,20 @@ void PoFLeakAna(){
     }
 
     // Apply noise filter
-    TV1D_denoise(raw, denoised, memorydepth, 50);
+    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 50);
+
+    // Evaluate single waveform baseline
+    baseline_ADC = 0.;
+    baseline_ADC_bin = -1;
+    TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
+    for(int j = 0; j < memorydepth; j++) ADC_hist->Fill(denoised[j]);
+    baseline_ADC_bin = ADC_hist->GetMaximumBin();
+    baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
+    delete ADC_hist;
 
     for(int i=0; i<8; ++i){
         for(int j=0; j<1750; j++){
-            if((denoised[j] - level[i])<0 && (denoised[j+1] - level[i])>0){
+            if( ( denoised[j] - (baseline_ADC+delta_ADC[i]) )<0 && ( denoised[j+1] - (baseline_ADC+delta_ADC[i]) )>0 ){
 	        Count3[i] += 1;
 	    }
         }
@@ -373,11 +428,20 @@ void PoFLeakAna(){
     }
 
     // Apply noise filter
-    TV1D_denoise(raw, denoised, memorydepth, 50);
+    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 50);
+
+    // Evaluate single waveform baseline
+    baseline_ADC = 0.;
+    baseline_ADC_bin = -1;
+    TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
+    for(int j = 0; j < memorydepth; j++) ADC_hist->Fill(denoised[j]);
+    baseline_ADC_bin = ADC_hist->GetMaximumBin();
+    baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
+    delete ADC_hist;
 
     for(int i=0; i<8; ++i){
         for(int j=0; j<1750; j++){
-            if((denoised[j] - level[i])<0 && (denoised[j+1] - level[i])>0){
+            if( ( denoised[j] - (baseline_ADC+delta_ADC[i]) )<0 && ( denoised[j+1] - (baseline_ADC+delta_ADC[i]) )>0 ){
 	        Count123[i] += 1;
 	    }
         }
@@ -401,17 +465,15 @@ void PoFLeakAna(){
       Gain123[i] = (Count123[i] - Count0[i])/20000*5000/3500;
   }
 
-  for(int i=0; i<8; ++i){
-      level[i] = 25*(i+2);
-  }
 //======Drawing====================
-  TGraph *dis0 = new TGraph(8, level, Count0);
-  TGraph *dis1 = new TGraph(8, level, Count1);
-  TGraph *dis2 = new TGraph(8, level, Count2);
-  TGraph *dis3 = new TGraph(8, level, Count3);
-  TGraph *dis123 = new TGraph(8, level, Count123);
+  TGraph *dis0 = new TGraph(8, delta_ADC, Count0);
+  TGraph *dis1 = new TGraph(8, delta_ADC, Count1);
+  TGraph *dis2 = new TGraph(8, delta_ADC, Count2);
+  TGraph *dis3 = new TGraph(8, delta_ADC, Count3);
+  TGraph *dis123 = new TGraph(8, delta_ADC, Count123);
 
   TCanvas *c = new TCanvas();
+  c->SetLogy(); c->SetGridx(); c->SetGridy();
   TMultiGraph *mg = new TMultiGraph();
 
   dis0->SetMarkerSize(0.8);
@@ -444,6 +506,11 @@ void PoFLeakAna(){
   mg->Add(dis2);
   mg->Add(dis3);
   mg->Add(dis123);
+  mg->GetXaxis()->SetTitle("#Delta (ADC)");
+  mg->GetYaxis()->SetTitle("Counts");
+  mg->SetMaximum(Count123[0]*2.);
+  mg->SetMinimum(Count0[7]/2.);
+  mg->Draw("AP");
 
   TLegend *leg = new TLegend(0.55, 0.65, 0.9, 0.9);
   leg->AddEntry(dis0, "No Laser: 3335ADC");
@@ -451,23 +518,20 @@ void PoFLeakAna(){
   leg->AddEntry(dis2, "v2 SwitchB [581mW]");
   leg->AddEntry(dis3, "v2 SwitchA & SwitchB [2039mW]");
   leg->AddEntry(dis123, "All Lasers of v2 & v3 on [4221mW]");
-
-  mg->GetXaxis()->SetTitle("#Delta (ADC)");
-  mg->GetYaxis()->SetTitle("Counts");
-
-  mg->Draw("AP");
   leg->Draw();
+
   c->SaveAs("up-crossing_count.png");
 
 
 //======Drawing Gain==================
   TCanvas *c2 = new TCanvas();
+  c2->SetGridx(); c2->SetGridy();
   TMultiGraph *mg2 = new TMultiGraph();
 
-  TGraph *diff1 = new TGraph(8, level, Gain1);
-  TGraph *diff2 = new TGraph(8, level, Gain2);
-  TGraph *diff3 = new TGraph(8, level, Gain3);
-  TGraph *diff123 = new TGraph(8, level, Gain123);
+  TGraph *diff1 = new TGraph(8, delta_ADC, Gain1);
+  TGraph *diff2 = new TGraph(8, delta_ADC, Gain2);
+  TGraph *diff3 = new TGraph(8, delta_ADC, Gain3);
+  TGraph *diff123 = new TGraph(8, delta_ADC, Gain123);
 
   diff1->SetMarkerSize(0.8);
   diff1->SetMarkerStyle(21);
@@ -515,6 +579,6 @@ void PoFLeakAna(){
   h2->SetLineColor(4);
   h2->SetLineStyle(7);
   h2->Draw("HIST SAME");
-  c3->SaveAs("single_waveform.png");
+  c3->SaveAs("example_single_waveform.png");
 
 }

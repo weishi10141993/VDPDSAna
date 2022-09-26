@@ -23,9 +23,6 @@ Run B++ PoF light leakage data:
 ssh -X shiw@lxplus.cern.ch
 git clone https://github.com/weishi10141993/VDPDSAna.git
 
-# Script to plot single waveform
-root -l -b -q select_single_waveform.C
-
 # Script to find peaks/count up-crossings
 root -l -b -q PoFLeakAna.C
 
