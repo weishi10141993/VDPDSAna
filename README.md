@@ -21,6 +21,7 @@ Run B++ PoF light leakage data:
 
 ```
 ssh -X shiw@lxplus.cern.ch
+cd /afs/cern.ch/work/s/shiw/public/
 git clone https://github.com/weishi10141993/VDPDSAna.git
 
 # Script to find peaks/count up-crossings

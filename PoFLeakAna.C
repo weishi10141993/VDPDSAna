@@ -87,7 +87,6 @@ void PoFLeakAna(){
   Double_t baseline_ADC;
   Int_t baseline_ADC_bin;
 
-  double level[8] = {0};
   double delta_ADC[8] = {0};
   double Count0[8] = {0};
   double Count1[8] = {0};
@@ -102,21 +101,18 @@ void PoFLeakAna(){
 
   // delta ADC above baseline as threshold
   delta_ADC[0] = 50;
-  level[0] = 3385;//for wave5, baseline=3335---
-//  level[0] = 2590;//for wave6, baseline=2540---
-  for(int i=0; i<8; ++i){
-      level[i] = level[0]+25*i;
-      delta_ADC[i] = delta_ADC[0] + 25*i;
-  }
+  for(int i=0; i<8; ++i) delta_ADC[i] = delta_ADC[0] + 25*i;
 
   // Single waveform
   TH1D *h1;
   TH1D *h2; // denoised
 
+  ifstream fin;
+
+  // Loop over samples
   //=================
   // Read No Laser
   //=================
-  ifstream fin;
   fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only/wave5.dat", ios::in | ios::binary);
 
   if(fin.good() && fin.is_open()) cout << "Reading file" << endl;
@@ -166,7 +162,7 @@ void PoFLeakAna(){
     baseline_ADC_bin = ADC_hist->GetMaximumBin();
     baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
     if(waveNum == example_waveform) {
-      cout << "baseline_ADC: "<< baseline_ADC <<endl;
+      cout << "Example waveform # "<< example_waveform <<" baseline_ADC: "<< baseline_ADC <<endl;
       TCanvas *tmp = new TCanvas();
       ADC_hist->Draw();
       tmp->SaveAs("example_ADC_hist.png");
@@ -198,12 +194,14 @@ void PoFLeakAna(){
 
   cout<<"==========Result of No Laser:=========== "<<endl;
   for(int i=0; i<8; ++i){
-      cout<<"Counts of Level "<<level[i]<<": "<<Count0[i]<<endl;
+      cout<<"Counts at delta_ADC "<<delta_ADC[i]<<": "<<Count0[i]<<endl;
   }
 
-  fin.close();//Very Important------
+  fin.close();
 
-//======Read v2 Switch A========================
+  //=================
+  // Read v2 Switch A
+  //=================
   fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_argon_read/wave5.dat", ios::in | ios::binary);
 
   if(fin.good() && fin.is_open()){ // Ok
@@ -261,7 +259,7 @@ void PoFLeakAna(){
 
   cout<<"==========Result of v2 SwitchA:=========== "<<endl;
   for(int i=0; i<8; ++i){
-      cout<<"Counts of Level "<<level[i]<<": "<<Count1[i]<<endl;
+      cout<<"Counts at delta_ADC "<<delta_ADC[i]<<": "<<Count1[i]<<endl;
   }
 
   fin.close();
@@ -324,7 +322,7 @@ void PoFLeakAna(){
 
   cout<<"==========Result of v2 SwitchB:=========== "<<endl;
   for(int i=0; i<8; ++i){
-      cout<<"Counts of Level "<<level[i]<<": "<<Count2[i]<<endl;
+      cout<<"Counts of delta_ADC "<<delta_ADC[i]<<": "<<Count2[i]<<endl;
   }
 
   fin.close();
@@ -387,7 +385,7 @@ void PoFLeakAna(){
 
   cout<<"==========Result of v2 SwitchA & SwitchB:=========== "<<endl;
   for(int i=0; i<8; ++i){
-      cout<<"Counts of Level "<<level[i]<<": "<<Count3[i]<<endl;
+      cout<<"Counts of delta_ADC "<<delta_ADC[i]<<": "<<Count3[i]<<endl;
   }
 
   fin.close();
@@ -451,7 +449,7 @@ void PoFLeakAna(){
 
   cout<<"==========Result of All lasers of v2 & v3:=========== "<<endl;
   for(int i=0; i<8; ++i){
-      cout<<"Counts of Level "<<level[i]<<": "<<Count123[i]<<endl;
+      cout<<"Counts of delta_ADC "<<delta_ADC[i]<<": "<<Count123[i]<<endl;
   }
 
   fin.close();
@@ -513,7 +511,7 @@ void PoFLeakAna(){
   mg->Draw("AP");
 
   TLegend *leg = new TLegend(0.55, 0.65, 0.9, 0.9);
-  leg->AddEntry(dis0, "No Laser: 3335ADC");
+  leg->AddEntry(dis0, "No Laser");
   leg->AddEntry(dis1, "v2 SwitchA [1458mW]");
   leg->AddEntry(dis2, "v2 SwitchB [581mW]");
   leg->AddEntry(dis3, "v2 SwitchA & SwitchB [2039mW]");
