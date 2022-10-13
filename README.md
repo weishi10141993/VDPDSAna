@@ -25,6 +25,7 @@ cd /afs/cern.ch/work/s/shiw/public/
 git clone https://github.com/weishi10141993/VDPDSAna.git
 
 # Script to find peaks/count up-crossings
+# Adjust user config file names
 root -l -b -q PoFLeakAna.C
 
 # Persistence mode: Script to fill all waveform points from a sample in a 2d histogram

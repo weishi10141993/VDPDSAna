@@ -57,21 +57,42 @@ void PoFLeakAna(){
   //=============
   // User config
   //=============
-  Bool_t first_line = true; // so we can set the length of the vector
+  Bool_t got_mem_depth = true; // so we can initilize stuff
   Bool_t filternoise = true; // apply noise filter if true (most likely you need)
-  int example_waveform = 19470; // the example waveform number you want to plot: can't exceed maximum waveforms
+  int example_waveform = 3; // example waveform number you want to plot from 1st dataset: can't exceed maximum waveforms
+  // Samples
+  // Sep 17
+  // No laser:      /afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only/wave5.dat
+  // v2 switch A:   /afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_argon_read/wave5.dat
+  // v2 switch B:   /afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchB_argon_read/wave5.dat
+  // v2 switch A&B: /afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_and_switchB_argon_read/wave5.dat
+  // v2 & v3:       /afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_and_v3_all_lasers/wave5.dat
+
+  // Sep 14
+  // No laser:
+  // v3 laser 1:
+  // v3 laser 2:
+  // v3 laser 3:
+  // v3 laser 1,2,3:
+  TString dirname = "/afs/cern.ch/work/s/shiw/public/ColdBoxVD";
+  vector<TString> adcdataset;
+	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only/wave5.dat");
+	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_argon_read/wave5.dat");
+  adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchB_argon_read/wave5.dat");
+  adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_and_switchB_argon_read/wave5.dat");
+  adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_and_v3_all_lasers/wave5.dat");
 
   //==========================
   // Digitizer config
   //     usually no change
   //==========================
   int headbin; // to store headers
-  int nbytes_headers = 4; // 4 bytes (32 bits) for each head
+  uint32_t valbin = 0; // to read data
+  int headers = 6; // total number of headers
+  int nbytes_headers = 4; // 4 bytes (32 bits) for each header
   int nbytes_data = 2; // 2 bytes (16 bits) per sample
   int memorydepth = 0; // size of waveforms
-  uint32_t valbin = 0; // to read data
-
-  int waveNum = 0;//To record num of waveforms; Added by szhang; 20220720---
+  double percentage = 0.7; // fraction of the waveform of interest from beginning, usually trigger is put fairly late and is excluded
 
   Int_t nbits = 14; // ADC is a 14 bits, 2 Vpp
   Double_t samplingRate = 250.e6; // 250 MSamples/s for DT5725
@@ -88,20 +109,12 @@ void PoFLeakAna(){
   Int_t baseline_ADC_bin;
 
   double delta_ADC[8] = {0};
-  double Count0[8] = {0};
-  double Count1[8] = {0};
-  double Count2[8] = {0};
-  double Count3[8] = {0};
-  double Count123[8] = {0};
-
-  double Gain1[8] = {0};
-  double Gain2[8] = {0};
-  double Gain3[8] = {0};
-  double Gain123[8] = {0};
+  double Count[5][8] = {0};
+  double Gain[4][8] = {0};
 
   // delta ADC above baseline as threshold
   delta_ADC[0] = 50;
-  for(int i=0; i<8; ++i) delta_ADC[i] = delta_ADC[0] + 25*i;
+  for(int ithres=0; ithres<8; ++ithres) delta_ADC[ithres] = delta_ADC[0] + 25*ithres;
 
   // Single waveform
   TH1D *h1;
@@ -109,366 +122,140 @@ void PoFLeakAna(){
 
   ifstream fin;
 
-  // Loop over samples
-  //=================
-  // Read No Laser
-  //=================
-  fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only/wave5.dat", ios::in | ios::binary);
+  for ( int idat = 0; idat < adcdataset.size(); idat++ ) {
+    std::cout << "Looking at dataset " << idat << ": " << adcdataset[idat] << std::endl;
 
-  if(fin.good() && fin.is_open()) cout << "Reading file" << endl;
-  else{
-    cout << "File did not open!!" << endl;
-    exit(1);
-  }
+    fin.open(TString::Format("%s/%s", dirname.Data(), adcdataset[idat].Data()), ios::in | ios::binary);
 
-  // Loop over waveforms
-  while(!fin.fail()){
-    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head
-      fin.read((char *) &headbin, nbytes_headers);
-      // header0 will be EventSize, so: you can do
-      if(ln==0){
-        memorydepth = headbin;
-        // the result is in bytes, so 2*NSamples+4*headers
-        memorydepth = (memorydepth-4*6)/2;
-      }
-    }
-    if(first_line){
-      printf("Waveform size: %d \n",memorydepth);
-      raw.resize(memorydepth);
-      denoised.resize(memorydepth);
-      first_line=false;
-      h1 = new TH1D("h1", "h1", memorydepth, 0, memorydepth);
-      h2 = new TH1D("h2", "h2", memorydepth, 0, memorydepth);
-    }
+    if( !( fin.good() && fin.is_open() ) ) {
+      std::cout << "File did not open!!" << endl;
+      exit(1);
+    };
 
-    // Store each waveform
-    for(int j = 0; j < memorydepth; j++) {
-        fin.read((char *) &valbin, nbytes_data); // 2 bytes (16 bits) per sample
-        if(fin.bad() || fin.fail()){
-          break;
+    int waveNum = 0; // num of waveforms, set to 0 for each new dataset
+
+    // Loop over waveforms in the dataset
+    while(!fin.fail()){
+      // stream all headers
+      for(Int_t ln=0; ln<headers; ln++){
+        fin.read((char *) &headbin, nbytes_headers);
+        // header0 will be EventSize, so: you can do
+        if( ln == 0 ){
+          memorydepth = headbin;
+          // the result is in bytes, so 2*NSamples+4*headers
+          memorydepth = (memorydepth - nbytes_headers*headers)/nbytes_data;
         }
-        raw[j] = valbin;
-        denoised[j] = raw[j];
-    }
+      } // end stream all headers
 
-    // Apply noise filter
-    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 50);
+      if(got_mem_depth && idat == 0){ // initialization based on memorydepth
+        got_mem_depth=false;
+        printf("Waveform points: %d \n", memorydepth);
+        raw.resize(memorydepth);
+        denoised.resize(memorydepth); // this is necessary for some reason
+        h1 = new TH1D("h1", "h1", memorydepth, 0, memorydepth);
+        h2 = new TH1D("h2", "h2", memorydepth, 0, memorydepth);
+      }
 
-    // Evaluate single waveform baseline
-    baseline_ADC = 0.;
-    baseline_ADC_bin = -1;
-    TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
-    for(int j = 0; j < memorydepth; j++) ADC_hist->Fill(denoised[j]);
-    baseline_ADC_bin = ADC_hist->GetMaximumBin();
-    baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
-    if(waveNum == example_waveform) {
-      cout << "Example waveform # "<< example_waveform <<" baseline_ADC: "<< baseline_ADC <<endl;
-      TCanvas *tmp = new TCanvas();
-      ADC_hist->Draw();
-      tmp->SaveAs("example_ADC_hist.png");
-      delete tmp;
-    }
-    delete ADC_hist;
+      // Store each waveform
+      for(int ipoint = 0; ipoint < memorydepth; ipoint++) {
+          fin.read((char *) &valbin, nbytes_data); // 2 bytes (16 bits) per sample
+          if(fin.bad() || fin.fail()) break;
+          raw[ipoint] = valbin;
+          denoised[ipoint] = raw[ipoint];
+      }
 
-    // Calculate up-crossing in each waveform
-    for(int i=0; i<8; ++i){
-      for(int j=0; j<1750; j++){
-        if( ( denoised[j] - (baseline_ADC+delta_ADC[i]) )<0 && ( denoised[j+1] - (baseline_ADC+delta_ADC[i]) )>0 ){
-          Count0[i] += 1;
+      //
+      // Apply noise filter
+      //
+
+      if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 50);
+
+      //
+      // Evaluate single waveform baseline
+      //
+
+      baseline_ADC = 0.;
+      baseline_ADC_bin = -1;
+      TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
+      for(int ipoint = 0; ipoint < memorydepth; ipoint++) ADC_hist->Fill(denoised[ipoint]);
+      baseline_ADC_bin = ADC_hist->GetMaximumBin();
+      baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
+      if(waveNum == example_waveform && idat == 0) {
+        cout <<"Dataset "<< idat <<" example waveform # "<< example_waveform <<" baseline ADC: "<< baseline_ADC <<endl;
+        TCanvas *tmp = new TCanvas();
+        ADC_hist->Draw();
+        tmp->SaveAs( TString::Format("example_ADC_hist_from_dataset%d.png", idat) );
+        delete tmp;
+      }
+      delete ADC_hist;
+
+      //
+      // Count up-crossings in each waveform
+      //
+
+      for(int ithres=0; ithres<8; ++ithres){ // all thresholds
+        for(int jpoint=0; jpoint<1750; jpoint++){ // range of points we are interested in
+          if( ( denoised[jpoint] - (baseline_ADC+delta_ADC[ithres]) )<0 && ( denoised[jpoint+1] - (baseline_ADC+delta_ADC[ithres]) )>0 ){
+            Count[idat][ithres] += 1;
+          }
         }
       }
+
+      // Integrate peak region
+      // TODO
+
+      waveNum += 1;
+      if (waveNum % 10000 == 0) printf("Wavenum: %d\n", waveNum);
+
+      //
+      // Plot example single waveform
+      //
+      if(waveNum == example_waveform && idat == 0) {
+        for(int ipoint=0; ipoint<memorydepth; ipoint++){
+          h1->Fill(ipoint, raw[ipoint]);
+          h2->Fill(ipoint, denoised[ipoint]);
+        }
+        TCanvas *c3 = new TCanvas();
+        h1->SetLineColor(2);
+        h1->Draw("HIST");
+        h1->GetXaxis()->SetTitle("Time tick (4ns)");
+        h1->GetYaxis()->SetTitle("Amplitude (ADC Channels)");
+        h2->SetLineColor(4);
+        h2->SetLineStyle(7);
+        h2->Draw("HIST SAME");
+        c3->SaveAs( TString::Format("example_single_waveform_from_dataset%d.png", idat) );
+        delete c3;
+      } // end plot single waveform
+
+    } // End loop over waveforms
+
+    cout<<"========== Result =========== "<<endl;
+    for(int ithres=0; ithres<8; ++ithres){
+      cout<<"Counts at delta ADC " << delta_ADC[ithres]<<": "<<Count[idat][ithres]<<endl;
     }
 
-    waveNum += 1;
-    if (waveNum % 10000 == 0) printf("Wavenum: %d\n", waveNum);
+    fin.close();
 
-    // Plot single waveform
-    if(waveNum == example_waveform) {
-      for(int j=0; j<2500; j++){
-        h1->Fill(j, raw[j]);
-        h2->Fill(j, denoised[j]);
-      }
-    } // end plot single waveform
+  } // end loop over dataset
 
-  } // End loop over waveforms
-
-  cout<<"==========Result of No Laser:=========== "<<endl;
+  //
+  // Calculate extra upcrossings
+  //
   for(int i=0; i<8; ++i){
-      cout<<"Counts at delta_ADC "<<delta_ADC[i]<<": "<<Count0[i]<<endl;
+      Gain[0][i] = (Count[1][i] - Count[0][i])/20000*5000/3500;
+      Gain[1][i] = (Count[2][i] - Count[0][i])/20000*5000/3500;
+      Gain[2][i] = (Count[3][i] - Count[0][i])/20000*5000/3500;
+      Gain[3][i] = (Count[4][i] - Count[0][i])/20000*5000/3500;
   }
 
-  fin.close();
-
-  //=================
-  // Read v2 Switch A
-  //=================
-  fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_argon_read/wave5.dat", ios::in | ios::binary);
-
-  if(fin.good() && fin.is_open()){ // Ok
-    cout << "Reading file" << endl;
-  }
-  else{ // emergency shutdown
-    cout << "File did not open!!" << endl;
-    return;
-  }
-  while(!fin.fail()){
-    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head
-      fin.read((char *) &headbin, nbytes_headers);
-      // header0 will be EventSize, so: you can do
-      if(ln==0){
-        memorydepth = headbin;
-        // the result is in bytes, so 2*NSamples+4*headers
-        memorydepth = (memorydepth-4*6)/2;
-      }
-    }
-    if(first_line){
-      printf("Waveform size: %d \n",memorydepth);
-      raw.resize(memorydepth);
-      first_line=false;
-    }
-    for(int j = 0; j < memorydepth; j++) {
-        fin.read((char *) &valbin, nbytes_data); // 2 bytes (16 bits) per sample
-        if(fin.bad() || fin.fail()){
-          break;
-        }
-        raw[j] = valbin;
-        denoised[j] = raw[j];
-    }
-
-    // Apply noise filter
-    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 50);
-
-    // Evaluate single waveform baseline
-    baseline_ADC = 0.;
-    baseline_ADC_bin = -1;
-    TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
-    for(int j = 0; j < memorydepth; j++) ADC_hist->Fill(denoised[j]);
-    baseline_ADC_bin = ADC_hist->GetMaximumBin();
-    baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
-    delete ADC_hist;
-
-    for(int i=0; i<8; ++i){
-        for(int j=0; j<1750; j++){
-            if( ( denoised[j] - (baseline_ADC+delta_ADC[i]) )<0 && ( denoised[j+1] - (baseline_ADC+delta_ADC[i]) )>0 ){
-	        Count1[i] += 1;
-	    }
-        }
-    }
-
-  }
-
-  cout<<"==========Result of v2 SwitchA:=========== "<<endl;
-  for(int i=0; i<8; ++i){
-      cout<<"Counts at delta_ADC "<<delta_ADC[i]<<": "<<Count1[i]<<endl;
-  }
-
-  fin.close();
-
-//======Read v2 Switch B========================
-  fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchB_argon_read/wave5.dat", ios::in | ios::binary);
-
-  if(fin.good() && fin.is_open()){ // Ok
-    cout << "Reading file" << endl;
-  }
-  else{ // emergency shutdown
-    cout << "File did not open!!" << endl;
-    return;
-  }
-  while(!fin.fail()){
-    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head
-      fin.read((char *) &headbin, nbytes_headers);
-      // header0 will be EventSize, so: you can do
-      if(ln==0){
-        memorydepth = headbin;
-        // the result is in bytes, so 2*NSamples+4*headers
-        memorydepth = (memorydepth-4*6)/2;
-      }
-    }
-    if(first_line){
-      printf("Waveform size: %d \n",memorydepth);
-      raw.resize(memorydepth);
-      first_line=false;
-    }
-    for(int j = 0; j < memorydepth; j++) {
-        fin.read((char *) &valbin, nbytes_data); // 2 bytes (16 bits) per sample
-        if(fin.bad() || fin.fail()){
-          break;
-        }
-        raw[j] = valbin;
-        denoised[j] = raw[j];
-    }
-
-    // Apply noise filter
-    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 50);
-
-    // Evaluate single waveform baseline
-    baseline_ADC = 0.;
-    baseline_ADC_bin = -1;
-    TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
-    for(int j = 0; j < memorydepth; j++) ADC_hist->Fill(denoised[j]);
-    baseline_ADC_bin = ADC_hist->GetMaximumBin();
-    baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
-    delete ADC_hist;
-
-    for(int i=0; i<8; ++i){
-        for(int j=0; j<1750; j++){
-            if( ( denoised[j] - (baseline_ADC+delta_ADC[i]) )<0 && ( denoised[j+1] - (baseline_ADC+delta_ADC[i]) )>0 ){
-	        Count2[i] += 1;
-	    }
-        }
-    }
-
-  }
-
-  cout<<"==========Result of v2 SwitchB:=========== "<<endl;
-  for(int i=0; i<8; ++i){
-      cout<<"Counts of delta_ADC "<<delta_ADC[i]<<": "<<Count2[i]<<endl;
-  }
-
-  fin.close();
-
-//======Read v2 SwitchA & SwitchB========================
-  fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_and_switchB_argon_read/wave5.dat", ios::in | ios::binary);
-
-  if(fin.good() && fin.is_open()){ // Ok
-    cout << "Reading file" << endl;
-  }
-  else{ // emergency shutdown
-    cout << "File did not open!!" << endl;
-    return;
-  }
-  while(!fin.fail()){
-    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head
-      fin.read((char *) &headbin, nbytes_headers);
-      // header0 will be EventSize, so: you can do
-      if(ln==0){
-        memorydepth = headbin;
-        // the result is in bytes, so 2*NSamples+4*headers
-        memorydepth = (memorydepth-4*6)/2;
-      }
-    }
-    if(first_line){
-      printf("Waveform size: %d \n",memorydepth);
-      raw.resize(memorydepth);
-      first_line=false;
-    }
-    for(int j = 0; j < memorydepth; j++) {
-        fin.read((char *) &valbin, nbytes_data); // 2 bytes (16 bits) per sample
-        if(fin.bad() || fin.fail()){
-          break;
-        }
-        raw[j] = valbin;
-        denoised[j] = raw[j];
-    }
-
-    // Apply noise filter
-    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 50);
-
-    // Evaluate single waveform baseline
-    baseline_ADC = 0.;
-    baseline_ADC_bin = -1;
-    TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
-    for(int j = 0; j < memorydepth; j++) ADC_hist->Fill(denoised[j]);
-    baseline_ADC_bin = ADC_hist->GetMaximumBin();
-    baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
-    delete ADC_hist;
-
-    for(int i=0; i<8; ++i){
-        for(int j=0; j<1750; j++){
-            if( ( denoised[j] - (baseline_ADC+delta_ADC[i]) )<0 && ( denoised[j+1] - (baseline_ADC+delta_ADC[i]) )>0 ){
-	        Count3[i] += 1;
-	    }
-        }
-    }
-
-  }
-
-  cout<<"==========Result of v2 SwitchA & SwitchB:=========== "<<endl;
-  for(int i=0; i<8; ++i){
-      cout<<"Counts of delta_ADC "<<delta_ADC[i]<<": "<<Count3[i]<<endl;
-  }
-
-  fin.close();
-
-
-//======Read all lasers of v2 & v3========================
-  fin.open("/afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_and_v3_all_lasers/wave5.dat", ios::in | ios::binary);
-
-  if(fin.good() && fin.is_open()){ // Ok
-    cout << "Reading file" << endl;
-  }
-  else{ // emergency shutdown
-    cout << "File did not open!!" << endl;
-    return;
-  }
-  while(!fin.fail()){
-    for(Int_t ln=0;ln<6;ln++){ // 4 bytes (32 bits) for each head
-      fin.read((char *) &headbin, nbytes_headers);
-      // header0 will be EventSize, so: you can do
-      if(ln==0){
-        memorydepth = headbin;
-        // the result is in bytes, so 2*NSamples+4*headers
-        memorydepth = (memorydepth-4*6)/2;
-      }
-    }
-    if(first_line){
-      printf("Waveform size: %d \n",memorydepth);
-      raw.resize(memorydepth);
-      first_line=false;
-    }
-    for(int j = 0; j < memorydepth; j++) {
-        fin.read((char *) &valbin, nbytes_data); // 2 bytes (16 bits) per sample
-        if(fin.bad() || fin.fail()){
-          break;
-        }
-        raw[j] = valbin;
-        denoised[j] = raw[j];
-    }
-
-    // Apply noise filter
-    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 50);
-
-    // Evaluate single waveform baseline
-    baseline_ADC = 0.;
-    baseline_ADC_bin = -1;
-    TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
-    for(int j = 0; j < memorydepth; j++) ADC_hist->Fill(denoised[j]);
-    baseline_ADC_bin = ADC_hist->GetMaximumBin();
-    baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
-    delete ADC_hist;
-
-    for(int i=0; i<8; ++i){
-        for(int j=0; j<1750; j++){
-            if( ( denoised[j] - (baseline_ADC+delta_ADC[i]) )<0 && ( denoised[j+1] - (baseline_ADC+delta_ADC[i]) )>0 ){
-	        Count123[i] += 1;
-	    }
-        }
-    }
-
-  }
-
-  cout<<"==========Result of All lasers of v2 & v3:=========== "<<endl;
-  for(int i=0; i<8; ++i){
-      cout<<"Counts of delta_ADC "<<delta_ADC[i]<<": "<<Count123[i]<<endl;
-  }
-
-  fin.close();
-
-
-//======Gain calculations==========
-  for(int i=0; i<8; ++i){
-      Gain1[i] = (Count1[i] - Count0[i])/20000*5000/3500;
-      Gain2[i] = (Count2[i] - Count0[i])/20000*5000/3500;
-      Gain3[i] = (Count3[i] - Count0[i])/20000*5000/3500;
-      Gain123[i] = (Count123[i] - Count0[i])/20000*5000/3500;
-  }
-
-//======Drawing====================
-  TGraph *dis0 = new TGraph(8, delta_ADC, Count0);
-  TGraph *dis1 = new TGraph(8, delta_ADC, Count1);
-  TGraph *dis2 = new TGraph(8, delta_ADC, Count2);
-  TGraph *dis3 = new TGraph(8, delta_ADC, Count3);
-  TGraph *dis123 = new TGraph(8, delta_ADC, Count123);
+  //
+  // Draw count of upcrossings
+  //
+  TGraph *dis0 = new TGraph(8, delta_ADC, Count[0]);
+  TGraph *dis1 = new TGraph(8, delta_ADC, Count[1]);
+  TGraph *dis2 = new TGraph(8, delta_ADC, Count[2]);
+  TGraph *dis3 = new TGraph(8, delta_ADC, Count[3]);
+  TGraph *dis123 = new TGraph(8, delta_ADC, Count[4]);
 
   TCanvas *c = new TCanvas();
   c->SetLogy(); c->SetGridx(); c->SetGridy();
@@ -506,8 +293,8 @@ void PoFLeakAna(){
   mg->Add(dis123);
   mg->GetXaxis()->SetTitle("#Delta (ADC)");
   mg->GetYaxis()->SetTitle("Counts");
-  mg->SetMaximum(Count123[0]*2.);
-  mg->SetMinimum(Count0[7]/2.);
+  mg->SetMaximum(Count[4][0]*2.); // highest laser power and lowest threshold
+  mg->SetMinimum(Count[0][7]/2.); // no laser and highest threshold
   mg->Draw("AP");
 
   TLegend *leg = new TLegend(0.55, 0.65, 0.9, 0.9);
@@ -521,15 +308,17 @@ void PoFLeakAna(){
   c->SaveAs("up-crossing_count.png");
 
 
-//======Drawing Gain==================
+  //
+  // Draw extra upcrossings
+  //
   TCanvas *c2 = new TCanvas();
   c2->SetGridx(); c2->SetGridy();
   TMultiGraph *mg2 = new TMultiGraph();
 
-  TGraph *diff1 = new TGraph(8, delta_ADC, Gain1);
-  TGraph *diff2 = new TGraph(8, delta_ADC, Gain2);
-  TGraph *diff3 = new TGraph(8, delta_ADC, Gain3);
-  TGraph *diff123 = new TGraph(8, delta_ADC, Gain123);
+  TGraph *diff1 = new TGraph(8, delta_ADC, Gain[0]);
+  TGraph *diff2 = new TGraph(8, delta_ADC, Gain[1]);
+  TGraph *diff3 = new TGraph(8, delta_ADC, Gain[2]);
+  TGraph *diff123 = new TGraph(8, delta_ADC, Gain[3]);
 
   diff1->SetMarkerSize(0.8);
   diff1->SetMarkerStyle(21);
@@ -568,15 +357,5 @@ void PoFLeakAna(){
   mg2->Draw("AP");
   leg2->Draw();
   c2->SaveAs("extra_up-crossing_per10us_count.png");
-
-  TCanvas *c3 = new TCanvas();
-  h1->SetLineColor(2);
-  h1->Draw("HIST");
-  h1->GetXaxis()->SetTitle("Time tick (4ns)");
-  h1->GetYaxis()->SetTitle("Amplitude (ADC Channels)");
-  h2->SetLineColor(4);
-  h2->SetLineStyle(7);
-  h2->Draw("HIST SAME");
-  c3->SaveAs("example_single_waveform.png");
 
 }
