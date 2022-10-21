@@ -57,33 +57,107 @@ void PoFLeakAna(){
   //=============
   // User config
   //=============
-  Bool_t got_mem_depth = true; // so we can initilize stuff
+  // Choose one of these samples: "B++_v3_high", "B++_v3_low", "B++_v2"
+  TString runname = "B++_v2"; // runname_detector_[power]
   Bool_t filternoise = true; // apply noise filter if true (most likely you need)
   int example_waveform = 3; // example waveform number you want to plot from 1st dataset: can't exceed maximum waveforms
-  // Samples
-  // Sep 17
-  // No laser:      /afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only/wave5.dat
-  // v2 switch A:   /afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_argon_read/wave5.dat
-  // v2 switch B:   /afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchB_argon_read/wave5.dat
-  // v2 switch A&B: /afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_and_switchB_argon_read/wave5.dat
-  // v2 & v3:       /afs/cern.ch/work/s/shiw/public/ColdBoxVD/Coldbox_Sep2022_leakage_check/20220917_v2_and_v3_all_lasers/wave5.dat
+  int maxwavenum = 20000; // max number of waveforms want to look at
+  double pre_trig_frac; // fraction of waveform we are interested: starting from the beginning of the waveform (run/dataset dependent)
 
-  // Sep 14
-  // No laser:
-  // v3 laser 1:
-  // v3 laser 2:
-  // v3 laser 3:
-  // v3 laser 1,2,3:
-  TString dirname = "/afs/cern.ch/work/s/shiw/public/ColdBoxVD";
+  int nadcthrs = 8; // number of ADC thresholds
+  double delta_ADC[20] = {0}; // put 20 as default length
+  // delta ADC above baseline as threshold
+  if ( nadcthrs > 20 ) {
+    std::cout << "nadcthrs > 20, please increase array length of delta_ADC, Count, and Gain" << endl;
+    exit(1);
+  }
+  delta_ADC[0] = 50; // normally depends on channel, set at roughly 1PE amplitude
+  for(int ithres=0; ithres<nadcthrs; ++ithres) delta_ADC[ithres] = delta_ADC[0] + 25*ithres;
+
   vector<TString> adcdataset;
-	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only/wave5.dat");
-	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_argon_read/wave5.dat");
-  adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchB_argon_read/wave5.dat");
-  adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_and_switchB_argon_read/wave5.dat");
-  adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_and_v3_all_lasers/wave5.dat");
+  TString dirname = "/afs/cern.ch/work/s/shiw/public/ColdBoxVD";
+  TString channame = "wave5.dat";
+
+  Bool_t got_mem_depth = true; // so we can initilize stuff, usually true
+
+  // up to 7 set of data, can be more, but plot will get messy
+  int color[7] = {1, 2, 3, 41, 6, 4, 9}; // preferred color
+  int markerstyle[7] = {21, 21, 21, 21, 3, 21, 21};
+  TString legendname[7];
+  double Count[7][20] = {0}; // put 20 as default length
+  double Gain[7][20] = {0};
+
+  // Samples
+
+  // =========
+  // Run CRP3
+  // =========
+  // Same v3, v2 XA detectors on cathode (with copper box shield the DCEMs)
+  // Wall junction box covered with metal shield
+  // 37V miniarapuca biased by DCEM+Parma DCDC (instead of directly powered by PS)
+  // 47V miniarapuca same as Run B++, same Argon2x2 channels
+
+  // =========
+  // Run B++
+  // =========
+  // v3, v2 XA on cathode
+  // wave5 is 37V mini-arapuca w/ Argon2x2 (ch1)
+  // wave6 is 47V mini-arapuca w/ Argon2x2 (ch2)
+  // each dataset should have/stop at 20k waveforms each with 2500 sampling points
+
+  if ( runname == "B++_v3_high" ) {
+    // Sep 15 v3 cathode high power 2W
+    adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220915_v3_laser1_705_laser2_737_laser3_740/xarapuca_V3_cosmic_trigger50_no_laser");            // No laser (ref)
+  	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220915_v3_laser1_705_laser2_737_laser3_740/xarapuca_V3_cosmic_trigger50_laser_1");             // v3 laser 1
+    adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220915_v3_laser1_705_laser2_737_laser3_740/xarapuca_V3_cosmic_trigger50_laser_2");             // v3 laser 2
+    adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220915_v3_laser1_705_laser2_737_laser3_740/xarapuca_V3_cosmic_trigger50_laser_3");             // v3 laser 3
+    adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220915_v3_laser1_705_laser2_737_laser3_740/xarapuca_V3_cosmic_trigger50_laser_1_and_2_and_3"); // v3 laser 1,2,3
+    legendname[0] = "No Laser";
+    legendname[1] = "v3 Laser 1 [705mW]";
+    legendname[2] = "v3 Laser 2 [737mW]";
+    legendname[3] = "v3 Laser 3 [740mW]";
+    legendname[4] = "v3 Laser 1+2+3 [2182mW]";
+    pre_trig_frac = 0.7;
+  } else if ( runname == "B++_v3_low" ) {
+    // Sep 17 v3 cathode low power 1W
+  	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only");                          // No laser (ref)
+  	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/cathode_v3_laser_1_and_argon_read");   // v3 laser 1
+    adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/cathode_v3_laser_2_and_argon_read");   // v3 laser 2
+    adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/cathode_v3_laser_3_and_argon_read");   // v3 laser 3
+    adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/cathode_v3_laser_123_and_argon_read"); // v3 laser 1,2,3
+    legendname[0] = "No Laser";
+    legendname[1] = "v3 Laser 1 [388mW]";
+    legendname[2] = "v3 Laser 2 [410mW]";
+    legendname[3] = "v3 Laser 3 [250mW]";
+    legendname[4] = "v3 Laser 1+2+3 [1048mW]";
+    pre_trig_frac = 0.7;
+  } else if ( runname == "B++_v2" ) {
+    // Sep 17 v2 cathode 2W
+  	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only");                          // No laser (ref)
+  	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_argon_read");               // v2 switch A
+    adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchB_argon_read");               // v2 switch B
+    adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_swtichA_1458_switchB_581/cathode_v2_switchA_and_switchB_argon_read");   // v2 switch A&B
+    adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v2_and_v3_all_lasers");                                                    // v2 & v3
+    legendname[0] = "No Laser";
+    legendname[1] = "v2 SwitchA [1458mW]";
+    legendname[2] = "v2 SwitchB [581mW]";
+    legendname[3] = "v2 SwitchA & SwitchB [2039mW]";
+    legendname[4] = "All Lasers of v2 & v3 on [3087mW]";
+    pre_trig_frac = 0.7;
+  } else {
+    std::cout << "Unknown runname" << endl;
+    exit(1);
+  }
+
+  int ndat = adcdataset.size();
+
+  if ( ndat > 7 ) {
+    std::cout << "ndat > 7, please increase array length of color, markerstyle, legendname, Count, and Gain" << endl;
+    exit(1);
+  }
 
   //==========================
-  // Digitizer config
+  // CAEN Digitizer config
   //     usually no change
   //==========================
   int headbin; // to store headers
@@ -108,24 +182,29 @@ void PoFLeakAna(){
   Double_t baseline_ADC;
   Int_t baseline_ADC_bin;
 
-  double delta_ADC[8] = {0};
-  double Count[5][8] = {0};
-  double Gain[4][8] = {0};
-
-  // delta ADC above baseline as threshold
-  delta_ADC[0] = 50;
-  for(int ithres=0; ithres<8; ++ithres) delta_ADC[ithres] = delta_ADC[0] + 25*ithres;
-
   // Single waveform
   TH1D *h1;
   TH1D *h2; // denoised
+  TCanvas *cbaseline = new TCanvas();
+  TLegend *legdataset = new TLegend(0.55, 0.65, 0.9, 0.9);
+
+  //
+  // At this point, printing a lot of stuff for the reader to check
+  //
+
+  std::cout << " === Printing user config === " << std::endl;
+  std::cout << " * Run name: " << runname << std::endl;
+  std::cout << " * Number of samples: " << ndat << std::endl;
+  std::cout << " * Apply noise filter: " << filternoise << std::endl;
+  std::cout << " * Max No. of events per sample: " << maxwavenum << std::endl;
+  std::cout << " * Fraction of pre-trigger baseline: " << pre_trig_frac << std::endl;
 
   ifstream fin;
 
-  for ( int idat = 0; idat < adcdataset.size(); idat++ ) {
+  for ( int idat = 0; idat < ndat; idat++ ) {
     std::cout << "Looking at dataset " << idat << ": " << adcdataset[idat] << std::endl;
 
-    fin.open(TString::Format("%s/%s", dirname.Data(), adcdataset[idat].Data()), ios::in | ios::binary);
+    fin.open(TString::Format("%s/%s/%s", dirname.Data(), adcdataset[idat].Data(), channame.Data()), ios::in | ios::binary);
 
     if( !( fin.good() && fin.is_open() ) ) {
       std::cout << "File did not open!!" << endl;
@@ -133,6 +212,7 @@ void PoFLeakAna(){
     };
 
     int waveNum = 0; // num of waveforms, set to 0 for each new dataset
+    TH1F *BaselineADCHist = new TH1F("BaselineADCHist", "BaselineADCHist", 100, 3300, 3400);
 
     // Loop over waveforms in the dataset
     while(!fin.fail()){
@@ -157,11 +237,13 @@ void PoFLeakAna(){
       }
 
       // Store each waveform
+      waveNum += 1;
+      if( waveNum > maxwavenum ) break; // otherwise it may access non-existing memory
       for(int ipoint = 0; ipoint < memorydepth; ipoint++) {
-          fin.read((char *) &valbin, nbytes_data); // 2 bytes (16 bits) per sample
-          if(fin.bad() || fin.fail()) break;
-          raw[ipoint] = valbin;
-          denoised[ipoint] = raw[ipoint];
+        fin.read((char *) &valbin, nbytes_data); // 2 bytes (16 bits) per sample
+        if(fin.bad() || fin.fail()) break;
+        raw[ipoint] = valbin;
+        denoised[ipoint] = raw[ipoint];
       }
 
       //
@@ -180,6 +262,7 @@ void PoFLeakAna(){
       for(int ipoint = 0; ipoint < memorydepth; ipoint++) ADC_hist->Fill(denoised[ipoint]);
       baseline_ADC_bin = ADC_hist->GetMaximumBin();
       baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
+
       if(waveNum == example_waveform && idat == 0) {
         cout <<"Dataset "<< idat <<" example waveform # "<< example_waveform <<" baseline ADC: "<< baseline_ADC <<endl;
         TCanvas *tmp = new TCanvas();
@@ -189,12 +272,15 @@ void PoFLeakAna(){
       }
       delete ADC_hist;
 
+      // Fill baseline ADC of all waveforms in each dataset (one distribution per dataset)
+      BaselineADCHist->Fill(baseline_ADC);
+
       //
       // Count up-crossings in each waveform
       //
 
-      for(int ithres=0; ithres<8; ++ithres){ // all thresholds
-        for(int jpoint=0; jpoint<1750; jpoint++){ // range of points we are interested in
+      for(int ithres=0; ithres<nadcthrs; ++ithres){ // all thresholds
+        for(int jpoint=0; jpoint<memorydepth*pre_trig_frac; jpoint++){ // range of points we are interested in
           if( ( denoised[jpoint] - (baseline_ADC+delta_ADC[ithres]) )<0 && ( denoised[jpoint+1] - (baseline_ADC+delta_ADC[ithres]) )>0 ){
             Count[idat][ithres] += 1;
           }
@@ -203,9 +289,6 @@ void PoFLeakAna(){
 
       // Integrate peak region
       // TODO
-
-      waveNum += 1;
-      if (waveNum % 10000 == 0) printf("Wavenum: %d\n", waveNum);
 
       //
       // Plot example single waveform
@@ -229,84 +312,75 @@ void PoFLeakAna(){
 
     } // End loop over waveforms
 
+    fin.close();
+
+    cout<<"Tot number of waveforms: " << waveNum <<endl;
+
     cout<<"========== Result =========== "<<endl;
-    for(int ithres=0; ithres<8; ++ithres){
+    for(int ithres=0; ithres<nadcthrs; ++ithres){
       cout<<"Counts at delta ADC " << delta_ADC[ithres]<<": "<<Count[idat][ithres]<<endl;
     }
 
-    fin.close();
+    // Plot baseline ADC distribution of each dataset on canvas
+    cbaseline->cd();
+    gStyle->SetOptStat(0);
+    BaselineADCHist->SetLineColor(color[idat]);
+    if ( idat == 0 ) {
+      BaselineADCHist->GetXaxis()->SetTitle("Baseline ADC");
+      BaselineADCHist->GetYaxis()->SetTitle("Events");
+      BaselineADCHist->SetMaximum(maxwavenum);
+      BaselineADCHist->Draw("HIST");
+    } else {
+      BaselineADCHist->Draw("HIST SAME");
+    } // end plot
+    legdataset->AddEntry(BaselineADCHist, TString::Format("%s", legendname[idat].Data()));
 
   } // end loop over dataset
 
+  legdataset->Draw();
+  gPad->RedrawAxis();
+  cbaseline->SaveAs("Baseline_ADC_distribution_all_dataset.png");
+
   //
-  // Calculate extra upcrossings
+  // Calculate average (extra) upcrossings
   //
-  for(int i=0; i<8; ++i){
-      Gain[0][i] = (Count[1][i] - Count[0][i])/20000*5000/3500;
-      Gain[1][i] = (Count[2][i] - Count[0][i])/20000*5000/3500;
-      Gain[2][i] = (Count[3][i] - Count[0][i])/20000*5000/3500;
-      Gain[3][i] = (Count[4][i] - Count[0][i])/20000*5000/3500;
+
+  for ( int idat = 0; idat < ndat; idat++ ) {
+    for ( int ithres = 0; ithres < nadcthrs; ++ithres ) {
+      if ( idat == 0 ) Gain[idat][ithres] = Count[idat][ithres]/pre_trig_frac/maxwavenum; // reference avg count
+      else Gain[idat][ithres] = (Count[idat][ithres] - Count[0][ithres])/pre_trig_frac/maxwavenum; // extra upcrossings due to laser on
+    }
   }
 
   //
   // Draw count of upcrossings
   //
-  TGraph *dis0 = new TGraph(8, delta_ADC, Count[0]);
-  TGraph *dis1 = new TGraph(8, delta_ADC, Count[1]);
-  TGraph *dis2 = new TGraph(8, delta_ADC, Count[2]);
-  TGraph *dis3 = new TGraph(8, delta_ADC, Count[3]);
-  TGraph *dis123 = new TGraph(8, delta_ADC, Count[4]);
 
   TCanvas *c = new TCanvas();
   c->SetLogy(); c->SetGridx(); c->SetGridy();
+
+  TGraph** dis = new TGraph*[ndat];
   TMultiGraph *mg = new TMultiGraph();
+  TLegend *leg = new TLegend(0.55, 0.65, 0.9, 0.9);
 
-  dis0->SetMarkerSize(0.8);
-  dis0->SetMarkerStyle(21);
-  dis0->SetMarkerColor(1);
-  dis0->SetLineColor(1);
+  for ( int idat = 0; idat < ndat; idat++ ) {
+    dis[idat] = new TGraph(nadcthrs, delta_ADC, Count[idat]);
+    dis[idat]->SetMarkerSize(0.8);
+    dis[idat]->SetMarkerStyle(markerstyle[idat]);
+    dis[idat]->SetMarkerColor(color[idat]);
+    dis[idat]->SetLineColor(color[idat]);
+    mg->Add(dis[idat]);
+    leg->AddEntry(dis[idat], TString::Format("%s", legendname[idat].Data()));
+  }
 
-  dis1->SetMarkerSize(0.8);
-  dis1->SetMarkerStyle(21);
-  dis1->SetMarkerColor(2);
-  dis1->SetLineColor(2);
-
-  dis2->SetMarkerSize(0.8);
-  dis2->SetMarkerStyle(21);
-  dis2->SetMarkerColor(3);
-  dis2->SetLineColor(3);
-
-  dis3->SetMarkerSize(0.8);
-  dis3->SetMarkerStyle(21);
-  dis3->SetMarkerColor(41);
-  dis3->SetLineColor(41);
-
-  dis123->SetMarkerSize(0.8);
-  dis123->SetMarkerStyle(3);
-  dis123->SetMarkerColor(6);
-  dis123->SetLineColor(6);
-
-  mg->Add(dis0);
-  mg->Add(dis1);
-  mg->Add(dis2);
-  mg->Add(dis3);
-  mg->Add(dis123);
   mg->GetXaxis()->SetTitle("#Delta (ADC)");
   mg->GetYaxis()->SetTitle("Counts");
-  mg->SetMaximum(Count[4][0]*2.); // highest laser power and lowest threshold
-  mg->SetMinimum(Count[0][7]/2.); // no laser and highest threshold
-  mg->Draw("AP");
+  mg->SetMaximum(Count[ndat-1][0]*2.); // highest laser power and lowest threshold
+  mg->SetMinimum(Count[0][nadcthrs-1]/2.); // no laser and highest threshold
+  mg->Draw("APL");
 
-  TLegend *leg = new TLegend(0.55, 0.65, 0.9, 0.9);
-  leg->AddEntry(dis0, "No Laser");
-  leg->AddEntry(dis1, "v2 SwitchA [1458mW]");
-  leg->AddEntry(dis2, "v2 SwitchB [581mW]");
-  leg->AddEntry(dis3, "v2 SwitchA & SwitchB [2039mW]");
-  leg->AddEntry(dis123, "All Lasers of v2 & v3 on [4221mW]");
   leg->Draw();
-
   c->SaveAs("up-crossing_count.png");
-
 
   //
   // Draw extra upcrossings
@@ -314,48 +388,37 @@ void PoFLeakAna(){
   TCanvas *c2 = new TCanvas();
   c2->SetGridx(); c2->SetGridy();
   TMultiGraph *mg2 = new TMultiGraph();
-
-  TGraph *diff1 = new TGraph(8, delta_ADC, Gain[0]);
-  TGraph *diff2 = new TGraph(8, delta_ADC, Gain[1]);
-  TGraph *diff3 = new TGraph(8, delta_ADC, Gain[2]);
-  TGraph *diff123 = new TGraph(8, delta_ADC, Gain[3]);
-
-  diff1->SetMarkerSize(0.8);
-  diff1->SetMarkerStyle(21);
-  diff1->SetMarkerColor(2);
-  diff1->SetLineColor(2);
-
-  diff2->SetMarkerSize(0.8);
-  diff2->SetMarkerStyle(21);
-  diff2->SetMarkerColor(3);
-  diff2->SetLineColor(3);
-
-  diff3->SetMarkerSize(0.8);
-  diff3->SetMarkerStyle(21);
-  diff3->SetMarkerColor(41);
-  diff3->SetLineColor(41);
-
-  diff123->SetMarkerSize(0.8);
-  diff123->SetMarkerStyle(3);
-  diff123->SetMarkerColor(6);
-  diff123->SetLineColor(6);
-
-  mg2->Add(diff1);
-  mg2->Add(diff2);
-  mg2->Add(diff3);
-  mg2->Add(diff123);
-
   TLegend *leg2 = new TLegend(0.55, 0.65, 0.9, 0.9);
-  leg2->AddEntry(diff1, "v2 SwitchA [1458mW]");
-  leg2->AddEntry(diff2, "v2 SwitchB [581mW]");
-  leg2->AddEntry(diff3, "v2 SwitchA & SwitchB [2039mW]");
-  leg2->AddEntry(diff123, "All Lasers of v2 & v3 on [4221mW]");
+
+  TGraph** diff = new TGraph*[ndat-1];
+  // require more than 1 dat
+  for ( int idat = 0; idat < ndat-1; idat++ ) { // start from first dat
+    diff[idat] = new TGraph(nadcthrs, delta_ADC, Gain[idat+1]);
+    diff[idat]->SetMarkerSize(0.8);
+    diff[idat]->SetMarkerStyle(markerstyle[idat+1]);
+    diff[idat]->SetMarkerColor(color[idat+1]);
+    diff[idat]->SetLineColor(color[idat+1]);
+    mg2->Add(diff[idat]);
+    leg2->AddEntry(diff[idat], TString::Format("%s", legendname[idat+1].Data()));
+  }
 
   mg2->GetXaxis()->SetTitle("#Delta (ADC)");
-  mg2->GetYaxis()->SetTitle("Counts per 10#mus");
+  mg2->GetYaxis()->SetTitle("Extra counts per 10#mus");
+  mg2->Draw("APL");
 
-  mg2->Draw("AP");
   leg2->Draw();
   c2->SaveAs("extra_up-crossing_per10us_count.png");
+
+  // Plot the reference upcrossing counts per 10us
+  TCanvas *c4 = new TCanvas();
+  c4->SetGridx(); c4->SetGridy();
+  TGraph *reference = new TGraph(nadcthrs, delta_ADC, Gain[0]);
+  reference->SetMarkerSize(0.8);
+  reference->SetMarkerStyle(21);
+  reference->SetMarkerColor(1);
+  reference->SetLineColor(1);
+  reference->SetTitle("No Laser;#Delta (ADC);Counts per 10#mus");
+  reference->Draw("APL");
+  c4->SaveAs("up-crossing_per10us_reference.png");
 
 }
