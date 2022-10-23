@@ -61,7 +61,7 @@ void PoFLeakAna(){
   TString runname = "B++_v2"; // runname_detector_[power]
   Bool_t filternoise = true; // apply noise filter if true (most likely you need)
   int example_waveform = 3; // example waveform number you want to plot from 1st dataset: can't exceed maximum waveforms
-  int maxwavenum = 20000; // max number of waveforms want to look at
+  int maxwavenum; // max number of waveforms want to look at
   double pre_trig_frac; // fraction of waveform we are interested: starting from the beginning of the waveform (run/dataset dependent)
 
   int nadcthrs = 8; // number of ADC thresholds
@@ -71,12 +71,12 @@ void PoFLeakAna(){
     std::cout << "nadcthrs > 20, please increase array length of delta_ADC, Count, and Gain" << endl;
     exit(1);
   }
-  delta_ADC[0] = 50; // normally depends on channel, set at roughly 1PE amplitude
+  delta_ADC[0] = 50; // normally depends on channel, set at roughly SPE amplitude
   for(int ithres=0; ithres<nadcthrs; ++ithres) delta_ADC[ithres] = delta_ADC[0] + 25*ithres;
 
   vector<TString> adcdataset;
   TString dirname = "/afs/cern.ch/work/s/shiw/public/ColdBoxVD";
-  TString channame = "wave5.dat";
+  TString channame = "wave6.dat"; // wave5.dat is for 37V miniXA on wall, wave6.dat is 47V miniXA on wall
 
   Bool_t got_mem_depth = true; // so we can initilize stuff, usually true
 
@@ -86,6 +86,10 @@ void PoFLeakAna(){
   TString legendname[7];
   double Count[7][20] = {0}; // put 20 as default length
   double Gain[7][20] = {0};
+  double ChargeIntegral[7] = {0};
+  double maxY = 2000;
+  double baselineadcmin = 2450;
+  double baselineadcmax = 2550;
 
   // Samples
 
@@ -117,6 +121,7 @@ void PoFLeakAna(){
     legendname[2] = "v3 Laser 2 [737mW]";
     legendname[3] = "v3 Laser 3 [740mW]";
     legendname[4] = "v3 Laser 1+2+3 [2182mW]";
+    maxwavenum = 20000;
     pre_trig_frac = 0.7;
   } else if ( runname == "B++_v3_low" ) {
     // Sep 17 v3 cathode low power 1W
@@ -130,6 +135,7 @@ void PoFLeakAna(){
     legendname[2] = "v3 Laser 2 [410mW]";
     legendname[3] = "v3 Laser 3 [250mW]";
     legendname[4] = "v3 Laser 1+2+3 [1048mW]";
+    maxwavenum = 20000;
     pre_trig_frac = 0.7;
   } else if ( runname == "B++_v2" ) {
     // Sep 17 v2 cathode 2W
@@ -143,6 +149,7 @@ void PoFLeakAna(){
     legendname[2] = "v2 SwitchB [581mW]";
     legendname[3] = "v2 SwitchA & SwitchB [2039mW]";
     legendname[4] = "All Lasers of v2 & v3 on [3087mW]";
+    maxwavenum = 20000;
     pre_trig_frac = 0.7;
   } else {
     std::cout << "Unknown runname" << endl;
@@ -185,8 +192,8 @@ void PoFLeakAna(){
   // Single waveform
   TH1D *h1;
   TH1D *h2; // denoised
-  TCanvas *cbaseline = new TCanvas();
-  TLegend *legdataset = new TLegend(0.55, 0.65, 0.9, 0.9);
+  TH1F** BaselineADCHist = new TH1F*[ndat];
+  TH1F** IntegralHist = new TH1F*[ndat];
 
   //
   // At this point, printing a lot of stuff for the reader to check
@@ -194,10 +201,17 @@ void PoFLeakAna(){
 
   std::cout << " === Printing user config === " << std::endl;
   std::cout << " * Run name: " << runname << std::endl;
+  std::cout << " * Detector: " << channame << std::endl;
   std::cout << " * Number of samples: " << ndat << std::endl;
   std::cout << " * Apply noise filter: " << filternoise << std::endl;
   std::cout << " * Max No. of events per sample: " << maxwavenum << std::endl;
   std::cout << " * Fraction of pre-trigger baseline: " << pre_trig_frac << std::endl;
+  std::cout << " " << std::endl;
+  std::cout << " === Printing CAEN digitizer info === " << std::endl;
+  std::cout << " * ADC channels: " << nADCs << std::endl;
+  std::cout << " * Sampling Rate (per second): " << samplingRate << std::endl;
+  std::cout << " * Conversion [V/ADC]: " << inVolts << std::endl;
+  std::cout << " " << std::endl;
 
   ifstream fin;
 
@@ -212,7 +226,8 @@ void PoFLeakAna(){
     };
 
     int waveNum = 0; // num of waveforms, set to 0 for each new dataset
-    TH1F *BaselineADCHist = new TH1F("BaselineADCHist", "BaselineADCHist", 100, 3300, 3400);
+    BaselineADCHist[idat] = new TH1F("", "", 100, baselineadcmin, baselineadcmax); // range is run dependent
+    IntegralHist[idat] = new TH1F("", "", 100, -60000, 140000);
 
     // Loop over waveforms in the dataset
     while(!fin.fail()){
@@ -238,7 +253,10 @@ void PoFLeakAna(){
 
       // Store each waveform
       waveNum += 1;
-      if( waveNum > maxwavenum ) break; // otherwise it may access non-existing memory
+      if( waveNum > maxwavenum ) {
+        printf("Reach max wave number: %d \n", maxwavenum);
+        break; // otherwise it may access non-existing memory
+      }
       for(int ipoint = 0; ipoint < memorydepth; ipoint++) {
         fin.read((char *) &valbin, nbytes_data); // 2 bytes (16 bits) per sample
         if(fin.bad() || fin.fail()) break;
@@ -273,22 +291,33 @@ void PoFLeakAna(){
       delete ADC_hist;
 
       // Fill baseline ADC of all waveforms in each dataset (one distribution per dataset)
-      BaselineADCHist->Fill(baseline_ADC);
+      BaselineADCHist[idat]->Fill(baseline_ADC);
 
-      //
-      // Count up-crossings in each waveform
-      //
+      double ADCtime = 0; // initilize to zero for each waveform
 
-      for(int ithres=0; ithres<nadcthrs; ++ithres){ // all thresholds
-        for(int jpoint=0; jpoint<memorydepth*pre_trig_frac; jpoint++){ // range of points we are interested in
+      // Loop over points in each waveform
+      for(int jpoint=0; jpoint<memorydepth*pre_trig_frac; jpoint++){ // range of points we are interested in
+
+        // Integrate waveform
+        ADCtime += (denoised[jpoint] - baseline_ADC); // relative to baseline
+
+        //
+        // Count up-crossings in each waveform
+        //
+
+        for(int ithres=0; ithres<nadcthrs; ++ithres){ // all thresholds
           if( ( denoised[jpoint] - (baseline_ADC+delta_ADC[ithres]) )<0 && ( denoised[jpoint+1] - (baseline_ADC+delta_ADC[ithres]) )>0 ){
             Count[idat][ithres] += 1;
-          }
-        }
-      }
+          } // end if
+        } // end loop over thrs
+      } // end loop over points in a waveform
 
-      // Integrate peak region
-      // TODO
+      // Fill waveform integral
+      // multiply 4ns per point
+      IntegralHist[idat]->Fill(ADCtime*dtime);
+
+      // Average to per 10us and put in legend
+      ChargeIntegral[idat] += ADCtime*dtime;
 
       //
       // Plot example single waveform
@@ -314,32 +343,60 @@ void PoFLeakAna(){
 
     fin.close();
 
-    cout<<"Tot number of waveforms: " << waveNum <<endl;
-
     cout<<"========== Result =========== "<<endl;
     for(int ithres=0; ithres<nadcthrs; ++ithres){
       cout<<"Counts at delta ADC " << delta_ADC[ithres]<<": "<<Count[idat][ithres]<<endl;
     }
 
-    // Plot baseline ADC distribution of each dataset on canvas
-    cbaseline->cd();
-    gStyle->SetOptStat(0);
-    BaselineADCHist->SetLineColor(color[idat]);
-    if ( idat == 0 ) {
-      BaselineADCHist->GetXaxis()->SetTitle("Baseline ADC");
-      BaselineADCHist->GetYaxis()->SetTitle("Events");
-      BaselineADCHist->SetMaximum(maxwavenum);
-      BaselineADCHist->Draw("HIST");
-    } else {
-      BaselineADCHist->Draw("HIST SAME");
-    } // end plot
-    legdataset->AddEntry(BaselineADCHist, TString::Format("%s", legendname[idat].Data()));
-
   } // end loop over dataset
+
+  //
+  // Plot baseline ADC distribution of each dataset on canvas
+  //
+  TCanvas *cbaseline = new TCanvas();
+  cbaseline->SetLogy(); cbaseline->SetGridx(); cbaseline->SetGridy();
+  gStyle->SetOptStat(0);
+  TLegend *legdataset = new TLegend(0.55, 0.65, 0.9, 0.9);
+  for ( int idat = 0; idat < ndat; idat++ ) {
+    BaselineADCHist[idat]->SetLineColor(color[idat]);
+    if ( idat == 0 ) {
+      BaselineADCHist[idat]->GetXaxis()->SetTitle("Baseline ADC");
+      BaselineADCHist[idat]->GetYaxis()->SetTitle("Events");
+      BaselineADCHist[idat]->SetMaximum(maxwavenum);
+      BaselineADCHist[idat]->Draw("HIST");
+    } else {
+      BaselineADCHist[idat]->Draw("HIST SAME");
+    } // end plot
+    legdataset->AddEntry(BaselineADCHist[idat], TString::Format("%s", legendname[idat].Data()));
+  }
 
   legdataset->Draw();
   gPad->RedrawAxis();
   cbaseline->SaveAs("Baseline_ADC_distribution_all_dataset.png");
+
+  //
+  // Draw integral distribution of each dataset
+  //
+  TCanvas *cintegral = new TCanvas("", "", 1400, 1000);
+  cintegral->SetGridx(); cintegral->SetGridy();
+  gStyle->SetOptStat(0);
+  TLegend *legintegral = new TLegend(0.45, 0.6, 0.9, 0.9);
+  for ( int idat = 0; idat < ndat; idat++ ) {
+    IntegralHist[idat]->SetLineColor(color[idat]);
+    if ( idat == 0 ) {
+      IntegralHist[idat]->GetXaxis()->SetTitle("ADC*ns");
+      IntegralHist[idat]->GetYaxis()->SetTitle("Events");
+      IntegralHist[idat]->SetMaximum(maxY);
+      IntegralHist[idat]->Draw("HIST");
+    } else {
+      IntegralHist[idat]->Draw("HIST SAME");
+    } // end plot
+    legintegral->AddEntry(IntegralHist[idat], TString::Format("%s: %.0f ADC*ns per 10us", legendname[idat].Data(), ChargeIntegral[idat]/pre_trig_frac/maxwavenum));
+  }
+
+  legintegral->Draw();
+  gPad->RedrawAxis();
+  cintegral->SaveAs("Integral_ADCns_all_dataset.png");
 
   //
   // Calculate average (extra) upcrossings
