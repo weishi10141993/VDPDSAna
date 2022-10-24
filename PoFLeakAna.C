@@ -57,10 +57,10 @@ void PoFLeakAna(){
   //=============
   // User config
   //=============
-  // Choose one of these samples: "B++_v3_high", "B++_v3_low", "B++_v2"
-  TString runname = "B++_v2"; // runname_detector_[power]
+  // Choose one of these samples: "B++_v3_high", "B++_v3_low", "B++_v2", "CRP3_randtrg_47V", "CRP3_randtrg_37V"
+  TString runname = "CRP3_randtrg_37V"; // runname_detector_[power]
   Bool_t filternoise = true; // apply noise filter if true (most likely you need)
-  int example_waveform = 3; // example waveform number you want to plot from 1st dataset: can't exceed maximum waveforms
+  int example_waveform = 10; // example waveform number you want to plot from 1st dataset: can't exceed maximum waveforms
   int maxwavenum; // max number of waveforms want to look at
   double pre_trig_frac; // fraction of waveform we are interested: starting from the beginning of the waveform (run/dataset dependent)
 
@@ -80,6 +80,13 @@ void PoFLeakAna(){
 
   Bool_t got_mem_depth = true; // so we can initilize stuff, usually true
 
+  // Plot related
+  double maxY = 50;
+  double baselineadcmin = 1680;
+  double baselineadcmax = 1780;
+  double integralQmin = -500000;
+  double integralQmax = 1500000;
+  double adcbinfactor = 4; // nADC/adcbinfactor will be the number of bins, default is 4 (50ADC ~SPE, need to reduce if gain is samll)
   // up to 7 set of data, can be more, but plot will get messy
   int color[7] = {1, 2, 3, 41, 6, 4, 9}; // preferred color
   int markerstyle[7] = {21, 21, 21, 21, 3, 21, 21};
@@ -87,29 +94,47 @@ void PoFLeakAna(){
   double Count[7][20] = {0}; // put 20 as default length
   double Gain[7][20] = {0};
   double ChargeIntegral[7] = {0};
-  double maxY = 2000;
-  double baselineadcmin = 2450;
-  double baselineadcmax = 2550;
 
   // Samples
+  if ( runname == "CRP3_randtrg_47V" ) {
+    // =================
+    // Run CRP3 Oct 2022
+    // =================
+    // Change: Copper box shield the DCEMs + Wall junction box covered with metal shield
+    // Change: 37V miniarapuca biased by DCEM+Parma DCDC (instead of directly powered by PS as in B++ run)
+    // 47V miniarapuca same as Run B++
+    // Same v3, v2 XAs on cathode
+    // same Argon2x2 channels naming convention as B++ run
+    //   wave5 --> 37V
+    //   wave6 --> 47V
+    // each dataset should have/stop at 500 waveforms each with 125000 (500us) sampling points
 
-  // =========
-  // Run CRP3
-  // =========
-  // Same v3, v2 XA detectors on cathode (with copper box shield the DCEMs)
-  // Wall junction box covered with metal shield
-  // 37V miniarapuca biased by DCEM+Parma DCDC (instead of directly powered by PS)
-  // 47V miniarapuca same as Run B++, same Argon2x2 channels
+    // Oct 17: random trigger on 47V miniarapuca on wall (both miniarapucas on)
+    adcdataset.push_back("October2022run/2022_10_17/48V_miniXarapuca_DCR/run0_CATHODE_OFF_37V_channelON"); // No laser (ref)
+    adcdataset.push_back("October2022run/2022_10_17/48V_miniXarapuca_DCR/run0_CATHODE_ON_37V_channelON");  // v2 & v3 PoF on
+    legendname[0] = "No Laser";
+    legendname[1] = "All Lasers of v2 & v3 on [3087mW]";
+    maxwavenum = 500;
+    pre_trig_frac = 1;
 
-  // =========
-  // Run B++
-  // =========
-  // v3, v2 XA on cathode
-  // wave5 is 37V mini-arapuca w/ Argon2x2 (ch1)
-  // wave6 is 47V mini-arapuca w/ Argon2x2 (ch2)
-  // each dataset should have/stop at 20k waveforms each with 2500 sampling points
+  } else if ( runname == "CRP3_randtrg_37V" ) {
+    // Oct 17: random trigger on 37V miniarapuca on wall (both miniarapucas on)
+    adcdataset.push_back("October2022run/2022_10_17/37V_miniXarapuca_DCR/run0_CATHODE_OFF_48V_channelON"); // No laser (ref)
+    adcdataset.push_back("October2022run/2022_10_17/37V_miniXarapuca_DCR/run0_CATHODE_ON_48V_channelON");  // v2 & v3 PoF on
+    legendname[0] = "No Laser";
+    legendname[1] = "All Lasers of v2 & v3 on [3087mW]";
+    maxwavenum = 500;
+    pre_trig_frac = 1;
 
-  if ( runname == "B++_v3_high" ) {
+  } else if ( runname == "B++_v3_high" ) {
+    // ================
+    // Run B++ Sep 2022
+    // ================
+    // v3, v2 XA on cathode
+    // wave5 is 37V mini-arapuca w/ Argon2x2 (ch1)
+    // wave6 is 47V mini-arapuca w/ Argon2x2 (ch2)
+    // each dataset should have/stop at 20k waveforms each with 2500 sampling points
+
     // Sep 15 v3 cathode high power 2W
     adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220915_v3_laser1_705_laser2_737_laser3_740/xarapuca_V3_cosmic_trigger50_no_laser");            // No laser (ref)
   	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220915_v3_laser1_705_laser2_737_laser3_740/xarapuca_V3_cosmic_trigger50_laser_1");             // v3 laser 1
@@ -123,6 +148,7 @@ void PoFLeakAna(){
     legendname[4] = "v3 Laser 1+2+3 [2182mW]";
     maxwavenum = 20000;
     pre_trig_frac = 0.7;
+
   } else if ( runname == "B++_v3_low" ) {
     // Sep 17 v3 cathode low power 1W
   	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only");                          // No laser (ref)
@@ -137,6 +163,7 @@ void PoFLeakAna(){
     legendname[4] = "v3 Laser 1+2+3 [1048mW]";
     maxwavenum = 20000;
     pre_trig_frac = 0.7;
+
   } else if ( runname == "B++_v2" ) {
     // Sep 17 v2 cathode 2W
   	adcdataset.push_back("Coldbox_Sep2022_leakage_check/20220917_v3_laser1_388_laser2_410_laser3_250/argon_only");                          // No laser (ref)
@@ -151,6 +178,7 @@ void PoFLeakAna(){
     legendname[4] = "All Lasers of v2 & v3 on [3087mW]";
     maxwavenum = 20000;
     pre_trig_frac = 0.7;
+
   } else {
     std::cout << "Unknown runname" << endl;
     exit(1);
@@ -173,7 +201,7 @@ void PoFLeakAna(){
   int nbytes_headers = 4; // 4 bytes (32 bits) for each header
   int nbytes_data = 2; // 2 bytes (16 bits) per sample
   int memorydepth = 0; // size of waveforms
-  double percentage = 0.7; // fraction of the waveform of interest from beginning, usually trigger is put fairly late and is excluded
+  int tmpdepth = 0; // size of waveform from previous waveform
 
   Int_t nbits = 14; // ADC is a 14 bits, 2 Vpp
   Double_t samplingRate = 250.e6; // 250 MSamples/s for DT5725
@@ -205,7 +233,7 @@ void PoFLeakAna(){
   std::cout << " * Number of samples: " << ndat << std::endl;
   std::cout << " * Apply noise filter: " << filternoise << std::endl;
   std::cout << " * Max No. of events per sample: " << maxwavenum << std::endl;
-  std::cout << " * Fraction of pre-trigger baseline: " << pre_trig_frac << std::endl;
+  std::cout << " * Fraction of waveform: " << pre_trig_frac << std::endl;
   std::cout << " " << std::endl;
   std::cout << " === Printing CAEN digitizer info === " << std::endl;
   std::cout << " * ADC channels: " << nADCs << std::endl;
@@ -227,11 +255,12 @@ void PoFLeakAna(){
 
     int waveNum = 0; // num of waveforms, set to 0 for each new dataset
     BaselineADCHist[idat] = new TH1F("", "", 100, baselineadcmin, baselineadcmax); // range is run dependent
-    IntegralHist[idat] = new TH1F("", "", 100, -60000, 140000);
+    IntegralHist[idat] = new TH1F("", "", 100, integralQmin, integralQmax);
 
     // Loop over waveforms in the dataset
     while(!fin.fail()){
       // stream all headers
+      // each waveform has headers
       for(Int_t ln=0; ln<headers; ln++){
         fin.read((char *) &headbin, nbytes_headers);
         // header0 will be EventSize, so: you can do
@@ -244,6 +273,7 @@ void PoFLeakAna(){
 
       if(got_mem_depth && idat == 0){ // initialization based on memorydepth
         got_mem_depth=false;
+        tmpdepth = memorydepth;
         printf("Waveform points: %d \n", memorydepth);
         raw.resize(memorydepth);
         denoised.resize(memorydepth); // this is necessary for some reason
@@ -257,6 +287,12 @@ void PoFLeakAna(){
         printf("Reach max wave number: %d \n", maxwavenum);
         break; // otherwise it may access non-existing memory
       }
+
+      if( memorydepth != tmpdepth ) {
+        printf("Depth doesn't match at waveform %d \n", waveNum);
+        exit(1); // you need to understand your dataset
+      }
+
       for(int ipoint = 0; ipoint < memorydepth; ipoint++) {
         fin.read((char *) &valbin, nbytes_data); // 2 bytes (16 bits) per sample
         if(fin.bad() || fin.fail()) break;
@@ -276,7 +312,7 @@ void PoFLeakAna(){
 
       baseline_ADC = 0.;
       baseline_ADC_bin = -1;
-      TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/4, 0, nADCs); // this bin can't be too fine, 4 adc binning
+      TH1F *ADC_hist = new TH1F("ADC_hist", "ADC_hist", nADCs/adcbinfactor, 0, nADCs); // this bin width depend on channel gain, smaller gain needs finer binning
       for(int ipoint = 0; ipoint < memorydepth; ipoint++) ADC_hist->Fill(denoised[ipoint]);
       baseline_ADC_bin = ADC_hist->GetMaximumBin();
       baseline_ADC = ADC_hist->GetXaxis()->GetBinCenter(baseline_ADC_bin);
@@ -391,7 +427,7 @@ void PoFLeakAna(){
     } else {
       IntegralHist[idat]->Draw("HIST SAME");
     } // end plot
-    legintegral->AddEntry(IntegralHist[idat], TString::Format("%s: %.0f ADC*ns per 10us", legendname[idat].Data(), ChargeIntegral[idat]/pre_trig_frac/maxwavenum));
+    legintegral->AddEntry(IntegralHist[idat], TString::Format("%s: %.0f ADC*ns per 10us", legendname[idat].Data(), ChargeIntegral[idat]/pre_trig_frac/maxwavenum/(tmpdepth*dtime/1000/10)));
   }
 
   legintegral->Draw();
@@ -399,13 +435,15 @@ void PoFLeakAna(){
   cintegral->SaveAs("Integral_ADCns_all_dataset.png");
 
   //
-  // Calculate average (extra) upcrossings
+  // Calculate average (extra) upcrossings per 10us
   //
+
+  // per waveform length: tmpdepth*4ns/1000 [us] / 10 [us]
 
   for ( int idat = 0; idat < ndat; idat++ ) {
     for ( int ithres = 0; ithres < nadcthrs; ++ithres ) {
-      if ( idat == 0 ) Gain[idat][ithres] = Count[idat][ithres]/pre_trig_frac/maxwavenum; // reference avg count
-      else Gain[idat][ithres] = (Count[idat][ithres] - Count[0][ithres])/pre_trig_frac/maxwavenum; // extra upcrossings due to laser on
+      if ( idat == 0 ) Gain[idat][ithres] = Count[idat][ithres]/pre_trig_frac/maxwavenum/(tmpdepth*dtime/1000/10); // reference avg count
+      else Gain[idat][ithres] = (Count[idat][ithres] - Count[0][ithres])/pre_trig_frac/maxwavenum/(tmpdepth*dtime/1000/10); // extra upcrossings due to laser on
     }
   }
 
