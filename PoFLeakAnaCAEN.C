@@ -53,7 +53,7 @@ void TV1D_denoise(vector<Double_t>& input, vector<Double_t>& output, const int w
   }
 }
 
-void PoFLeakAna(){
+void PoFLeakAnaCAEN(){
   //=============
   // User config
   //=============

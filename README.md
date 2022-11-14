@@ -26,7 +26,8 @@ git clone https://github.com/weishi10141993/VDPDSAna.git
 
 # Script to find peaks/count up-crossings
 # Adjust user config file names
-root -l -b -q PoFLeakAna.C
+root -l -b -q PoFLeakAnaCAEN.C
+root -l -b -q PoFLeakAnaScope.C
 
 # Persistence mode: Script to fill all waveform points from a sample in a 2d histogram
 root -l -b -q initial_reading.C
