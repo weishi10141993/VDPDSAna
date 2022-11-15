@@ -60,36 +60,36 @@ void PoFLeakAnaScope(){
   // SPE Analyzable:
   // nolaser-reference-1mohm-dc-4nsResolution-nov8.txt (nothing on SiPM, closed box)
 
-  // SiPM overcurrent:
+  //
+  // GaAs OPC Receiver (No potting)
+  //
+
+  // runname: GaAsOPC-NoPotting-200mW (SiPM overcurrent)
   // chineselaser-reference4power200mW-dc1megaohm-4nsResolution-nov8.txt
   // chineselaser-200mW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov8.txt
 
-  // SiPM overcurrent:
+  // runname: GaAsOPC-NoPotting-400mW (SiPM overcurrent)
   // chineselaser-reference4power400mW-dc1megaohm-4nsResolution-nov8.txt
   // chineselaser-400mW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov8.txt
 
-  // SPE Analyzable:
+  // runname: GaAsOPC-NoPotting-LowPower (SPE Analyzable)
   // chineselaser-reference4power0p1-1uW-dc1megaohm-4nsResolution-nov9.txt
   // chineselaser-0p1uW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov9.txt
   // chineselaser-0p3uW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov9.txt
   // chineselaser-1uW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov9.txt
 
-  // SPE Analyzable:
+  //
+  // 62.5um black fiber (No potting)
+  //
+
+  // runname: MIH-black-62p5um-fiber-10cm-short (SPE Analyzable)
   // chineselaser-reference-62p5micro-blackfiber-blackboxdiagonal-to-opc-dc1megaohm-4nsResolution-nov9.txt
   // chineselaser-200mW-62p5micro-blackfiber-blackboxdiagonal-to-opc-dc1megaohm-4nsResolution-nov9.txt
   // chineselaser-400mW-62p5micro-blackfiber-blackboxdiagonal-to-opc-dc1megaohm-4nsResolution-nov9.txt
   // chineselaser-600mW-62p5micro-blackfiber-blackboxdiagonal-to-opc-dc1megaohm-4nsResolution-nov9.txt
   // chineselaser-800mW-62p5micro-blackfiber-blackboxdiagonal-to-opc-dc1megaohm-4nsResolution-nov9.txt
 
-  // FC-FC connector, SiPM overcurrent
-  // chineselaser-reference-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
-  // chineselaser-after40m-power5p3mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
-  // chineselaser-after40m-power10mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
-  // chineselaser-after40m-power48mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
-  // chineselaser-after40m-power154mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
-  // chineselaser-after40m-power350mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
-
-  // 40-m spool 62.5um black fiber, SPE analyzable, a lot of current at 350mW & 200mW
+  // runname: MIH-black-62p5um-fiber-40m-spool (SPE Analyzable, a lot of current at 156mW (200mW) & 350mW (440mW))
   // chineselaser-reference-40mspoolfiber-62p5micronblack-opensipm-tometer-dc1megaohm-4nsResolution-nov10.txt
   // chineselaser-5mW-40mspoolfiber-62p5micronblack-opensipm-tometer-dc1megaohm-4nsResolution-nov10.txt
   // chineselaser-10mW-40mspoolfiber-62p5micronblack-opensipm-tometer-dc1megaohm-4nsResolution-nov10.txt
@@ -97,14 +97,29 @@ void PoFLeakAnaScope(){
   // chineselaser-156mW-40mspoolfiber-62p5micronblack-opensipm-tometer-dc1megaohm-4nsResolution-nov10.txt
   // chineselaser-350mW-40mspoolfiber-62p5micronblack-opensipm-tometer-dc1megaohm-4nsResolution-nov10.txt
 
+  //
+  // FC-FC connector (No potting)
+  //
+
+  // runname: Rectangular-FCFC-connector (SiPM overcurrent)
+  // chineselaser-reference-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
+  // chineselaser-after40m-power5p3mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
+  // chineselaser-after40m-power10mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
+  // chineselaser-after40m-power48mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
+  // chineselaser-after40m-power154mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
+  // chineselaser-after40m-power350mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
+
   // Scope Keysight
   // Sample rate 250M/s (4ns resolution per point), each dataset points 200 million
   // save as 1 column in txt file, unit: Volt
+
+  TString runname = "Rectangular-FCFC-connector";
 
   TString dirname = "/pnfs/dune/persistent/users/weishi/PoFLeakageTest";
   Bool_t filternoise = true; // apply noise filter if true (most likely you need)
   vector<TString> adcdataset;
   TString legendname[7];
+  TString legendheader;
   int color[7] = {1, 2, 3, 41, 6, 4, 9}; // preferred color
   int markerstyle[7] = {21, 21, 21, 21, 3, 21, 21};
   double Count[7][20] = {0}; // put 20 as default length
@@ -124,11 +139,68 @@ void PoFLeakAnaScope(){
   for(int ithres=0; ithres<nadcthrs; ++ithres) delta_amp[ithres] = delta_amp[0] + 0.025*ithres;
 
   // Samples
-  if ( true ) {
+  if ( runname == "GaAsOPC-NoPotting-LowPower" ) {
     adcdataset.push_back("chineselaser-reference4power0p1-1uW-dc1megaohm-4nsResolution-nov9.txt"); // ref
     adcdataset.push_back("chineselaser-0p1uW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov9.txt");
-    legendname[0] = "No Laser";
-    legendname[1] = "0.1uW GaAs OPC no potting";
+    adcdataset.push_back("chineselaser-0p3uW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov9.txt");
+    adcdataset.push_back("chineselaser-1uW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov9.txt");
+    legendheader = "GaAs OPC no potting";
+    legendname[0] = "No power";
+    legendname[1] = "0.1uW";
+    legendname[2] = "0.3uW";
+    legendname[3] = "1.0uW";
+  } else if ( runname == "GaAsOPC-NoPotting-200mW" ) {
+    adcdataset.push_back("chineselaser-reference4power200mW-dc1megaohm-4nsResolution-nov8.txt"); // ref
+    adcdataset.push_back("chineselaser-200mW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov8.txt");
+    legendheader = "GaAs OPC no potting";
+    legendname[0] = "No power";
+    legendname[1] = "200mW";
+  } else if ( runname == "GaAsOPC-NoPotting-400mW" ) {
+    adcdataset.push_back("chineselaser-reference4power400mW-dc1megaohm-4nsResolution-nov8.txt"); // ref
+    adcdataset.push_back("chineselaser-400mW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov8.txt");
+    legendheader = "GaAs OPC no potting";
+    legendname[0] = "No power";
+    legendname[1] = "400mW";
+  } else if ( runname == "MIH-black-62p5um-fiber-10cm-short" ) {
+    adcdataset.push_back("chineselaser-reference-62p5micro-blackfiber-blackboxdiagonal-to-opc-dc1megaohm-4nsResolution-nov9.txt"); // ref
+    adcdataset.push_back("chineselaser-200mW-62p5micro-blackfiber-blackboxdiagonal-to-opc-dc1megaohm-4nsResolution-nov9.txt");
+    adcdataset.push_back("chineselaser-400mW-62p5micro-blackfiber-blackboxdiagonal-to-opc-dc1megaohm-4nsResolution-nov9.txt");
+    adcdataset.push_back("chineselaser-600mW-62p5micro-blackfiber-blackboxdiagonal-to-opc-dc1megaohm-4nsResolution-nov9.txt");
+    adcdataset.push_back("chineselaser-800mW-62p5micro-blackfiber-blackboxdiagonal-to-opc-dc1megaohm-4nsResolution-nov9.txt");
+    legendheader = "Black 62.5um fiber: 10cm";
+    legendname[0] = "No power";
+    legendname[1] = "200mW";
+    legendname[2] = "400mW";
+    legendname[3] = "600mW";
+    legendname[4] = "800mW";
+  } else if ( runname == "MIH-black-62p5um-fiber-40m-spool" ) {
+    adcdataset.push_back("chineselaser-reference-40mspoolfiber-62p5micronblack-opensipm-tometer-dc1megaohm-4nsResolution-nov10.txt"); // ref
+    adcdataset.push_back("chineselaser-5mW-40mspoolfiber-62p5micronblack-opensipm-tometer-dc1megaohm-4nsResolution-nov10.txt");
+    adcdataset.push_back("chineselaser-10mW-40mspoolfiber-62p5micronblack-opensipm-tometer-dc1megaohm-4nsResolution-nov10.txt");
+    adcdataset.push_back("chineselaser-48mW-40mspoolfiber-62p5micronblack-opensipm-tometer-dc1megaohm-4nsResolution-nov10.txt");
+    adcdataset.push_back("chineselaser-156mW-40mspoolfiber-62p5micronblack-opensipm-tometer-dc1megaohm-4nsResolution-nov10.txt");
+    adcdataset.push_back("chineselaser-350mW-40mspoolfiber-62p5micronblack-opensipm-tometer-dc1megaohm-4nsResolution-nov10.txt");
+    legendheader = "Black 62.5um fiber: 40m spool";
+    legendname[0] = "No power";
+    legendname[1] = "6.3mW (5mW)";
+    legendname[2] = "11.3mW (10mW)";
+    legendname[3] = "59mW (48mW)";
+    legendname[4] = "200mW (156mW)";
+    legendname[5] = "440mW (350mW)";
+  } else if ( runname == "Rectangular-FCFC-connector" ) {
+    adcdataset.push_back("chineselaser-reference-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt"); // ref
+    adcdataset.push_back("chineselaser-after40m-power5p3mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt");
+    adcdataset.push_back("chineselaser-after40m-power10mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt");
+    adcdataset.push_back("chineselaser-after40m-power48mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt");
+    adcdataset.push_back("chineselaser-after40m-power154mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt");
+    adcdataset.push_back("chineselaser-after40m-power350mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt");
+    legendheader = "FC-FC connector";
+    legendname[0] = "No power";
+    legendname[1] = "6.3mW (5mW)";
+    legendname[2] = "11.3mW (10mW)";
+    legendname[3] = "59mW (48mW)";
+    legendname[4] = "200mW (156mW)";
+    legendname[5] = "440mW (350mW)";
   }
 
   int ndat = adcdataset.size();
@@ -160,7 +232,7 @@ void PoFLeakAnaScope(){
     while (!file.eof()){
       file>>amplitude;
 
-      if (line % 10000000 == 0) std::cout << "line "<< line << ": " << amplitude << endl;
+      if (line % 100000000 == 0) std::cout << "line "<< line << ": " << amplitude << endl;
 
       raw.push_back(amplitude);
       denoised.push_back(amplitude);
@@ -246,7 +318,7 @@ void PoFLeakAnaScope(){
   for ( int idat = 0; idat < ndat; idat++ ) {
     amplitude_hist[idat]->SetLineColor(color[idat]);
     if ( idat == 0 ) {
-      amplitude_hist[idat]->GetXaxis()->SetTitle("Baseline ADC");
+      amplitude_hist[idat]->GetXaxis()->SetTitle("Amplitude (Volt)");
       amplitude_hist[idat]->GetYaxis()->SetTitle("Events");
       amplitude_hist[idat]->SetMaximum(memorydepth);
       amplitude_hist[idat]->Draw("HIST");
@@ -255,7 +327,7 @@ void PoFLeakAnaScope(){
     } // end plot
     legdataset->AddEntry(amplitude_hist[idat], TString::Format("%s", legendname[idat].Data()));
   }
-
+  legdataset->SetHeader(legendheader);
   legdataset->Draw();
   gPad->RedrawAxis();
   camplitude->SaveAs("amplitude_distribution_all_dataset.png");
@@ -304,6 +376,7 @@ void PoFLeakAnaScope(){
   mg->SetMinimum(0.1); // reference and highest threshold
   mg->Draw("APL");
 
+  leg->SetHeader(legendheader);
   leg->Draw();
   c->SaveAs("up-crossing_count.png");
 
@@ -331,6 +404,7 @@ void PoFLeakAnaScope(){
   mg2->GetYaxis()->SetTitle("Extra counts per 10#mus");
   mg2->Draw("APL");
 
+  leg2->SetHeader(legendheader);
   leg2->Draw();
   c2->SaveAs("extra_up-crossing_per10us_count.png");
 
