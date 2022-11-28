@@ -9,13 +9,40 @@ cd /dune/app/users/weishi
 mkdir VDPDSRes
 cd VDPDSRes
 
-source /grid/fermiapp/products/dune/setup_dune.sh
-ups list -aK+ dunesw
-setup dunesw v09_63_00d01 -q e20:prof
+# Check everything:
+
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+setup dunesw v09_58_01d00 -q e20:prof
 mrb newDev
-source /dune/app/users/weishi/VDPDSRes/localProducts_larsoft_v09_63_00_e20_prof/setup
+source /dune/app/users/weishi/VDPDSRes/localProducts_larsoft_v09_58_01_e20_prof/setup
 cd srcs
+
+mrb g dunesw
+cd dunesw
+git checkout tags/v09_58_01d00
+
+cd ..
+mrb g protoduneana  
+cd protoduneana
+git checkout tags/v09_58_01d00
+
+cd ..
+mrb g duneprototypes  
+cd duneprototypes
+git checkout tags/v09_58_01d00
+
+cd ..
+mrb g duneana  
+cd duneana
+git checkout tags/v09_58_01d00
+
+cd ..
 mrb g duneopdet
+cd duneopdet
+git checkout tags/v09_58_01d00
+
+cd ..
+mrb uc
 cd $MRB_BUILDDIR
 setup ninja
 mrbsetenv
@@ -31,6 +58,8 @@ wget https://raw.githubusercontent.com/weishi10141993/VDPDSAna/main/Marley_10MeV
 projectgui.py Marley_10MeV_darkcount_10Hz.xml
 ```
 
+To list all files: ```grep -r . -e 'gen_g4```.
+
 To produce resolution plot:
 ```
 /dune/app/users/apaudel/code/PDEnergyresolution_tdr/PDEcal_Sept11/.C ==> produce voxel LY calibration
@@ -40,8 +69,8 @@ To produce resolution plot:
 ## Re-login
 ```
 source /grid/fermiapp/products/dune/setup_dune.sh
-setup dunesw v09_63_00d01 -q e20:prof
-source /dune/app/users/weishi/VDPDSRes/localProducts_larsoft_v09_63_00_e20_prof/setup
+setup dunesw v09_58_01d00 -q e20:prof
+source /dune/app/users/weishi/VDPDSRes/localProducts_larsoft_v09_58_01_e20_prof/setup
 mrbsetenv
 cd /dune/app/users/weishi/
 ```
