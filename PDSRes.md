@@ -49,22 +49,30 @@ mrbsetenv
 mrb i --generator ninja
 ```
 
-Marley events (nue CC 5-30MeV, 5k events) will be generated, simulated, and reconstructed via the following xml file:
-
+Marley events (nue CC 5-30MeV, 5k events) will be generated, modify the number of events and energy in
 ```
-# 10 MeV
-wget https://raw.githubusercontent.com/weishi10141993/VDPDSAna/main/Marley_10MeV_darkcount_10Hz
+/dune/app/users/weishi/VDPDSRes/srcs/dunesw/fcl/dunefdvd/gen/supernova/prodmarley_nue_mono10_dunevd10kt_1x8x14_3view_30deg.fcl
+```
 
+the following xml file takes care of submitting jobs to the grid for gen-g4, detsim, reco, and ana:
+```
 projectgui.py Marley_10MeV_darkcount_10Hz.xml
 ```
 
-To list all files: ```grep -r . -e 'gen_g4```.
+To change dark noise rate, modify and recompile:
+```
+/dune/app/users/weishi/VDPDSRes/srcs/duneopdet/OpticalDetector/SIPMOpSensorSim.fcl
+```
+
+To list all files: ```grep -r . -e 'gen_g4'```.
 
 To produce resolution plot:
 ```
 /dune/app/users/apaudel/code/PDEnergyresolution_tdr/PDEcal_Sept11/.C ==> produce voxel LY calibration
 /dune/app/users/apaudel/code/PDEnergyresolution_tdr/PDEcal_Sept11/*Res ==> produce resolution
 ```
+
+These dark count rates are studied: 10 Hz, 10^5Hz (1PE/10us).
 
 ## Re-login
 ```
@@ -75,7 +83,18 @@ mrbsetenv
 cd /dune/app/users/weishi/
 ```
 
+## Re-compile
+```
+cd $MRB_BUILDDIR
+mrb z
+mrbsetenv
+setup ninja
+mrb i --generator ninja
+
+OR faster way:
+cd $MRB_BUILDDIR
+make install -j 4
+```
 ## Other study
 
-1. PDS Energy resolution: analysis of track with highest charge + blips in time and position coincidence
-2. SNB trigger rate & efficiency
+SNB trigger rate & efficiency

@@ -41,8 +41,8 @@
   <!-- Project stages -->
 
   <stage name="gen_g4">
-    <fcl>/dune/app/users/weishi/VDPDSAna/MarleySimConfig/prodmarley_nue_mono10_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
-    <fcl>supernova_g4_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
+    <fcl>/dune/app/users/weishi/VDPDSRes/srcs/dunesw/fcl/dunefdvd/gen/supernova/prodmarley_nue_mono10_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
+    <fcl>/dune/app/users/weishi/VDPDSRes/srcs/dunesw/fcl/dunefdvd/g4/supernova_g4_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
     <outdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/gen_g4</outdir>
     <workdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/gen_g4</workdir>
     <output>gen_g4_&release;_&tag;_&name;_${CLUSTER}_${PROCESS}.root</output>
@@ -55,7 +55,7 @@
   </stage>
 
   <stage name="detsim">
-    <fcl>standard_detsim_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
+    <fcl>/dune/app/users/weishi/VDPDSRes/srcs/dunesw/fcl/dunefdvd/detsim/standard_detsim_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
     <outdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/detsim</outdir>
     <workdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/detsim</workdir>
     <output>detsim_&release;_&tag;_&name;_${CLUSTER}_${PROCESS}.root</output>
@@ -69,7 +69,7 @@
   </stage>
 
   <stage name="reco">
-    <fcl>supernova_reco_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
+    <fcl>/dune/app/users/weishi/VDPDSRes/srcs/dunesw/fcl/dunefdvd/reco/supernova_reco_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
     <outdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/reco</outdir>
     <workdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/reco</workdir>
     <output>reco_&release;_&tag;_&name;_${CLUSTER}_${PROCESS}.root</output>
@@ -83,7 +83,7 @@
   </stage>
 
   <stage name="ana">
-    <fcl>marley_anatree_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
+    <fcl>/dune/app/users/weishi/VDPDSRes/srcs/dunesw/fcl/dunefdvd/anatree/marley_anatree_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
     <outdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/ana</outdir>
     <workdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/ana</workdir>
     <output>ana_&release;_&tag;_&name;_${CLUSTER}_${PROCESS}.root</output>
