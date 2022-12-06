@@ -56,20 +56,36 @@ Marley events (nue CC 5-30MeV, 5k events) will be generated, modify the number o
 
 the following xml file takes care of submitting jobs to the grid for gen-g4, detsim, reco, and ana:
 ```
+cd /dune/app/users/weishi/VDPDSAna/MarleySimConfig
 projectgui.py Marley_10MeV_darkcount_10Hz.xml
 ```
 
 To change dark noise rate, modify and recompile:
 ```
+# FD2-VD: SIPMOpSensorSim_module.cc
 /dune/app/users/weishi/VDPDSRes/srcs/duneopdet/OpticalDetector/SIPMOpSensorSim.fcl
+# FD1-HD: OpDetDigitizerDUNE_module.cc (not of interest as there is no PoF)
+/dune/app/users/weishi/VDPDSRes/srcs/duneopdet/OpticalDetector/opticaldetectormodules_dune.fcl
 ```
 
-To list all files: ```grep -r . -e 'gen_g4'```.
+To list all files: ```grep -r . -e 'gen_g4'``` or ```find . -iname 'ana_hist*.root'```.
 
 To produce resolution plot:
 ```
-/dune/app/users/apaudel/code/PDEnergyresolution_tdr/PDEcal_Sept11/.C ==> produce voxel LY calibration
-/dune/app/users/apaudel/code/PDEnergyresolution_tdr/PDEcal_Sept11/*Res ==> produce resolution
+cd /dune/app/users/weishi/VDPDSAna/ERes
+# first produce voxel LY calibration
+root -l
+.L Mergednobkgnd50kEtrue.C+
+Mergednobkgnd50kEtrue k
+k.Loop()
+
+# what is nentries 9223372036854775807?
+
+# then get resolution
+root -l
+.L Mergednobkgnd50kEtrue_Eres.C+
+Mergednobkgnd50kEtrue_Eres k
+k.Loop()
 ```
 
 These dark count rates are studied: 10 Hz, 10^5Hz (1PE/10us).
