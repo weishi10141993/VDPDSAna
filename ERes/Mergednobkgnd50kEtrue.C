@@ -77,20 +77,17 @@ void Mergednobkgnd50kEtrue::Loop()
   TH2D *LY_vs_visenergy       =new TH2D("LY_vs_visenergy", ";visible energy[MeV];LY [PE/MeV]", 100,0,100, 100,0,100);
   TH2D *LY_vs_tenergy         =new TH2D("LY_vs_tenergy", ";true energy[MeV];LY [PE/MeV]", 100,0,100, 100,0,100);
   TH2D *LY_vs_visenergyallbins=new TH2D("LY_vs_visenergyallbins", ";visible energy[MeV];LY [PE/MeV]", 100,0,100, 100,0,100);
+
   int bin=0;
   if (fChain == 0) return;
 
-  Long64_t nentries = fChain->GetEntriesFast();
+  Long64_t nentries = fChain->GetEntries();
   std::cout<< "nentries: " << nentries <<std::endl;
 
-  Long64_t nbytes = 0, nb = 0;
   std::cout<<"event loop start "<<std::endl;
-  for (Long64_t jentry=0; jentry<nentries;jentry++) {
+  for (Long64_t ientry=0; ientry<nentries; ientry++) {
 
-    Long64_t ientry = LoadTree(jentry);
-    if (ientry < 0) break;
-    nb = fChain->GetEntry(jentry);
-    nbytes += nb;
+    fChain->GetEntry(ientry);
 
     float TotalPE=0.0;
     for(Size_t i=0; i<TotalPEVector->size(); i++){

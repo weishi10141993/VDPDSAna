@@ -114,7 +114,13 @@ Mergednobkgnd50kEtrue_Eres::Mergednobkgnd50kEtrue_Eres(TTree *tree) : fChain(0)
       // of trees.
       TChain * chain = new TChain("vdflashmatch/FlashMatchTree","");
       chain->Add("/pnfs/dune/persistent/users/weishi/vdpds/v09_58_01d00/prodmarley_nue_mono10_nobkg_darkcount10Hz/ana/41291455_6/ana_hist_9f856b7d-3216-4293-8916-984254da9460.root");
-      //chain->Add("/pnfs/dune/persistent/users/weishi/vdpds/v09_58_01d00/prodmarley_nue_mono10_nobkg_darkcount10Hz/ana/41291455_0/ana_hist_382d717d-d4bd-4d0f-ae9a-947bbfa2aad6.root");
+      chain->Add("/pnfs/dune/persistent/users/weishi/vdpds/v09_58_01d00/prodmarley_nue_mono10_nobkg_darkcount10Hz/ana/41291455_0/ana_hist_382d717d-d4bd-4d0f-ae9a-947bbfa2aad6.root");
+      chain->Add("/pnfs/dune/persistent/users/weishi/vdpds/v09_58_01d00/prodmarley_nue_mono10_nobkg_darkcount10Hz/ana/41291455_7/ana_hist_5094aedb-0dbc-4868-92c1-3c3b73fd7c0c.root");
+      chain->Add("/pnfs/dune/persistent/users/weishi/vdpds/v09_58_01d00/prodmarley_nue_mono10_nobkg_darkcount10Hz/ana/41291455_4/ana_hist_75bb4ab9-1414-485a-b387-5f0fb0f0ab8a.root");
+      chain->Add("/pnfs/dune/persistent/users/weishi/vdpds/v09_58_01d00/prodmarley_nue_mono10_nobkg_darkcount10Hz/ana/41291455_3/ana_hist_5d957b7d-c42a-43c7-9f01-b3668421fb8a.root");
+      chain->Add("/pnfs/dune/persistent/users/weishi/vdpds/v09_58_01d00/prodmarley_nue_mono10_nobkg_darkcount10Hz/ana/41291455_1/ana_hist_0b22ac24-8778-412a-ab2e-159b7b5711d3.root");
+      chain->Add("/pnfs/dune/persistent/users/weishi/vdpds/v09_58_01d00/prodmarley_nue_mono10_nobkg_darkcount10Hz/ana/41291455_8/ana_hist_79aca95b-4aa0-4122-8ff8-498e460b4f9b.root");
+      chain->Add("/pnfs/dune/persistent/users/weishi/vdpds/v09_58_01d00/prodmarley_nue_mono10_nobkg_darkcount10Hz/ana/41291455_10/ana_hist_6c207ed6-46a0-4093-8889-226f2c22d91c.root");
 
       std::cout<< "Adding trees to chain" <<std::endl;
 

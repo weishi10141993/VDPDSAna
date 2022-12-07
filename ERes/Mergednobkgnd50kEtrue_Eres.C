@@ -39,10 +39,11 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
   int ymax=600;
   std::vector<double> LYavg;
 
-  int ebin=11;
-  double emin=3.75;
-  double emax=31.25;
-  double bine=2.5;
+  // this macro assumes fitting several mono-energies from emin to emax with bin step bine [MeV]
+  int ebin=5;
+  double emin=5;
+  double emax=30;
+  double bine=5;
 
   int nbinz=8;
   int zmin=600;
@@ -52,9 +53,6 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
   int biny=100;
   int binz=100;
 
-  int xval=0;
-  int yval=0;
-  int zval=0;
   int energy_bin=0;
 
   TProfile2D *xy_pe=new TProfile2D("xy_pe",";Y [cm];X [cm]",nbiny,ymin,ymax,nbinx,xmin,xmax);
@@ -63,67 +61,52 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
   TH2D *X_vs_Purity=new TH2D("X_vs_Purity","",nbinx,xmin,xmax,20,0,1);
   TH1D *LYvaluesall=new TH1D("LYvaluesall","",200,0,200);
 
-  TH2D *res_vs_eng=new TH2D("res_vs_eng","",11,3.75,31.25,500,-10,10);
+  TH2D *res_vs_eng=new TH2D("res_vs_eng","",7,0,35, 500,-10,10);
 
   TH1D *eres[ebin];
-  for(int i=0;i<ebin;i++){
-    eres[i]=new TH1D(Form("eres_%d",i),";(reco energy -true E)/true E;entries",500,-10,10);
-  }
+  for(int i=0;i<ebin;i++) eres[i]=new TH1D(Form("eres_%d",i),";(reco energy -true E)/true E;entries",500,-10,10);
   TProfile *E_resolution=new TProfile("E_resolution",";TrueE [MeV];(recoE-trueE)/TrueE",6,2.5,32.5);
   TH2D *TrueE_vs_recoE=new TH2D("TrueE_vs_recoE",";TrueE[MeV];recoE[MeV]",100,0,100,100,0,100);
 
   int bin=0;
   if (fChain == 0) return;
 
-  Long64_t nentries = fChain->GetEntriesFast();
-  Long64_t nbytes = 0, nb = 0;
-
+  Long64_t nentries = fChain->GetEntries();
   std::cout<<"nentries: "<<nentries<<std::endl;
-  for (Long64_t jentry=0; jentry<nentries;jentry++) {
-    if(jentry%1000==0)  std::cout<<jentry<<"/"<<nentries<<std::endl;
-    Long64_t ientry = LoadTree(jentry);
-    if (ientry < 0) break;
-    nb = fChain->GetEntry(jentry);   nbytes += nb;
-    // if (Cut(ientry) < 0) continue;
+
+  for (Long64_t ientry=0; ientry<nentries; ientry++) {
+
+    fChain->GetEntry(ientry);
+
     float TotalPE=0.0;
-    for(Size_t i=0;i<TotalPEVector->size();i++){
-      TotalPE+=TotalPEVector->at(i);
-    }
-    TrueE=TrueE*1000;
+    for(Size_t i=0;i<TotalPEVector->size();i++) TotalPE+=TotalPEVector->at(i);
+
+    TrueE=TrueE*1000; // MeV
     Edep=Edep*1000;
-    if(TotalPE==0) continue;
+    if( TotalPE == 0 ) continue;
     double recoE=0.0;
-    if(TrueE>35) continue;
+    if( TrueE > 35) continue;
 
     TrueE_vs_Edep->Fill(TrueE,Edep);
-    if(TrueY>-550 && TrueY<550){
-      if(TrueX>-325 && TrueX<325){
-        if(TrueZ>650 && TrueZ<1350){
-          xy_pe->Fill(TrueY,TrueX,TotalPE/(TrueE));
-          energy_bin=int((TrueE-3.75)/bine);
-          // if(energy_bin>ebin-1) energy_bin=ebin-1;
-          if(energy_bin>ebin-1 || energy_bin<0) continue;
-          //  xval=(TrueX-xmin)/binx;
-          // yval=(TrueY-ymin)/biny;
-          // zval=(TrueZ-zmin)/binz;
-          recoE=TotalPE/Xcorr->Interpolate(TrueX, TrueY, TrueZ);
-          if(TotalPE/TrueE<LYcutoff) continue;
-          LYvaluesall->Fill(TotalPE/TrueE);
-          LYavg.push_back(TotalPE/TrueE);
-          if(Xcorr->Interpolate(TrueX, TrueY, TrueZ)<1 || Xcorr->Interpolate(TrueX, TrueY, TrueZ)>100) continue;
-          TrueE_vs_recoE->Fill(TrueE,recoE);
-          eres[energy_bin]->Fill((recoE-TrueE)/(TrueE));
-          res_vs_eng->Fill(TrueE,(recoE-TrueE)/(TrueE));
-          // if(TrueZ>900 && TrueZ<1100 && TrueX>-100 && TrueX<100 && TrueY>-100 && TrueY<100) eres[energy_bin]->Fill((recoE-TrueE)/(TrueE));
-        } //X pos
-      } //Y pos
-    }//Z pos
-  }//jentry
+    if(TrueX>-325 && TrueX<325 && TrueY>-550 && TrueY<550 && TrueZ>650 && TrueZ<1350){
+      xy_pe->Fill(TrueY,TrueX,TotalPE/(TrueE));
+      energy_bin=int((TrueE-emin)/bine);
 
+      if(energy_bin>ebin-1 || energy_bin<0) continue;
+
+      recoE=TotalPE/Xcorr->Interpolate(TrueX, TrueY, TrueZ);
+      if(TotalPE/TrueE<LYcutoff) continue;
+      LYvaluesall->Fill(TotalPE/TrueE);
+      LYavg.push_back(TotalPE/TrueE);
+      if(Xcorr->Interpolate(TrueX, TrueY, TrueZ)<1 || Xcorr->Interpolate(TrueX, TrueY, TrueZ)>100) continue;
+      TrueE_vs_recoE->Fill(TrueE,recoE);
+      eres[energy_bin]->Fill((recoE-TrueE)/(TrueE));
+      res_vs_eng->Fill(TrueE,(recoE-TrueE)/(TrueE));
+    } // if pos
+  } //ientry
 
   double mean1=0;
   double sig1=0;
-
 
   /*std::vector<double> E,errE,Res,errRes;
   for(int i=0;i<6;i++){
@@ -144,7 +127,7 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
   std::vector<double> E,errE,Res,errRes;
   for(int i=0;i<ebin;i++){
     //	eres[i]->Write(Form("eres_%f",5*i+2.5));
-    if(eres[i]->GetEntries()<20) continue;
+    if(eres[i]->GetEntries()<20) continue; // can't fit with too small stats
     int binmax=eres[i]->GetMaximumBin();
     mean1=eres[i]->GetXaxis()->GetBinCenter(binmax);
     sig1=eres[i]->GetStdDev();
