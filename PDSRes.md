@@ -68,7 +68,7 @@ To change dark noise rate [study 10 Hz, 10^4Hz, 10^5Hz (1PE/10us), 10^6Hz (10PE/
 /dune/app/users/weishi/VDPDSRes/srcs/duneopdet/OpticalDetector/opticaldetectormodules_dune.fcl
 ```
 
-To list all files: ``find . -iname 'ana_hist*.root'```.
+To list all files: ```find . -iname 'ana_hist*.root'```.
 
 To produce resolution plot:
 ```
