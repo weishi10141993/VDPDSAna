@@ -63,9 +63,9 @@ projectgui.py Marley_10MeV_darkcount_10Hz.xml
 To change dark noise rate [study 10 Hz, 10^4Hz, 10^5Hz (1PE/10us), 10^6Hz (10PE/10us)], modify and recompile:
 ```
 # FD2-VD: SIPMOpSensorSim_module.cc
-/dune/app/users/weishi/VDPDSRes/srcs/duneopdet/OpticalDetector/SIPMOpSensorSim.fcl
+/dune/app/users/weishi/VDPDSRes/srcs/duneopdet/duneopdet/OpticalDetector/SIPMOpSensorSim.fcl
 # FD1-HD: OpDetDigitizerDUNE_module.cc (not of interest as there is no PoF)
-/dune/app/users/weishi/VDPDSRes/srcs/duneopdet/OpticalDetector/opticaldetectormodules_dune.fcl
+/dune/app/users/weishi/VDPDSRes/srcs/duneopdet/duneopdet/OpticalDetector/opticaldetectormodules_dune.fcl
 ```
 
 To list all files: ```find . -iname 'ana_hist*.root'```.

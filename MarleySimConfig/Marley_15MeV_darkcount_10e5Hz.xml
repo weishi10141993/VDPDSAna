@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+
+<!-- Production Project -->
+
+<!DOCTYPE project [
+<!ENTITY release "v09_58_01d00">
+<!ENTITY file_type "mc">
+<!ENTITY run_type "physics">
+<!ENTITY tag "vdpds">
+<!ENTITY name "prodmarley_nue_mono15_nobkg_darkcount10e5Hz">
+]>
+
+<project name="&name;">
+
+  <!-- Group -->
+  <group>dune</group>
+
+  <!-- Project size -->
+  <numevents>50000</numevents>
+
+  <!-- Operating System -->
+  <os>SL7</os>
+
+  <!-- Batch resources -->
+  <resource>DEDICATED,OPPORTUNISTIC,OFFSITE</resource>
+
+  <!-- Larsoft information -->
+  <larsoft>
+    <ups>dunesw</ups>
+    <tag>&release;</tag>
+    <qual>e20:prof</qual>
+  </larsoft>
+
+  <check>0</check>
+  <copy>0</copy>
+
+  <parameter name ="MCName">&name;</parameter>
+  <parameter name ="MCDetectorType">vd_1x8x14_3view_30deg</parameter>
+  <parameter name ="MCGenerators">MARLEY</parameter>
+
+  <!-- Project stages -->
+
+  <stage name="gen_g4">
+    <fcl>/dune/app/users/weishi/VDPDSRes/srcs/dunesw/fcl/dunefdvd/gen/supernova/prodmarley_nue_mono10_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
+    <fcl>/dune/app/users/weishi/VDPDSRes/srcs/dunesw/fcl/dunefdvd/g4/supernova_g4_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
+    <outdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/prodmarley_nue_mono5_nobkg_darkcount10Hz/gen_g4</outdir>
+    <workdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/prodmarley_nue_mono5_nobkg_darkcount10Hz/gen_g4</workdir>
+    <output>gen_g4_&release;_&tag;_&name;_${CLUSTER}_${PROCESS}.root</output>
+    <memory>6000</memory>
+    <numjobs>500</numjobs>
+    <datatier>simulated</datatier>
+    <!--<maxfluxfilemb>0</maxfluxfilemb>-->
+    <schema>root</schema>
+    <jobsub> -l '+SingularityImage="/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest"' --append_condor_requirements='(TARGET.HAS_SINGULARITY=?=true)' </jobsub>
+  </stage>
+
+  <stage name="detsim">
+    <fcl>/dune/app/users/weishi/VDPDSRes/srcs/dunesw/fcl/dunefdvd/detsim/standard_detsim_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
+    <outdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/detsim</outdir>
+    <workdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/detsim</workdir>
+    <output>detsim_&release;_&tag;_&name;_${CLUSTER}_${PROCESS}.root</output>
+    <memory>8000</memory>
+    <inputlist>/dune/app/users/weishi/VDPDSAna/MarleySimConfig/gen_g4_marley_mono15_dunevd10kt_1x8x14_3view_30deg.list</inputlist>
+    <numjobs>500</numjobs>
+    <datatier>detector-simulated</datatier>
+    <schema>root</schema>
+    <jobsub>--expected-lifetime=24h</jobsub>
+    <jobsub> -l '+SingularityImage="/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest"' --append_condor_requirements='(TARGET.HAS_SINGULARITY=?=true)' </jobsub>
+  </stage>
+
+  <stage name="reco">
+    <fcl>/dune/app/users/weishi/VDPDSRes/srcs/dunesw/fcl/dunefdvd/reco/supernova_reco_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
+    <outdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/reco</outdir>
+    <workdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/reco</workdir>
+    <output>reco_&release;_&tag;_&name;_${CLUSTER}_${PROCESS}.root</output>
+    <memory>4000</memory>
+    <inputlist>/dune/app/users/weishi/VDPDSAna/MarleySimConfig/detsim_marley_mono15_dunevd10kt_1x8x14_3view_30deg_darkcount10e5Hz.list</inputlist>
+    <numjobs>500</numjobs>
+    <datatier>reconstructed</datatier>
+    <schema>root</schema>
+    <jobsub>--expected-lifetime=24h</jobsub>
+    <jobsub> -l '+SingularityImage="/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest"' --append_condor_requirements='(TARGET.HAS_SINGULARITY=?=true)' </jobsub>
+  </stage>
+
+  <stage name="ana">
+    <fcl>/dune/app/users/weishi/VDPDSRes/srcs/dunesw/fcl/dunefdvd/anatree/marley_anatree_dunevd10kt_1x8x14_3view_30deg.fcl</fcl>
+    <outdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/ana</outdir>
+    <workdir>/pnfs/dune/persistent/users/weishi/&tag;/&release;/&name;/ana</workdir>
+    <output>ana_&release;_&tag;_&name;_${CLUSTER}_${PROCESS}.root</output>
+    <memory>2000</memory>
+    <inputlist>/dune/app/users/weishi/VDPDSAna/MarleySimConfig/reco_marley_mono15_dunevd10kt_1x8x14_3view_30deg_darkcount10e5Hz.list</inputlist>
+    <numjobs>500</numjobs>
+    <datatier>full-reconstructed</datatier>
+    <schema>root</schema>
+    <jobsub>--expected-lifetime=8h</jobsub>
+    <jobsub> -l '+SingularityImage="/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest"' --append_condor_requirements='(TARGET.HAS_SINGULARITY=?=true)' </jobsub>
+  </stage>
+
+   <!-- file type -->
+  <filetype>&file_type;</filetype>
+
+  <!-- run type -->
+  <runtype>&run_type;</runtype>
+
+</project>
