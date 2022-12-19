@@ -18,40 +18,40 @@
 #include <fstream>
 #include <iomanip>
 
-int LYcutoff = 0;
+int EvtLYCut = 0;
 
 void Mergednobkgnd50kEtrue_Eres::Loop()
 {
-  TFile f1(Form("Merged_Etruecal_%d.root", LYcutoff));
+  TFile f1(Form("LY_Calib_Etrue_EvtLYCut_%d.root", EvtLYCut));
   TH3D *Xcorr=(TH3D*)f1.Get("LY_XYZcal");
-  TFile f(Form("Merged_Etrue_Eres%d.root", LYcutoff), "RECREATE");
 
-  ofstream outfile;
-  outfile.open("minLY_avgLY_Etruev1.txt",std::ios_base::app);
+  TFile f(Form("PDS_ERes_Etrue_%d.root", EvtLYCut), "RECREATE");
 
-  std::cout<<"code starting "<<std::endl;
-  int nbinx=35;
-  int xmin=-350;
-  int xmax=350;
+  int nbinx = 35;
+  int xmin  = -350;
+  int xmax  = 350;
 
-  int nbiny=12;
-  int ymin=-600;
-  int ymax=600;
-  std::vector<double> LYavg;
+  int nbiny = 12;
+  int ymin  = -600;
+  int ymax  = 600;
 
+  int nbinz = 8;
+  int zmin  = 600;
+  int zmax  = 1400;
+
+  // True energy binning
   // this macro assumes fitting several mono-energies from emin to emax with bin step bine [MeV]
-  int ebin=5;
+  int ebin=6;
   double emin=5;
-  double emax=30;
-  double bine=5;
+  double emax=35;
 
-  int nbinz=8;
-  int zmin=600;
-  int zmax=1400;
+  // Calculate bin size
+  int binx = (xmax-xmin)/nbinx;
+  int biny = (ymax-ymin)/nbiny;
+  int binz = (zmax-zmin)/nbinz;
+  int bine = (emax-emin)/ebin;
 
-  int binx=20;
-  int biny=100;
-  int binz=100;
+  std::vector<double> LYavg;
 
   int energy_bin=0;
 
@@ -83,9 +83,10 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
 
     TrueE=TrueE*1000; // MeV
     Edep=Edep*1000;
-    if( TotalPE == 0 ) continue;
     double recoE=0.0;
-    if( TrueE > 35) continue;
+    if( TotalPE == 0 ) continue;
+    if( TrueE > 40 ) continue;   // we only care low E events below 40MeV
+    if( TotalPE/TrueE < EvtLYCut ) continue;
 
     TrueE_vs_Edep->Fill(TrueE,Edep);
     if(TrueX>-325 && TrueX<325 && TrueY>-550 && TrueY<550 && TrueZ>650 && TrueZ<1350){
@@ -94,39 +95,28 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
 
       if(energy_bin>ebin-1 || energy_bin<0) continue;
 
-      recoE=TotalPE/Xcorr->Interpolate(TrueX, TrueY, TrueZ);
-      if(TotalPE/TrueE<LYcutoff) continue;
+      recoE = TotalPE/(Xcorr->Interpolate(TrueX, TrueY, TrueZ));
+
       LYvaluesall->Fill(TotalPE/TrueE);
       LYavg.push_back(TotalPE/TrueE);
+
       if(Xcorr->Interpolate(TrueX, TrueY, TrueZ)<1 || Xcorr->Interpolate(TrueX, TrueY, TrueZ)>100) continue;
-      TrueE_vs_recoE->Fill(TrueE,recoE);
-      eres[energy_bin]->Fill((recoE-TrueE)/(TrueE));
-      res_vs_eng->Fill(TrueE,(recoE-TrueE)/(TrueE));
+
+      TrueE_vs_recoE->Fill(TrueE, recoE);
+      eres[energy_bin]->Fill((recoE - TrueE)/(TrueE));
+      res_vs_eng->Fill(TrueE,(recoE - TrueE)/(TrueE));
     } // if pos
   } //ientry
 
+  //
+  // Let it fit!
+  //
   double mean1=0;
   double sig1=0;
 
-  /*std::vector<double> E,errE,Res,errRes;
-  for(int i=0;i<6;i++){
-    //	eres[i]->Write(Form("eres_%f",5*i+2.5));
-    eres[i]->GetXaxis()->SetRangeUser(-2.5,2.5);
-    std::cout<<"Entries vs bin "<<i<<" "<<eres[i]->GetEntries()<<std::endl;
-    if(eres[i]->GetEntries()<20) continue;
-    eres[i]->Fit("gaus","R");
-    eres[i]->Write(Form("eres_%f",i+5.0));
-    TF1 *fun=eres[i]->GetFunction("gaus");
-    E.push_back(i*5+5.0);
-    errE.push_back(2.5);
-    Res.push_back(fun->GetParameter(2));
-    errRes.push_back(fun->GetParError(2));
-  }
-  TGraphErrors *Evsres=new TGraphErrors(E.size(),&E[0],&Res[0],&errE[0],&errRes[0]);*/
-
   std::vector<double> E,errE,Res,errRes;
-  for(int i=0;i<ebin;i++){
-    //	eres[i]->Write(Form("eres_%f",5*i+2.5));
+  for(int i=0; i<ebin; i++){
+
     if(eres[i]->GetEntries()<20) continue; // can't fit with too small stats
     int binmax=eres[i]->GetMaximumBin();
     mean1=eres[i]->GetXaxis()->GetBinCenter(binmax);
@@ -137,13 +127,14 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
 
     eres[i]->Fit("gaus","","",mean1-sig1/2.0,mean1+sig1/2.0);
     //  eres[i]->Fit("gaus","","",mean1-sig1,mean1+sig1);//LY =0
-    eres[i]->Write(Form("eres_%f",i*2.5+5.0));
+    eres[i]->Write(Form("eres_%f",i*bine + emin));
     TF1 *fun=eres[i]->GetFunction("gaus");
-    E.push_back((i*2.5+5.0)/1000.0);
+    E.push_back((i*bine + emin)/1000.0);
     errE.push_back(0.0);
     Res.push_back(fun->GetParameter(2));
     errRes.push_back(fun->GetParError(2));
   }
+
   TGraphErrors *Evsres=new TGraphErrors(E.size(),&E[0],&Res[0],&errE[0],&errRes[0]);
   Evsres->SetTitle(";True neutrino energy [MeV];Enenergy resolution;");
   double avgLY=std::accumulate(LYavg.begin(), LYavg.end(),0.0)/LYavg.size();
@@ -153,9 +144,8 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
   xy_pe->Write();
   X_vs_Purity->Write();
   TrueE_vs_recoE->Write();
-  std::cout<<"Average LY is "<<avgLY<<std::endl;
-  outfile<<"minLY "<<LYcutoff<<"  Avg LY "<<avgLY<<std::endl;
   LYvaluesall->Write();
   res_vs_eng->Write();
+  std::cout<<"Average LY (over all events): " << avgLY << " PE/MeV, min event LY: " << EvtLYCut << " PE/MeV" <<std::endl;
   f.Close();
 }

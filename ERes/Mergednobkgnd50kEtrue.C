@@ -13,39 +13,45 @@
 #include <TMath.h>
 #include<TH3.h>
 // source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.24.02/x86_64-centos7-gcc48-opt/bin/thisroot.sh
-int LYcutoff = 0; // PE/MeV, cut off on LY, LY smaller than this won't be considered
+int EvtLYCut = 0; // unit: PE/MeV, cut off on LY, events with smaller LY won't be considered
 
 void Mergednobkgnd50kEtrue::Loop()
 {
-  TFile f(Form("Merged_Etruecal_%d.root", LYcutoff),"RECREATE");
+  TFile f(Form("LY_Calib_Etrue_EvtLYCut_%d.root", EvtLYCut),"RECREATE");
 
-  // voxels in x, y, z
-  int nbinx=35;
-  int xmin=-350;
-  int xmax=350;
+  // Marley events are generated in a box, min_position: [ -325., -675., 600. ], max_position: [ 325., 675., 1500. ]
 
-  int nbiny=12;
-  int ymin=-600;
-  int ymax=600;
+  // Voxels in x, y, z
+  int nbinx = 35;
+  int xmin  = -350;
+  int xmax  = 350;
 
-  int nbinz=8;
-  int zmin=600;
-  int zmax=1400;
+  int nbiny = 12;
+  int ymin  = -600;
+  int ymax  = 600;
 
-  int ebin=30;
-  double emin=0.5;
-  double emax=30.5;
-  int bine=1;
+  int nbinz = 8;
+  int zmin  = 600;
+  int zmax  = 1400; // 100cm resolution?
 
-  int binx=20;
-  int biny=100;
-  int binz=100;
+  bool CheckEachVoxel = false; // for debug purpose only
 
+  // Calculate bin size
+  int binx = (xmax-xmin)/nbinx;
+  int biny = (ymax-ymin)/nbiny;
+  int binz = (zmax-zmin)/nbinz;
+
+  // LY calibration:
+  // each x-y-z voxel has an avg LY, push back event by event
   vector<vector<vector<vector<float>>>> LY_XYZ;
+  // avged over z
   vector<vector<vector<float>>> LY_XY;
+
+  // 1D histogram light yield for every voxel
   TH1D *LY[nbinx][nbiny][nbinz];
 
-  // 3D vector for light yield-energy calibration
+  // 4D vector for light yield-energy calibration
+  // for each voxel (x, y, z) --> PEs
   LY_XYZ.resize(nbinx);
   for(int i=0;i<nbinx;i++) LY_XYZ[i].resize(nbiny);
   for(int i=0;i<nbinx;i++){
@@ -61,7 +67,7 @@ void Mergednobkgnd50kEtrue::Loop()
   int xval=0;
   int yval=0;
   int zval=0;
-  int energy_bin=0;
+
   TH2D *PEvsEnergy1=new TH2D("PEvsEnergy1", ";PE;Energy[MeV]", 500,0,5000, 100,0,100);
   TH2D *PEvsEnergy2=new TH2D("PEvsEnergy2", ";PE;Energy[MeV]", 500,0,5000, 100,0,100);
 
@@ -90,54 +96,59 @@ void Mergednobkgnd50kEtrue::Loop()
     fChain->GetEntry(ientry);
 
     float TotalPE=0.0;
+    // N reconstructed flashes, each flash contains some number of PE
     for(Size_t i=0; i<TotalPEVector->size(); i++){
       TotalPE += TotalPEVector->at(i);
-      X_vs_Purity->Fill(TrueX, Purity->at(i));
+      X_vs_Purity->Fill(TrueX, Purity->at(i)); // purity: how many reco hits match to true hits
     }
 
     TrueE = TrueE*1000; // unit MeV
     Edep  = Edep*1000;  // unit MeV
-    if( TotalPE == 0 ) continue; // no light
-    if( TrueE > 35 ) continue;   // we only care below 35MeV
-    if( TotalPE/TrueE < LYcutoff ) continue; // Skip is LY is below cut-off
+    if( TotalPE == 0 ) continue; // Skip event with no light yield
+    if( TrueE > 40 ) continue;   // we only care low E events below 40MeV
+    // Skip event with avg LY is below some cut-off
+    // why is this interested?
+    if( TotalPE/TrueE < EvtLYCut ) continue;
 
     TrueE_vs_TrueE->Fill(TrueE,TrueE); // This seems useless
 
-    if(TrueZ>1000 && TrueZ<1100){ // why?
-    xy_pe->Fill(TrueY, TrueX, TotalPE/TrueE);
-    energy_bin=int(TrueE/ebin);
-    //  if(energy_bin>ebin-1) energy_bin=ebin-1;
-    xval=(TrueX-xmin)/binx;
-    yval=(TrueY-ymin)/biny;
-    zval=(TrueZ-zmin)/binz;
-    LY_x->Fill(TrueX, TotalPE/Edep);
-    LY_y->Fill(TrueY, TotalPE/Edep);
-    LY_z->Fill(TrueZ, TotalPE/Edep);
+    if(TrueX>-325 && TrueX<325 && TrueY>-550 && TrueY<550 && TrueZ>650 && TrueZ<1350){
+      xy_pe->Fill(TrueY, TrueX, TotalPE/TrueE);
 
-    if(xval>=0 && xval<nbinx && yval>=0 && yval<nbiny && zval>=0 && zval<nbinz){
-      LY_XYZ[xval][yval][zval].push_back(TotalPE/TrueE);
-      LY_XY[yval][xval].push_back(TotalPE/TrueE);
-    }
-    LY_vs_visenergyallbins->Fill(TrueE,TotalPE/TrueE);
-    if(TrueX>-50 && TrueX<50 && TrueY>-50 && TrueY<50 && TrueZ>900 && TrueZ<1100){
+      // Locate event in defined voxels
+      //
+      // !!! There is some problem here:
+      // the true position only represents the intereaction position
+      // but the event can span several voxels, do we still acount all PE to a single voxel?
+      //
+      xval=(TrueX-xmin)/binx;
+      yval=(TrueY-ymin)/biny;
+      zval=(TrueZ-zmin)/binz;
 
-      LY_vs_visenergy->Fill(TrueE,TotalPE/TrueE);
-      LY_vs_tenergy->Fill(TrueE,TotalPE/TrueE);
+      LY_x->Fill(TrueX, TotalPE/Edep);
+      LY_y->Fill(TrueY, TotalPE/Edep);
+      LY_z->Fill(TrueZ, TotalPE/Edep);
 
-    }
+      if(xval>=0 && xval<nbinx && yval>=0 && yval<nbiny && zval>=0 && zval<nbinz){
+        LY_XYZ[xval][yval][zval].push_back(TotalPE/TrueE); // event by event
+        LY_XY[yval][xval].push_back(TotalPE/TrueE); // why would this be interesting
+      }
 
-    if(TrueX>-250 && TrueX<-150 && TrueY>-50 && TrueY<50 && TrueZ>900 && TrueZ<1100){
-      PEvsEnergy1->Fill(TotalPE, TrueE);
-    }
-    if(TrueX>-250 && TrueX<-150 && TrueY>-50 && TrueY<50 && TrueZ>700 && TrueZ<900){
-      PEvsEnergy2->Fill(TotalPE, TrueE);
-    }
+      LY_vs_visenergyallbins->Fill(TrueE, TotalPE/TrueE);
+      // what's doing here?
+      if(TrueX>-50 && TrueX<50 && TrueY>-50 && TrueY<50 && TrueZ>900 && TrueZ<1100){
+        LY_vs_visenergy->Fill(TrueE,TotalPE/TrueE);
+        LY_vs_tenergy->Fill(TrueE,TotalPE/TrueE);
+      }
 
+      if(TrueX>-250 && TrueX<-150 && TrueY>-50 && TrueY<50 && TrueZ>900 && TrueZ<1100) PEvsEnergy1->Fill(TotalPE, TrueE);
+      if(TrueX>-250 && TrueX<-150 && TrueY>-50 && TrueY<50 && TrueZ>700 && TrueZ<900) PEvsEnergy2->Fill(TotalPE, TrueE);
     }//Z pos
   } // end event loop
 
   std::cout<<"event loop end "<<std::endl;
 
+  // Calibration uses the median LY among all events in the voxel
   for(int i=0;i<nbinx;i++){
     for(int j=0;j<nbiny;j++){
       for(int k=0;k<nbinz;k++){
@@ -146,29 +157,39 @@ void Mergednobkgnd50kEtrue::Loop()
     }
   }
 
- for(int i=0;i<nbiny;i++){
+  //
+  // From here the resolution can already be calculated, why bother another macro
+  //
+
+
+
+  for(int i=0;i<nbiny;i++){
     for(int j=0;j<nbinx;j++){
       LY_map->SetBinContent(i+1,j+1,TMath::Median(LY_XY[i][j].size(),&LY_XY[i][j][0]));
     }
   }
- int xcoor=0;
- int ycoor=0;
- int zcoor=0;
 
- for(int i=0;i<nbinx;i++){
-   for(int j=0;j<nbiny;j++){
-     for(int k=0;k<nbinz;k++){
-       LY[i][j][k]=new TH1D(Form("LY_%d_%d_%d",i,j,k),"",200,0,50);
-       for(int l=0;l<LY_XYZ[i][j][k].size();l++){
-         LY[i][j][k]->Fill(LY_XYZ[i][j][k][l]);
-       }
-       xcoor=xmin+i*binx+binx/2;
-       ycoor=ymin+j*biny+biny/2;
-       zcoor=zmin+k*binz+binz/2;
-       LY[i][j][k]->Write(Form("LYdist_X_%d_Y_%d_Z_%d",xcoor,ycoor,zcoor));
-     }
-   }
- }
+  int xcoor=0;
+  int ycoor=0;
+  int zcoor=0;
+
+  if ( CheckEachVoxel ) {
+    for(int i=0;i<nbinx;i++){
+      for(int j=0;j<nbiny;j++){
+        for(int k=0;k<nbinz;k++){
+          LY[i][j][k]=new TH1D(Form("LY_%d_%d_%d",i,j,k),"",200,0,50);
+
+          for(unsigned int l=0;l<LY_XYZ[i][j][k].size();l++) LY[i][j][k]->Fill(LY_XYZ[i][j][k][l]); // LY for each voxel, all events filled
+
+          xcoor=xmin+i*binx+binx/2;
+          ycoor=ymin+j*biny+biny/2;
+          zcoor=zmin+k*binz+binz/2;
+
+          LY[i][j][k]->Write(Form("LYdist_X_%d_Y_%d_Z_%d",xcoor,ycoor,zcoor));
+        }
+      }
+    }
+  } // end check each voxel
 
   TrueE_vs_TrueE->Write();
   xy_pe->Write();

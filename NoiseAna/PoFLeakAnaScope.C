@@ -113,7 +113,7 @@ void PoFLeakAnaScope(){
   // Sample rate 250M/s (4ns resolution per point), each dataset points 200 million
   // save as 1 column in txt file, unit: Volt
 
-  TString runname = "Rectangular-FCFC-connector";
+  TString runname = "Potted-GaAsOPC-1mmCopperShield";
 
   TString dirname = "/pnfs/dune/persistent/users/weishi/PoFLeakageTest";
   Bool_t filternoise = true; // apply noise filter if true (most likely you need)
@@ -139,7 +139,23 @@ void PoFLeakAnaScope(){
   for(int ithres=0; ithres<nadcthrs; ++ithres) delta_amp[ithres] = delta_amp[0] + 0.025*ithres;
 
   // Samples
-  if ( runname == "GaAsOPC-NoPotting-LowPower" ) {
+  if ( runname == "Potted-GaAsOPC-1mmCopperShield-and-potted-connector" ) {
+    adcdataset.push_back("reference-4-chineselaser200mW-opc-and-connector-potted-plus-copperboxshield-1mm-thick-Dec16.txt"); // ref
+    adcdataset.push_back("chineselaser-orangepigtail555mW-200mW-opc-and-connector-potted-plus-copperboxshield-1mm-thick-Dec16.txt");
+    adcdataset.push_back("chineselaser-orangepigtail800mW-272mW-opc-and-connector-potted-plus-copperboxshield-1mm-thick-Dec16.txt");
+    adcdataset.push_back("chineselaser-orangepigtail1000mW-370mW-opc-and-connector-potted-plus-copperboxshield-1mm-thick-Dec16.txt");
+    legendheader = "Potted OPC + 1mm copper shield, potted connector";
+    legendname[0] = "No power";
+    legendname[1] = "200mW";
+    legendname[2] = "272mW";
+    legendname[3] = "370mW";
+  } else if ( runname == "Potted-GaAsOPC-1mmCopperShield" ) {
+    adcdataset.push_back("reference-4-chineselaser200mW-opc-potted-plus-copperboxshield-1mm-thick-Dec15.txt"); // ref
+    adcdataset.push_back("chineselaser-orangepigtail555mW-200mW-opc-potted-plus-copperboxshield-1mm-thick-Dec15.txt");
+    legendheader = "Potted OPC + 1mm copper shield";
+    legendname[0] = "No power";
+    legendname[1] = "200mW";
+  } else if ( runname == "GaAsOPC-NoPotting-LowPower" ) {
     adcdataset.push_back("chineselaser-reference4power0p1-1uW-dc1megaohm-4nsResolution-nov9.txt"); // ref
     adcdataset.push_back("chineselaser-0p1uW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov9.txt");
     adcdataset.push_back("chineselaser-0p3uW-GaAsOPCreceiver-dc1megaohm-4nsResolution-nov9.txt");

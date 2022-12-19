@@ -74,11 +74,14 @@ To produce resolution plot:
 ```
 cd /dune/app/users/weishi/VDPDSAna/ERes
 
-# first produce voxel LY calibration
+# First produce voxel LY calibration
 echo 'gROOT->ProcessLine(".L Mergednobkgnd50kEtrue.C+"); gROOT->ProcessLine("Mergednobkgnd50kEtrue k"); gROOT->ProcessLine("k.Loop()")' | root -l -b
 
-# then get resolution
+# Then get resolution
 echo 'gROOT->ProcessLine(".L Mergednobkgnd50kEtrue_Eres.C+"); gROOT->ProcessLine("Mergednobkgnd50kEtrue_Eres k"); gROOT->ProcessLine("k.Loop()")' | root -l -b
+
+# Note to make sure the input files are the same for both macros
+# And consistent cut on event LY in the top
 ```
 
 ## Re-login
@@ -109,4 +112,7 @@ mrb i --generator ninja
 
 ## Other study
 
+Bias in reco energy? as added noise contribute extra LY
+Effect should be different for different energy
+If per MeV have more than 10PE light yield, noise effect should be small
 SNB trigger rate & efficiency
