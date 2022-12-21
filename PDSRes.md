@@ -112,7 +112,6 @@ mrb i --generator ninja
 
 ## Other study
 
-Bias in reco energy? as added noise contribute extra LY
-Effect should be different for different energy
-If per MeV have more than 10PE light yield, noise effect should be small
+Purity check?
+
 SNB trigger rate & efficiency

@@ -114,7 +114,7 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
   double mean1=0;
   double sig1=0;
 
-  std::vector<double> E,errE,Res,errRes;
+  std::vector<double> E, errE, ERes, errERes, EBias, errEBias;
   for(int i=0; i<ebin; i++){
 
     if(eres[i]->GetEntries()<20) continue; // can't fit with too small stats
@@ -129,23 +129,35 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
     //  eres[i]->Fit("gaus","","",mean1-sig1,mean1+sig1);//LY =0
     eres[i]->Write(Form("eres_%f",i*bine + emin));
     TF1 *fun=eres[i]->GetFunction("gaus");
-    E.push_back((i*bine + emin)/1000.0);
+
+    E.push_back((i*bine + emin)/1000.0); // GeV
     errE.push_back(0.0);
-    Res.push_back(fun->GetParameter(2));
-    errRes.push_back(fun->GetParError(2));
+
+    EBias.push_back(fun->GetParameter(1));
+    errEBias.push_back(fun->GetParError(1));
+
+    ERes.push_back(fun->GetParameter(2));
+    errERes.push_back(fun->GetParError(2));
   }
 
-  TGraphErrors *Evsres=new TGraphErrors(E.size(),&E[0],&Res[0],&errE[0],&errRes[0]);
-  Evsres->SetTitle(";True neutrino energy [MeV];Enenergy resolution;");
+  TGraphErrors *EvsBias=new TGraphErrors(E.size(),&E[0],&EBias[0],&errE[0],&errEBias[0]);
+  EvsBias->SetTitle(";True neutrino energy [GeV];Energy bias;");
+  EvsBias->Write("EvsBias");
+
+  TGraphErrors *EvsRes=new TGraphErrors(E.size(),&E[0],&ERes[0],&errE[0],&errERes[0]);
+  EvsRes->SetTitle(";True neutrino energy [GeV];Energy resolution;");
+  EvsRes->Write("EvsRes");
+
   double avgLY=std::accumulate(LYavg.begin(), LYavg.end(),0.0)/LYavg.size();
   LYavg.clear();
-  Evsres->Write("Evsres");
+  std::cout<<"Average LY (over all events): " << avgLY << " PE/MeV, min event LY: " << EvtLYCut << " PE/MeV" <<std::endl;
+
   TrueE_vs_Edep->Write();
   xy_pe->Write();
   X_vs_Purity->Write();
   TrueE_vs_recoE->Write();
   LYvaluesall->Write();
   res_vs_eng->Write();
-  std::cout<<"Average LY (over all events): " << avgLY << " PE/MeV, min event LY: " << EvtLYCut << " PE/MeV" <<std::endl;
+
   f.Close();
 }
