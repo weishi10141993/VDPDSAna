@@ -58,7 +58,6 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
   TProfile2D *xy_pe=new TProfile2D("xy_pe",";Y [cm];X [cm]",nbiny,ymin,ymax,nbinx,xmin,xmax);
   TH2D *LY_map=new TH2D("LY_map","",nbiny,ymin,ymax,nbinx,xmin,xmax);
   TH2D *TrueE_vs_Edep=new TH2D("TrueE_vs_Edep","",50,0,50,50,0,50);
-  TH2D *X_vs_Purity=new TH2D("X_vs_Purity","",nbinx,xmin,xmax,20,0,1);
   TH1D *LYvaluesall=new TH1D("LYvaluesall","",200,0,200);
 
   TH2D *res_vs_eng=new TH2D("res_vs_eng","",7,0,35, 500,-10,10);
@@ -154,7 +153,6 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
 
   TrueE_vs_Edep->Write();
   xy_pe->Write();
-  X_vs_Purity->Write();
   TrueE_vs_recoE->Write();
   LYvaluesall->Write();
   res_vs_eng->Write();

@@ -78,8 +78,8 @@ void Mergednobkgnd50kEtrue::Loop()
 
   TH3D *LY_XYZcal             =new TH3D("LY_XYZcal", "", nbinx,xmin,xmax, nbiny,ymin,ymax, nbinz,zmin,zmax);
   TH2D *LY_map                =new TH2D("LY_map", "", nbiny,ymin,ymax, nbinx,xmin,xmax);
-  TH2D *TrueE_vs_TrueE        =new TH2D("TrueE_vs_TrueE", "", 50,0,50, 50,0,50);
   TH2D *X_vs_Purity           =new TH2D("X_vs_Purity", "", nbinx,xmin,xmax, 20,0,1);
+  TH1D *FlashHitPurity        =new TH1D("FlashHitPurity", "", 20, 0, 1);
   TH2D *LY_vs_visenergy       =new TH2D("LY_vs_visenergy", ";visible energy[MeV];LY [PE/MeV]", 100,0,100, 100,0,100);
   TH2D *LY_vs_tenergy         =new TH2D("LY_vs_tenergy", ";true energy[MeV];LY [PE/MeV]", 100,0,100, 100,0,100);
   TH2D *LY_vs_visenergyallbins=new TH2D("LY_vs_visenergyallbins", ";visible energy[MeV];LY [PE/MeV]", 100,0,100, 100,0,100);
@@ -99,7 +99,7 @@ void Mergednobkgnd50kEtrue::Loop()
     // N reconstructed flashes, each flash contains some number of PE
     for(Size_t i=0; i<TotalPEVector->size(); i++){
       TotalPE += TotalPEVector->at(i);
-      X_vs_Purity->Fill(TrueX, Purity->at(i)); // purity: how many reco hits match to true hits
+      X_vs_Purity->Fill(TrueX, Purity->at(i));
     }
 
     TrueE = TrueE*1000; // unit MeV
@@ -110,10 +110,12 @@ void Mergednobkgnd50kEtrue::Loop()
     // why is this interested?
     if( TotalPE/TrueE < EvtLYCut ) continue;
 
-    TrueE_vs_TrueE->Fill(TrueE,TrueE); // This seems useless
-
     if(TrueX>-325 && TrueX<325 && TrueY>-550 && TrueY<550 && TrueZ>650 && TrueZ<1350){
       xy_pe->Fill(TrueY, TrueX, TotalPE/TrueE);
+
+      for(Size_t i=0; i<TotalPEVector->size(); i++){
+        FlashHitPurity->Fill(Purity->at(i)); // purity: how many reco hits match to true hits
+      }
 
       // Locate event in defined voxels
       //
@@ -191,11 +193,11 @@ void Mergednobkgnd50kEtrue::Loop()
     }
   } // end check each voxel
 
-  TrueE_vs_TrueE->Write();
   xy_pe->Write();
   LY_map->Write();
   LY_XYZcal->Write();
   X_vs_Purity->Write();
+  FlashHitPurity->Write();
   LY_vs_visenergy->Write();
   LY_vs_visenergyallbins->Write();
   LY_vs_tenergy->Write();
