@@ -88,7 +88,8 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
     if( TotalPE/TrueE < EvtLYCut ) continue;
 
     TrueE_vs_Edep->Fill(TrueE,Edep);
-    if(TrueX>-325 && TrueX<325 && TrueY>-550 && TrueY<550 && TrueZ>650 && TrueZ<1350){
+    // VDTDR: at least 50cm from side wall, 25cm from anode and cathode.
+    if(TrueX>-275 && TrueX<275 && TrueY>-650 && TrueY<650 && TrueZ>650 && TrueZ<1450){
       xy_pe->Fill(TrueY,TrueX,TotalPE/(TrueE));
       energy_bin=int((TrueE-emin)/bine);
 
@@ -105,7 +106,7 @@ void Mergednobkgnd50kEtrue_Eres::Loop()
       eres[energy_bin]->Fill((recoE - TrueE)/(TrueE));
       res_vs_eng->Fill(TrueE,(recoE - TrueE)/(TrueE));
     } // if pos
-  } //ientry
+  } // ientry
 
   //
   // Let it fit!

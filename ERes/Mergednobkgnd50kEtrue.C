@@ -22,17 +22,19 @@ void Mergednobkgnd50kEtrue::Loop()
   // Marley events are generated in a box, min_position: [ -325., -675., 600. ], max_position: [ 325., 675., 1500. ]
 
   // Voxels in x, y, z
+  // x 20cm resolution
+  // y, z 100cm resolution
   int nbinx = 35;
   int xmin  = -350;
   int xmax  = 350;
 
-  int nbiny = 12;
-  int ymin  = -600;
-  int ymax  = 600;
+  int nbiny = 13;
+  int ymin  = -650;
+  int ymax  = 650;
 
   int nbinz = 8;
-  int zmin  = 600;
-  int zmax  = 1400; // 100cm resolution?
+  int zmin  = 650;
+  int zmax  = 1450;
 
   bool CheckEachVoxel = false; // for debug purpose only
 
@@ -107,10 +109,10 @@ void Mergednobkgnd50kEtrue::Loop()
     if( TotalPE == 0 ) continue; // Skip event with no light yield
     if( TrueE > 40 ) continue;   // we only care low E events below 40MeV
     // Skip event with avg LY is below some cut-off
-    // why is this interested?
     if( TotalPE/TrueE < EvtLYCut ) continue;
 
-    if(TrueX>-325 && TrueX<325 && TrueY>-550 && TrueY<550 && TrueZ>650 && TrueZ<1350){
+    // VDTDR: at least 50cm from side wall, 25cm from anode and cathode.
+    if(TrueX>-275 && TrueX<275 && TrueY>-650 && TrueY<650 && TrueZ>650 && TrueZ<1450){
       xy_pe->Fill(TrueY, TrueX, TotalPE/TrueE);
 
       for(Size_t i=0; i<TotalPEVector->size(); i++){
