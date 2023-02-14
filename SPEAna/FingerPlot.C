@@ -88,7 +88,7 @@ void FingerPlot(){
   // ifstream file("july8_led6p8_ch3_36V.txt");
   // ifstream file("july8_led6p8_ch2_36V_1.txt");
   //ifstream file("test_save_led10p0-35v.txt");
-  ifstream file("/pnfs/dune/persistent/users/weishi/SPEAna/VDDCEMv1p2Differential/default-jan31-48v-led7p5-higherfreq.txt");
+  ifstream file("/pnfs/dune/persistent/users/weishi/SPEAna/VDDCEMv1p2Differential/differential-separate-ps-feb14.txt");
   int line=0;
   vector<double> waveformy, time;
   double y, x, sizev;

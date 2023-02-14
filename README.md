@@ -29,6 +29,9 @@ git clone https://github.com/weishi10141993/VDPDSAna.git
 root -l -b -q PoFLeakAnaCAEN.C
 root -l -b -q PoFLeakAnaScope.C
 
+# Analyze SPE from scope data
+root -l -b -q SNRAnaScope.C
+
 # Persistence mode: Script to fill all waveform points from a sample in a 2d histogram
 root -l -b -q initial_reading.C
 
