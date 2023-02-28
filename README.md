@@ -29,6 +29,8 @@ git clone https://github.com/weishi10141993/VDPDSAna.git
 root -l -b -q PoFLeakAnaCAEN.C
 root -l -b -q PoFLeakAnaScope.C
 
+# Check raw waveform
+root -l -b -q CheckRawWfm.C
 # Analyze SPE from scope data
 root -l -b -q SNRAnaScope.C
 
