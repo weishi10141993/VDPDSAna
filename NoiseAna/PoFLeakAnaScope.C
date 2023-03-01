@@ -110,10 +110,10 @@ void PoFLeakAnaScope(){
   // chineselaser-after40m-power350mW-FC-FCconnector-blackboxdiagonal-to-meter-dc1megaohm-4nsResolution-nov10.txt
 
   // Scope Keysight
-  // Sample rate 250M/s (4ns resolution per point), each dataset points 200 million
+  // Sample rate 250M/s (4ns resolution per point)
   // save as 1 column in txt file, unit: Volt
 
-  TString runname = "Potted-GaAsOPC-1mmCopperShield";
+  TString runname = "Coppertape-1mmthick-compare-Silicone-GaAsOPC-and-FCconnector-800mW";
 
   TString dirname = "/pnfs/dune/persistent/users/weishi/PoFLeakageTest";
   Bool_t filternoise = true; // apply noise filter if true (most likely you need)
@@ -125,8 +125,10 @@ void PoFLeakAnaScope(){
   double Count[7][20] = {0}; // put 20 as default length
   double Gain[7][20] = {0};
   double ChargeIntegral[7] = {0};
+  int memorydepth = 39999983; // check txt file number of lines
   int startpoint = 2500; // example waveform starting point and end point
   int endpoint = 5000;
+  Double_t filter_lamda = 0.02; // unit Volt, this is roughly the SPE amplitude
 
   int nadcthrs = 8; // number of amplitude thresholds
   double delta_amp[20] = {0}; // put 20 as default length
@@ -139,7 +141,33 @@ void PoFLeakAnaScope(){
   for(int ithres=0; ithres<nadcthrs; ++ithres) delta_amp[ithres] = delta_amp[0] + 0.025*ithres;
 
   // Samples
-  if ( runname == "Potted-GaAsOPC-1mmCopperShield-and-potted-connector" ) {
+  if ( runname == "Coppertape-1mmthick-compare-Silicone-GaAsOPC-and-FCconnector-800mW" ) { // this compares effect of copper and silicone
+    adcdataset.push_back("reference-opc-potted-fc-potted-chineselaser-feb28-LAr.txt"); // ref, Feb 2023
+    adcdataset.push_back("opc-potted-fc-potted-chineselaser-pigtail800mW-feb28-LAr.txt"); // silicone only
+    adcdataset.push_back("opc-potted-fc-potted-coppertapeFConly-chineselaser-pigtail800mW-opc329mW-feb28-LAr.txt"); // silicone all + copper FC connector only
+    adcdataset.push_back("opc-potted-fc-potted-coppertapeOPConly-chineselaser-pigtail800mW-opc329mW-feb28-LAr.txt"); // silicone all + copper OPC only
+    adcdataset.push_back("opc-potted-fc-potted-coppertapeall-chineselaser-pigtail800mW-opc329mW-feb28-LAr.txt"); // silicone + copper all
+    adcdataset.push_back("no-potting-coppertapeopc+fc1mm-chineselaser-pigtail800mW-opc329mW-feb28-LAr.txt"); // copper all only
+    legendheader = "830mW (310mW @OPC)";
+    legendname[0] = "Reference";
+    legendname[1] = "Potted OPC and FCconnector (Silicone all)";
+    legendname[2] = "Silicone all + 1mmCopperTape on FCconnector";
+    legendname[3] = "Silicone all + 1mmCopperTape on OPC";
+    legendname[4] = "Silicone all + 1mmCopperTape all";
+    legendname[5] = "1mmCopperTape all (no silicone)";
+  } else if ( runname == "Potted-GaAsOPC-and-potted-FCconnector-noCopper" ) { // silicone potting only
+    adcdataset.push_back("reference-opc-potted-fc-potted-chineselaser-feb28-LAr.txt"); // ref, Feb 2023
+    adcdataset.push_back("opc-potted-fc-potted-chineselaser-pigtail1mW-feb28-LAr.txt");
+    adcdataset.push_back("opc-potted-fc-potted-chineselaser-pigtail50mW-feb28-LAr.txt");
+    adcdataset.push_back("opc-potted-fc-potted-chineselaser-pigtail100mW-feb28-LAr.txt");
+    adcdataset.push_back("opc-potted-fc-potted-chineselaser-pigtail800mW-feb28-LAr.txt");
+    legendheader = "Potted OPC, potted connector (Silicone all)";
+    legendname[0] = "No power";
+    legendname[1] = "1mW (0.2mW @OPC)";
+    legendname[2] = "50mW (20mW @OPC)";
+    legendname[3] = "100mW (40mW @OPC)";
+    legendname[4] = "830mW (310mW @OPC)";
+  } else if ( runname == "Potted-GaAsOPC-1mmCopperShield-and-potted-connector" ) { // silicone potting
     adcdataset.push_back("reference-4-chineselaser200mW-opc-and-connector-potted-plus-copperboxshield-1mm-thick-Dec16.txt"); // ref
     adcdataset.push_back("chineselaser-orangepigtail555mW-200mW-opc-and-connector-potted-plus-copperboxshield-1mm-thick-Dec16.txt");
     adcdataset.push_back("chineselaser-orangepigtail800mW-272mW-opc-and-connector-potted-plus-copperboxshield-1mm-thick-Dec16.txt");
@@ -149,7 +177,7 @@ void PoFLeakAnaScope(){
     legendname[1] = "200mW";
     legendname[2] = "272mW";
     legendname[3] = "370mW";
-  } else if ( runname == "Potted-GaAsOPC-1mmCopperShield" ) {
+  } else if ( runname == "Potted-GaAsOPC-1mmCopperShield" ) { // silicone potting
     adcdataset.push_back("reference-4-chineselaser200mW-opc-potted-plus-copperboxshield-1mm-thick-Dec15.txt"); // ref
     adcdataset.push_back("chineselaser-orangepigtail555mW-200mW-opc-potted-plus-copperboxshield-1mm-thick-Dec15.txt");
     legendheader = "Potted OPC + 1mm copper shield";
@@ -230,7 +258,6 @@ void PoFLeakAnaScope(){
   TH1D *h1 = new TH1D("h1", "h1", endpoint-startpoint, startpoint, endpoint);
   TH1D *h2 = new TH1D("h2", "h2", endpoint-startpoint, startpoint, endpoint);
   TH1F** amplitude_hist = new TH1F*[ndat];
-  int memorydepth = 200000000;
 
   for ( int idat = 0; idat < ndat; idat++ ) {
     std::cout << "Looking at dataset " << idat << ": " << adcdataset[idat] << std::endl;
@@ -241,7 +268,7 @@ void PoFLeakAnaScope(){
     vector<Double_t> raw; // waveform as vector
     vector<Double_t> denoised; // denoised waveform as vector
 
-    amplitude_hist[idat] = new TH1F("", "", 1000, 0, 1); // 1mV
+    amplitude_hist[idat] = new TH1F("", "", 1000, -0.3, 0.7); // 1mV
 
     ifstream file( TString::Format("%s/%s", dirname.Data(), adcdataset[idat].Data()) );
 
@@ -263,7 +290,7 @@ void PoFLeakAnaScope(){
     // Apply noise filter
     //
 
-    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, 0.02);
+    if (filternoise) TV1D_denoise(raw, denoised, memorydepth, filter_lamda);
 
     //
     // Evaluate waveform baseline
@@ -275,7 +302,7 @@ void PoFLeakAnaScope(){
     baseline_bin = amplitude_hist[idat]->GetMaximumBin();
     baseline = amplitude_hist[idat]->GetXaxis()->GetBinCenter(baseline_bin);
 
-    cout <<"Dataset "<< idat <<" baseline ADC: "<< baseline <<endl;
+    cout <<"Dataset "<< idat <<" baseline [V]: "<< baseline <<endl;
 
     double charge = 0; // initilize to zero for each dataset
 
@@ -330,7 +357,7 @@ void PoFLeakAnaScope(){
   TCanvas *camplitude = new TCanvas();
   camplitude->SetLogy(); camplitude->SetGridx(); camplitude->SetGridy();
   gStyle->SetOptStat(0);
-  TLegend *legdataset = new TLegend(0.55, 0.65, 0.9, 0.9);
+  TLegend *legdataset = new TLegend(0.45, 0.55, 0.9, 0.9);
   for ( int idat = 0; idat < ndat; idat++ ) {
     amplitude_hist[idat]->SetLineColor(color[idat]);
     if ( idat == 0 ) {
@@ -374,7 +401,7 @@ void PoFLeakAnaScope(){
 
   TGraph** dis = new TGraph*[ndat];
   TMultiGraph *mg = new TMultiGraph();
-  TLegend *leg = new TLegend(0.55, 0.65, 0.9, 0.9);
+  TLegend *leg = new TLegend(0.45, 0.55, 0.9, 0.9);
 
   for ( int idat = 0; idat < ndat; idat++ ) {
     dis[idat] = new TGraph(nadcthrs, delta_amp, Count[idat]);
@@ -402,7 +429,7 @@ void PoFLeakAnaScope(){
   TCanvas *c2 = new TCanvas();
   c2->SetGridx(); c2->SetGridy();
   TMultiGraph *mg2 = new TMultiGraph();
-  TLegend *leg2 = new TLegend(0.55, 0.65, 0.9, 0.9);
+  TLegend *leg2 = new TLegend(0.45, 0.55, 0.9, 0.9);
 
   TGraph** diff = new TGraph*[ndat-1];
   // require more than 1 dat

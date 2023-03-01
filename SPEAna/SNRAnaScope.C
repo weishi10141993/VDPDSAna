@@ -62,7 +62,10 @@ void SNRAnaScope(){
   TString dirname = "/pnfs/dune/persistent/users/weishi/SPEAna/Hamamatsu20ArrayVbd36ColdSimpX3LED";
   Bool_t filternoise = true; // apply noise filter if true (most likely you need)
   TString adcdataset = "led-pulse-4p6-feb27-2023-hamamatsu-36Vbd-LN2.txt"; // with low pass filter < 60MHz
-  Double_t filter_lamda = 0.02; // unit Volt, this is roughly the SPE amplitude
+
+  // Dataset
+  // SPE analysis for Simpx3+hamamatsu (linac setup for light leak test):
+  // /pnfs/dune/persistent/users/weishi/SPEAna/Hamamatsu20ArrayVbd36ColdSimpX3LED/led-pulse-4p6-feb27-2023-hamamatsu-36Vbd-LN2.txt
 
   // Scope setting
   Double_t samplingRate = 250.e6; // 250 MSamples/s for Keysight scope is 4ns per point
@@ -76,6 +79,7 @@ void SNRAnaScope(){
   Bool_t uselocalbaseline = false; // if set to true only +/- number of 500 points will be used to find a local baseline
   double baselinemin = -0.05; // unit V, this range should be set based on raw wfm, a wrong baseline will shift your SPE spectrum
   double baselinemax = 0.05;
+  Double_t filter_lamda = 0.02; // unit Volt, this is roughly the SPE amplitude
 
   // Plot example waveform
   int startpoint = 0;
