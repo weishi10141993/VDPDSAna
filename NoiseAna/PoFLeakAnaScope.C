@@ -113,7 +113,7 @@ void PoFLeakAnaScope(){
   // Sample rate 250M/s (4ns resolution per point)
   // save as 1 column in txt file, unit: Volt
 
-  TString runname = "Coppertape-1mmthick-compare-Silicone-GaAsOPC-and-FCconnector-800mW";
+  TString runname = "Black-Acrylic-OPCback-Grey-Silicone-all-plus-coppertapeall-CHN-830mW-OPC-330mW";
 
   TString dirname = "/pnfs/dune/persistent/users/weishi/PoFLeakageTest";
   Bool_t filternoise = true; // apply noise filter if true (most likely you need)
@@ -141,7 +141,19 @@ void PoFLeakAnaScope(){
   for(int ithres=0; ithres<nadcthrs; ++ithres) delta_amp[ithres] = delta_amp[0] + 0.025*ithres;
 
   // Samples
-  if ( runname == "Coppertape-1mmthick-compare-Silicone-GaAsOPC-and-FCconnector-800mW" ) { // this compares effect of copper and silicone
+  if ( runname == "Black-Acrylic-OPCback-Grey-Silicone-all-CHN-830mW-OPC-330mW" ) {
+    adcdataset.push_back("reference-chineselaser830mW-black-acrylic-plus-grey-silicone-opc-receiver-Mar20-2023.txt"); // ref
+    adcdataset.push_back("chineselaser830mW-black-acrylic-plus-grey-silicone-opc-receiver-Mar20-2023.txt");
+    legendheader = "Black acrylic + grey silicone potted OPC";
+    legendname[0] = "No power";
+    legendname[1] = "330mW (at OPC)";
+  } else if ( runname == "Black-Acrylic-OPCback-Grey-Silicone-all-plus-coppertapeall-CHN-830mW-OPC-330mW" ) {
+    adcdataset.push_back("reference-chineselaser830mW-black-acrylic-plus-grey-silicone-plus-coppertape-opc-receiver-Mar20-2023.txt"); // ref
+    adcdataset.push_back("chineselaser830mW-black-acrylic-plus-grey-silicone-plus-coppertape-opc-receiver-Mar20-2023.txt");
+    legendheader = "Acrylic + silicone + coppertape on OPC";
+    legendname[0] = "No power";
+    legendname[1] = "330mW (at OPC)";
+  } else if ( runname == "Coppertape-1mmthick-compare-Silicone-GaAsOPC-and-FCconnector-800mW" ) { // this compares effect of copper and silicone
     adcdataset.push_back("reference-opc-potted-fc-potted-chineselaser-feb28-LAr.txt"); // ref, Feb 2023
     adcdataset.push_back("opc-potted-fc-potted-chineselaser-pigtail800mW-feb28-LAr.txt"); // silicone only
     adcdataset.push_back("opc-potted-fc-potted-coppertapeFConly-chineselaser-pigtail800mW-opc329mW-feb28-LAr.txt"); // silicone all + copper FC connector only
