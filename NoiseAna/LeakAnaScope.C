@@ -54,7 +54,7 @@ void TV1D_denoise(vector<Double_t>& input, vector<Double_t>& output, const int w
   }
 }
 
-void PoFLeakAnaScope(){
+void LeakAnaScope(){
   // Dataset (reference + compare)
 
   // SPE Analyzable:
@@ -113,14 +113,14 @@ void PoFLeakAnaScope(){
   // Sample rate 250M/s (4ns resolution per point)
   // save as 1 column in txt file, unit: Volt
 
-  TString runname = "Black-Acrylic-OPCback-Grey-Silicone-all-plus-coppertapeall-CHN-830mW-OPC-330mW";
+  TString runname = "sof-defocused2p5mm-FPlaser-withFCfiber-LAr";
 
-  TString dirname = "/pnfs/dune/persistent/users/weishi/PoFLeakageTest";
+  TString dirname = "/pnfs/dune/persistent/users/weishi/LeakageTest";
   Bool_t filternoise = true; // apply noise filter if true (most likely you need)
   vector<TString> adcdataset;
   TString legendname[7];
   TString legendheader;
-  int color[7] = {1, 2, 3, 41, 6, 4, 9}; // preferred color
+  int color[7] = {1, 2, 3, 41, 6, 4, 7}; // preferred color
   int markerstyle[7] = {21, 21, 21, 21, 3, 21, 21};
   double Count[7][20] = {0}; // put 20 as default length
   double Gain[7][20] = {0};
@@ -141,7 +141,39 @@ void PoFLeakAnaScope(){
   for(int ithres=0; ithres<nadcthrs; ++ithres) delta_amp[ithres] = delta_amp[0] + 0.025*ithres;
 
   // Samples
-  if ( runname == "Black-Acrylic-OPCback-Grey-Silicone-all-CHN-830mW-OPC-330mW" ) {
+  if ( runname == "sof-defocused2p5mm-FPlaser-noFCfiber-LAr" ) {
+    adcdataset.push_back("ref-sof-defocused2p5mm-FPlaser-LAr-Mar31.txt"); // ref
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-1mA-LAr-Mar31.txt");
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-1.5mA-LAr-Mar31.txt");
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-2mA-LAr-Mar31.txt");
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-3mA-LAr-Mar31.txt");
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-5mA-LAr-Mar31.txt");
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-10mA-LAr-Mar31.txt");
+    legendheader = "FP laser defocus-2.5mm";
+    legendname[0] = "No forward current";
+    legendname[1] = "1mA";
+    legendname[2] = "1.5mA";
+    legendname[3] = "2mA";
+    legendname[4] = "3mA";
+    legendname[5] = "5mA";
+    legendname[6] = "10mA";
+  } else if ( runname == "sof-defocused2p5mm-FPlaser-withFCfiber-LAr" ) {
+    adcdataset.push_back("ref-sof-defocused2p5mm-FPlaser-withFCfiber-LAr-Mar31.txt"); // ref
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-withFCfiber-1mA-LAr-Mar31.txt");
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-withFCfiber-1.5mA-LAr-Mar31.txt");
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-withFCfiber-2mA-LAr-Mar31.txt");
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-withFCfiber-3mA-LAr-Mar31.txt");
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-withFCfiber-5mA-LAr-Mar31.txt");
+    adcdataset.push_back("sof-defocused2p5mm-FPlaser-withFCfiber-10mA-LAr-Mar31.txt");
+    legendheader = "FP laser defocus-2.5mm + fiber";
+    legendname[0] = "No forward current";
+    legendname[1] = "1mA";
+    legendname[2] = "1.5mA";
+    legendname[3] = "2mA";
+    legendname[4] = "3mA";
+    legendname[5] = "5mA";
+    legendname[6] = "10mA";
+  } else if ( runname == "Black-Acrylic-OPCback-Grey-Silicone-all-CHN-830mW-OPC-330mW" ) {
     adcdataset.push_back("reference-chineselaser830mW-black-acrylic-plus-grey-silicone-opc-receiver-Mar20-2023.txt"); // ref
     adcdataset.push_back("chineselaser830mW-black-acrylic-plus-grey-silicone-opc-receiver-Mar20-2023.txt");
     legendheader = "Black acrylic + grey silicone potted OPC";

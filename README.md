@@ -27,7 +27,7 @@ git clone https://github.com/weishi10141993/VDPDSAna.git
 # Script to find peaks/count up-crossings
 # Adjust user config file names
 root -l -b -q PoFLeakAnaCAEN.C
-root -l -b -q PoFLeakAnaScope.C
+root -l -b -q LeakAnaScope.C
 
 # Check raw waveform
 root -l -b -q CheckRawWfm.C
