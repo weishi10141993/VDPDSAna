@@ -59,9 +59,12 @@ void SNRAnaScope(){
   // User edit area start
   // =====================
   // Dataset: 2 columns in txt file, triger + signal, unit: Volt
-  TString dirname = "/pnfs/dune/persistent/users/weishi/SPEAna/Hamamatsu20ArrayVbd36ColdSimpX3LED";
+  //TString dirname = "/pnfs/dune/persistent/users/weishi/SPEAna/OPCPT30BiasHamamatsu20ArrayLN2SimpX3LED";
+  TString dirname = "/pnfs/dune/persistent/users/weishi/SPEAna/BroadcomSiPMData";
   Bool_t filternoise = true; // apply noise filter if true (most likely you need)
   TString adcdataset = "led-pulse-4p6-feb27-2023-hamamatsu-36Vbd-LN2.txt"; // with low pass filter < 60MHz
+  TString adcdataset = "LN2_BroadcomSiPM_40Vbias-LED7-Simp3X-ch2-22nF_C1-6-RemoveR7Row.txt";
+  //TString adcdataset = "PT30OPC_34p5V_PS_2p4A-2.552V_LED5p9-hamamatsu4x5array-koheron-simpx3-ch2.txt";
 
   // Dataset
   // SPE analysis for Simpx3+hamamatsu (linac setup for light leak test):
@@ -70,20 +73,24 @@ void SNRAnaScope(){
   // Scope setting
   Double_t samplingRate = 250.e6; // 250 MSamples/s for Keysight scope is 4ns per point
   Double_t dtime = (1/samplingRate)*1e9; // steps in nanoseconds
-  int memorydepth = 19999993; // number of saved data points in dataset
+  //int memorydepth = 199999998; // number of saved data points in dataset
+  int memorydepth =   100000000; // number of saved data points in dataset
+
+  int margin = 500; // number of saved data points in dataset
+  //int memorydepth = 19999993; // number of saved data points in dataset
 
   // Led trigger and signal setting
   Double_t LED_halfheight = 2.5; // volts
-  int trggerrefoffset = 24; // skip this number of data points since trigger start before integrate signal
-  int signalwidth = 110; // signal integrate window size (number of 4ns points)
-  Bool_t uselocalbaseline = false; // if set to true only +/- number of 500 points will be used to find a local baseline
-  double baselinemin = -0.05; // unit V, this range should be set based on raw wfm, a wrong baseline will shift your SPE spectrum
-  double baselinemax = 0.05;
-  Double_t filter_lamda = 0.02; // unit Volt, this is roughly the SPE amplitude
+  int trggerrefoffset = 5; // skip this number of data points since trigger start before integrate signal
+  int signalwidth = 350; // signal integrate window size (number of 4ns points)
+  Bool_t uselocalbaseline = true; // if set to true only +/- number of margin points will be used to find a local baseline
+  double baselinemin = 0.3; // unit V, this range should be set based on raw wfm, a wrong baseline will shift your SPE spectrum
+  double baselinemax = 0.4;
+  Double_t filter_lamda = 0.03; // unit Volt, this is roughly the SPE amplitude
 
   // Plot example waveform
   int startpoint = 0;
-  int endpoint = 5000;
+  int endpoint = 10000;
 
   // ===================
   // User edit area end
@@ -98,11 +105,11 @@ void SNRAnaScope(){
   TH1D *h2 = new TH1D("h2", "h2", endpoint-startpoint, startpoint, endpoint);
   TH1F *amplitude_hist = new TH1F("amplitude_hist", "amplitude_hist", 100, baselinemin, baselinemax);
 
-  double integralQmin = -5;
-  double integralQmax = 15;
+  double integralQmin = -50;
+  double integralQmax = 250;
   double AmpMax = 0.05; // unit: V
   double AmpMin = -0.05;
-  TH1F *IntegralHist = new TH1F("IntegralHist", "IntegralHist", 125, integralQmin, integralQmax);
+  TH1F *IntegralHist = new TH1F("IntegralHist", "IntegralHist", 1200, integralQmin, integralQmax);
   TH1F *MaxAmpHist = new TH1F("MaxAmpHist", "MaxAmpHist", 100, AmpMin, AmpMax);
 
   int line=0;
@@ -116,8 +123,12 @@ void SNRAnaScope(){
   ifstream file( TString::Format("%s/%s", dirname.Data(), adcdataset.Data()) );
 
   while (!file.eof()){
-    file>>trigger>>amplitude;
-    if (line % 100000000 == 0) std::cout << "line "<< line << ": " << trigger << "  " << amplitude << endl;
+    //
+    // Here need to specify which line is which
+    //
+    file>>amplitude>>trigger;
+    //file>>trigger>>amplitude;
+    if (line % 100000000 == 0) std::cout << "line "<< line << ": " << amplitude << "  " << trigger << endl;
     trig.push_back(trigger);
     raw.push_back(amplitude);
     denoised.push_back(amplitude);
@@ -151,26 +162,29 @@ void SNRAnaScope(){
   cout <<"Dataset baseline [V]: "<< baseline <<endl;
 
   double charge = 0.; // initilize to zero for each dataset
+  double amp = 0.; // initilize to zero for each dataset
   double maxcharge = 0.; // initilize to zero for each dataset
   int counttrig = 0;
   int countsig = 0;
   int countwaveforms = 0; // total number of triggered signals
+  bool currenttrig = false;
 
   // Loop over points
-  for(int jpoint=0; jpoint<memorydepth; jpoint++){
+  for(int jpoint=margin; jpoint<memorydepth-margin; jpoint++){
+    // Trigger rising edge
+    if ( trig[jpoint] < LED_halfheight && trig[jpoint+1] > LED_halfheight ) currenttrig = true;
 
-    // Trigger reference
-    if (trig[jpoint] > LED_halfheight && counttrig < trggerrefoffset ) counttrig++;
+    if ( counttrig < trggerrefoffset && currenttrig == true )  counttrig++;
     else if ( counttrig >=trggerrefoffset && countsig <= signalwidth) {
 
       //
       // calculate local baseline
       //
-      if (counttrig == trggerrefoffset && countsig == 0) { // only calculate once per trigger
+      if (counttrig == trggerrefoffset && countsig == 0 && uselocalbaseline) { // only calculate once per trigger
         TH1F *amplitude_hist_local = new TH1F("amplitude_hist_local", "amplitude_hist_local", 100, baselinemin, baselinemax);
         baseline_local = 0.;
         baseline_bin_local = -1;
-        for(int kpoint = jpoint - 500; kpoint < jpoint + 500; kpoint++) amplitude_hist_local->Fill(denoised[kpoint]);
+        for(int kpoint = jpoint - margin; kpoint < jpoint + margin; kpoint++) amplitude_hist_local->Fill(denoised[kpoint]);
         baseline_bin_local = amplitude_hist_local->GetMaximumBin();
         baseline_local = amplitude_hist_local->GetXaxis()->GetBinCenter(baseline_bin_local);
 
@@ -179,10 +193,13 @@ void SNRAnaScope(){
       }
 
       // start integrate signal width points
-      if ( uselocalbaseline ) charge += (denoised[jpoint] - baseline_local); // relative to local baseline
-      else charge += (denoised[jpoint] - baseline); // relative to baseline
 
-      if (charge > maxcharge) maxcharge = charge;
+      if ( uselocalbaseline ) amp = (denoised[jpoint] - baseline_local); // relative to local baseline
+      else amp = (denoised[jpoint] - baseline); // relative to baseline
+
+      charge += amp;
+
+      if (amp > maxcharge) maxcharge = amp;
       countsig++;
 
     } else if ( countsig > signalwidth ) {
@@ -194,6 +211,7 @@ void SNRAnaScope(){
       // initilize for next triggered signal
       counttrig = 0;
       countsig =0;
+      currenttrig = false;
       charge = 0.;
       maxcharge = 0.;
     } else {
