@@ -45,9 +45,13 @@ services:
 }
 
 #load the geometry; Shu; 20230209---
-services.Geometry.GDML: "dunevdcb1_v2_refactored.gdml"
-services.Geometry.Name: "dunevdcb1_v2_refactored"
-services.Geometry.ROOT: "dunevdcb1_v2_refactored.gdml"
+#services.Geometry.GDML: "dunevdcb1_v2_refactored.gdml"
+#services.Geometry.Name: "dunevdcb1_v2_refactored"
+#services.Geometry.ROOT: "dunevdcb1_v2_refactored.gdml"
+
+services.Geometry.GDML: "dunevdcb1_v2_refactored_M1.gdml"
+services.Geometry.Name: "dunevdcb1_v2_refactored_M1"
+services.Geometry.ROOT: "dunevdcb1_v2_refactored_M1.gdml"
 
 
 services.PhotonVisibilityService: {
