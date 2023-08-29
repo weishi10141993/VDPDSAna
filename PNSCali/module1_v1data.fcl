@@ -253,5 +253,5 @@ services.LArPropertiesService.ReflectiveSurfaceDiffuseFractions:[ [ 0, 0, 0, 0, 
 #physics.producers.generator.SigmaX:  [  10.7  ]
 #physics.producers.generator.SigmaY:  [  0.0 ]
 #physics.producers.generator.SigmaZ:  [  0.0  ]
-physics.producers.PNS.InputFileName:        "1_capture_per_evt_VD_ColdBox.dat"
+physics.producers.PNS.InputFileName:        "NeutronGen/VD_ColdBox_1_capture_per_evt_500_evts.dat"
 #physics.producers.PNS.maxEvents:            1
