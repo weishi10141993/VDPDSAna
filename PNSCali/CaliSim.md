@@ -37,3 +37,11 @@ mrbsetenv
 cd /dune/app/users/weishi/VDPDSAna/PNSCali
 lar -c module1_v1data.fcl -n 100 # this uses gamma cascade input from neutron captures
 ```
+
+# Analysis
+
+To analyze the light yield,
+```
+source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.24.02/x86_64-centos7-gcc48-opt/bin/thisroot.sh
+root -l -b -q LightYieldAna.C
+```

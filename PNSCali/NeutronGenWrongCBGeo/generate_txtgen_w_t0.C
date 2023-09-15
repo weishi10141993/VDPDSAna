@@ -342,7 +342,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	//Xg.SetXYZ(-100, 400, 100);
 
 	//calculate cylindrical radial distance
-	Double_t r = sqrt(pow(Xg[0],2) + pow(Xg[2]-146,2));
+	Double_t r = sqrt(pow(Xg[0],2) + pow(Xg[2],2));
 
 	//Get a random time for the specific r and y
 	
