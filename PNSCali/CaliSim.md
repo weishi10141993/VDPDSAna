@@ -1,4 +1,13 @@
-# Setup
+# Generate gamma cascades
+
+```
+cd /dune/app/users/weishi/VDPDSAna/PNSCali/NeutronGen
+source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.24.02/x86_64-centos7-gcc48-opt/bin/thisroot.sh
+root -l -b -q 'generate_txtgen_w_t0.C(1, 10000, "VD_ColdBox_1_capture_per_evt_10k_evts")'
+# 1 means 1 neutron capture per event, can be more than 1 captures
+```
+
+# Analysis Setup
 
 First time set up
 ```
@@ -35,10 +44,9 @@ source /dune/app/users/weishi/PDSPNSCali/localProducts_larsoft_v09_75_00_e20_pro
 mrbsetenv
 
 cd /dune/app/users/weishi/VDPDSAna/PNSCali
-lar -c module1_v1data.fcl -n 100 # this uses gamma cascade input from neutron captures
+nohup lar -c module1_v1data.fcl -n 10000 >& output.log &
+ # this uses gamma cascade input from neutron captures
 ```
-
-# Analysis
 
 To analyze the light yield,
 ```
