@@ -17,6 +17,18 @@ void LightYieldAna() {
   TFile *file = new TFile("TextFileGen_hist_module1.root");
   TTree* tree = (TTree*) file->Get("XAresponse/OpDetEvents");
 
+  double XAplaneX = -15.387; //cm
+  double XA0y = -38;
+  double XA0z = 257.901;
+  double XA1y = 118;
+  double XA1z = 186.701;
+  double XA2y = -118;
+  double XA2z = 111.701;
+  double XA3y = 37.2;
+  double XA3z = 40.9009;
+  double driftlength = 20; // small CB
+  double capturerange = 28; // 2x14cm radiation length
+
   int CountDetected = 0;
   vector<double> *gammaposX = 0;
   vector<double> *gammaposY = 0;
@@ -37,6 +49,11 @@ void LightYieldAna() {
   TH2D *h_totE_detected                   = new TH2D("h_totE_detected", "",                   30, 6.097, 6.1, 70, 0, 700);
   TH2D* h_totE_detected_column_normalized = new TH2D("h_totE_detected_column_normalized", "", 30, 6.097, 6.1, 70, 0, 700);
   TH1D *h_LY = new TH1D("h_LY", "h_LY", 60, 0, 60.0);
+  TH1D *h_XA0_detected_capture_topcenter = new TH1D("h_XA0_detected_capture_topcenter", "h_XA0_detected_capture_topcenter", 1000, 0, 2000.0);
+  TH1D *h_XA1_detected_capture_topcenter = new TH1D("h_XA1_detected_capture_topcenter", "h_XA1_detected_capture_topcenter", 1000, 0, 2000.0);
+  TH1D *h_XA2_detected_capture_topcenter = new TH1D("h_XA2_detected_capture_topcenter", "h_XA2_detected_capture_topcenter", 1000, 0, 2000.0);
+  TH1D *h_XA3_detected_capture_topcenter = new TH1D("h_XA3_detected_capture_topcenter", "h_XA3_detected_capture_topcenter", 1000, 0, 2000.0);
+  TH1D *h_XA_all_detected_capture_topcenter = new TH1D("h_XA_all_detected_capture_topcenter", "h_XA_all_detected_capture_topcenter", 1000, 0, 2000.0);
   TH2D *h_X_LY                   = new TH2D("h_X_LY",                   "", 50, -25, 25, 30, 0, 60.0);
   TH2D *h_X_LY_column_normalized = new TH2D("h_X_LY_column_normalized", "", 50, -25, 25, 30, 0, 60.0);
   TH2D *h_Y_LY                   = new TH2D("h_Y_LY",                   "", 40, -200, 200, 30, 0, 60.0);
@@ -87,6 +104,24 @@ void LightYieldAna() {
     h_Y_LY->Fill(gammaposY->at(0), CountDetected/totE);
     h_Z_LY->Fill(gammaposZ->at(0), CountDetected/totE);
 
+    // If capture happens on top of each XA (above the PD, around the center)
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA0y - capturerange && gammaposY->at(0) < XA0y + capturerange && gammaposZ->at(0) > XA0z - capturerange && gammaposZ->at(0) < XA0z + capturerange ) {
+      h_XA0_detected_capture_topcenter->Fill(CountDetected);
+      h_XA_all_detected_capture_topcenter->Fill(CountDetected);
+    }
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA1y - capturerange && gammaposY->at(0) < XA1y + capturerange && gammaposZ->at(0) > XA1z - capturerange && gammaposZ->at(0) < XA1z + capturerange ) {
+      h_XA1_detected_capture_topcenter->Fill(CountDetected);
+      h_XA_all_detected_capture_topcenter->Fill(CountDetected);
+    }
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA2y - capturerange && gammaposY->at(0) < XA2y + capturerange && gammaposZ->at(0) > XA2z - capturerange && gammaposZ->at(0) < XA2z + capturerange ) {
+      h_XA2_detected_capture_topcenter->Fill(CountDetected);
+      h_XA_all_detected_capture_topcenter->Fill(CountDetected);
+    }
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA3y - capturerange && gammaposY->at(0) < XA3y + capturerange && gammaposZ->at(0) > XA3z - capturerange && gammaposZ->at(0) < XA3z + capturerange ) {
+      h_XA3_detected_capture_topcenter->Fill(CountDetected);
+      h_XA_all_detected_capture_topcenter->Fill(CountDetected);
+    }
+
   } // end loop over totevts
 
 
@@ -134,6 +169,17 @@ void LightYieldAna() {
 
   h_LY->GetXaxis()->SetTitle("Light yield (PE/MeV)");
   h_LY->Write();
+
+  h_XA0_detected_capture_topcenter->GetXaxis()->SetTitle("Detected PEs");
+  h_XA0_detected_capture_topcenter->Write();
+  h_XA1_detected_capture_topcenter->GetXaxis()->SetTitle("Detected PEs");
+  h_XA1_detected_capture_topcenter->Write();
+  h_XA2_detected_capture_topcenter->GetXaxis()->SetTitle("Detected PEs");
+  h_XA2_detected_capture_topcenter->Write();
+  h_XA3_detected_capture_topcenter->GetXaxis()->SetTitle("Detected PEs");
+  h_XA3_detected_capture_topcenter->Write();
+  h_XA_all_detected_capture_topcenter->GetXaxis()->SetTitle("Detected PEs");
+  h_XA_all_detected_capture_topcenter->Write();
 
   // Column normalize
   TH1D *h_X_LY_projectX = h_X_LY->ProjectionX();
