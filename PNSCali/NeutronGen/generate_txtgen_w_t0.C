@@ -38,54 +38,54 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   // Prevent canvases from being drawn.
   //   gROOT->SetBatch(kTRUE);
   gROOT->Reset();
-  
+
   TStopwatch* clock = new TStopwatch();
   clock->Start();
-  
+
   // Random and Vertex parameters
   TRandom3* rdef = new TRandom3();//Random number generator
   rdef->SetSeed(0);
 
   // Open root file containing position distributions
-  TFile f("coldbox_dist.root");
+  TFile f("coldbox_side_dist.root");
 
   //Extract necessary histograms from the file
   TH1F *r = (TH1F*)f.Get("r");
   TH1F *x = (TH1F*)f.Get("X");
   TH1F *y = (TH1F*)f.Get("Y");
   TH1F *z = (TH1F*)f.Get("Z");
-  
+
   TH3F *dist = (TH3F*)f.Get("dist");
 
   //time histogram for verification
   TH1D *time = new TH1D("t_HEPEvt", "time", 115, 0, 5*1000000);
-  
-  
+
+
   // Choose an isotope (only Ar37, Ar41, 2H, 17O, 13C for now)
   TString isotope = "Ar41";
-  
+
   if (isotope != "Ar41" && isotope != "Ar37" && isotope != "H2" && isotope != "C13" && isotope != "O17") {
     cout << "Isotope isn't supported******. Exiting!\n";
     return;
   }
-  
+
   // HEPEvt file
   std::ofstream output_hepevt_g4(isotope + "_decays_HEPEvt_G4.dat");
   std::ofstream output_hepevt_larsoft(fileout + ".dat");
   std::ofstream output_dance(isotope + "_decays_DANCEinput.dat");
 
-  
+
   // Histos showing all gammas and their probab (cross check)
   TH1D *Gamma_spectrum = new TH1D(isotope + "_Gamma_spectrum",isotope + "_Gamma_spectrum", 1000, 0, 10000);
-  
+
   // Output file for histo
   TFile *g_out = new TFile(isotope + "_Gamma_spectrum.root","RECREATE");
-  
-  // Position in the simulation 
-  TVector3 Xg, Pg; 
+
+  // Position in the simulation
+  TVector3 Xg, Pg;
   Xg.SetXYZ(0.,0.,0.); Pg.SetXYZ(0.,0.,0.);
-  
-  
+
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,28 +93,28 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
   if (isotope == "Ar41") {
     // List of levels    0        1         2       3       4        5    6      7         8     9        10     11     12
     double Levels[13] = {6098.9, 4270.0, 3968.2, 3326.8, 3009.6, 2948.7, 2733.4, 2398.1, 1353.9, 1034.7, 516.1, 167.3, 0.0};
     double level = 0.0;
-    
-    
+
+
     std::vector<double> v_gammas; v_gammas.clear(); // gammas for this event
     Int_t nb_gammas = 0; // number of gammas for this decay
     Double_t probability = 0.; // the probability we'll use in the loop
     Double_t Etot = 0.;
     Int_t tot_gammas =0; //number of gammas for the entire event
     Double_t probMyGamma = 51.2;
-    
+
     Int_t nb1 = 0, nb2 = 0, nb3 = 0, nb4 = 0, nb5 = 0;
     // 1 is 4.7+1.18+0.167
     // 2 is 5582+516
     // 3 is 4.7+0.8+0.5
     // 4 is 3.7+1+1.18+0.167
     // 5 is 2771.8 1972.6 837.7 348.7 167.3
-    
-    
+
+
     for (UInt_t e = 0; e <nevents; e++){
       // Initialization
       tot_gammas = 0;
@@ -122,16 +122,16 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
       output_temp.open("temp.txt", std::ofstream::out | std::ofstream::trunc); //open and delete contents
 
       for (UInt_t n = 0; n < ndecays; n++) {
-      
+
 	// Initialization
-	v_gammas.clear(); 
+	v_gammas.clear();
 	nb_gammas = 0;
-	
-      
-      
+
+
+
 	level = Levels[0];
 	while (level != Levels[12]) {
-	
+
 	  if (level == Levels[0]) {
 	    probability = rdef->Uniform(10.79+0.242+probMyGamma+9.11+3.91+3.72+1.02+8.00+4.09+0.93);
 	    if (probability <= 10.79){
@@ -174,9 +174,9 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      level = Levels[1];
 	      v_gammas.push_back(1828.8); nb_gammas++;
 	      continue;
-	    } 	
+	    }
 	  }
-	
+
 	  if (level == Levels[1]) {
 	    probability = rdef->Uniform(0.93);
 	    if (probability <= 0.93){
@@ -185,7 +185,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      continue;
 	    }
 	  }
-	
+
 	  if (level == Levels[2]) {
 	    probability = rdef->Uniform(1.86+2.7);
 	    if (probability <= 1.86){
@@ -198,7 +198,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      continue;
 	    }
 	  }
-	
+
 	  if (level == Levels[3]) {
 	    probability = rdef->Uniform(5.49+0.186+0.502);
 	    if (probability <= 5.49){
@@ -215,7 +215,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      continue;
 	    }
 	  }
-	
+
 	  if (level == Levels[4]) {
 	    probability = rdef->Uniform(0.818);
 	    if (probability <= 0.818) {
@@ -224,7 +224,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      continue;
 	    }
 	  }
-	
+
 	  if (level == Levels[5]) {
 	    probability = rdef->Uniform(1.58+0.781);
 	    if (probability <= 1.58){
@@ -237,7 +237,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      continue;
 	    }
 	  }
-	
+
 	  if (level == Levels[6]) {
 	    probability = rdef->Uniform(2.6);
 	    if (probability <= 2.6) {
@@ -246,7 +246,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      continue;
 	    }
 	  }
-	
+
 	  if (level == Levels[7]) {
 	    probability = rdef->Uniform(0.27+1.3+5.58);
 	    if (probability <= 0.27){
@@ -263,7 +263,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      continue;
 	    }
 	  }
-	
+
 	  if (level == Levels[8]) {
 	    probability = rdef->Uniform(2.14+48.5+8.93);
 	    if (probability <= 2.14){
@@ -280,7 +280,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      continue;
 	    }
 	  }
-	
+
 	  if (level == Levels[9]) {
 	    probability = rdef->Uniform(1.02);
 	    if (probability <= 1.02) {
@@ -289,7 +289,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      continue;
 	    }
 	  }
-	
+
 	  if (level == Levels[10]) {
 	    probability = rdef->Uniform(23.5+6.14);
 	    if (probability <= 23.5){
@@ -302,7 +302,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      continue;
 	    }
 	  }
-	
+
 	  if (level == Levels[11]) {
 	    probability = rdef->Uniform(74.0);
 	    if (probability <= 74.0) {
@@ -311,12 +311,12 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	      continue;
 	    }
 	  }
-	
+
 	}
-      
+
 	//       v_gammas.empty();
 	//       v_gammas.push_back(4745.0);v_gammas.push_back(1186.8);v_gammas.push_back(167.3); nb_gammas = 3;
-      
+
 	// Check if sum of gammas is 6.1
 	for( UInt_t i = 0; i < v_gammas.size(); ++i) {
 	  Etot += v_gammas.at(i);
@@ -327,8 +327,8 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	  Etot = 0.; continue;
 	}
 	Etot = 0.; // re-initialize Etot
-      
-      
+
+
 	// Print and fill histograms
 	//     cout << nb_gammas << endl;
 	for( UInt_t i = 0; i < v_gammas.size(); ++i) {
@@ -336,7 +336,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	  Gamma_spectrum->Fill(v_gammas.at(i));
 	}
 	//     cout << endl;
-      
+
 	// Generates position in protoDUNE from the histogram distributions
 	Xg.SetXYZ(x->GetRandom(), y->GetRandom(), z->GetRandom());
 	//Xg.SetXYZ(-100, 400, 100);
@@ -345,7 +345,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	Double_t r = sqrt(pow(Xg[0],2) + pow(Xg[2]-146,2));
 
 	//Get a random time for the specific r and y
-	
+
 	auto rAxis = dist->GetXaxis();
 	auto yAxis = dist->GetYaxis();
 
@@ -360,35 +360,35 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 
 	Double_t t = timeDist->GetRandom();
 
-	  
+
 	time->Fill(t);
 
 	//cout << time->GetEntries() << endl;
 
-      
-      
+
+
 	// Now the part where the HEPEvt and DANCE input files are written
 	output_dance << nb_gammas << endl;
 	output_hepevt_g4 << nb_gammas << endl;
-      
+
 	for (Int_t i=0; i < nb_gammas; i++) {
 	  // HEPEvt part
 	  // generate energy, momentum and position
-	  gRandom->Sphere(Pg[0],Pg[1],Pg[2], v_gammas.at(i)*1e-6); //random momentum over a sphere (in GeV)     
+	  gRandom->Sphere(Pg[0],Pg[1],Pg[2], v_gammas.at(i)*1e-6); //random momentum over a sphere (in GeV)
 	  // write in HEPEvt file
 	  output_temp           << "1 22 0 0 0 0 "
 				<< Pg[0] << " " << Pg[1] << " " << Pg[2] << " " << v_gammas.at(i)*1e-6 << " 0 "
 				<< Xg[0] << " " << Xg[1] << " " << Xg[2] << " " << t << " "<< endl;
-	
+
 	  // output_hepevt_g4 << "1 22 0 0 "
 	  //			   << Pg[0] << " " << Pg[1] << " " << Pg[2] << " 0\n";
-	
+
 	  // DANCE input part
 	  //output_dance << v_gammas.at(i)*1e-3 << " "; // in MeV
 	}
 	output_dance << endl;
-      
-      
+
+
 	if (v_gammas.size() == 3) {
 	  if (v_gammas.at(0) == 4745.0 && v_gammas.at(1) == 1186.8 && v_gammas.at(2) == 167.3) {
 	    nb1++;
@@ -414,23 +414,23 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	}
 
 	tot_gammas += nb_gammas;
-      
+
       } //end of nb decays loop
 
 
       output_temp.close();
       std::ifstream infile("temp.txt"); //open stream to read temp file
       output_hepevt_larsoft << e << " " << tot_gammas << "\n"; //write the first line for each event to the output file
-      string line; 
+      string line;
       while(std::getline(infile, line)){
 	//copy line from the temp file to the output file
-	output_hepevt_larsoft << line << "\n"; 
+	output_hepevt_larsoft << line << "\n";
       }
-	
+
 
     } //end of nb events loop
-    
-    
+
+
     cout << nb1 << " " << nb2 << " " << nb3 << " " << nb4 << " " << nb5 << "\n";
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -440,7 +440,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -448,29 +448,29 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
   if (isotope == "Ar37") {
     // List of levels    0        1         2       3       4        5    6      7         8     9        10     11       12     13
     double Levels[14] = {8791.2, 6826.2, 6583.7, 5090.5, 4637.6, 4578.7, 4448.6, 3981.1, 3938.5, 3518.0, 2490.9, 1611.9, 1410.6, 0.0};
     double level = 0.0;
-    
-    
+
+
     std::vector<double> v_gammas; v_gammas.clear(); // gammas for this event
     Int_t nb_gammas = 0; // number of gammas for this decay
     Double_t probability = 0.; // the probability we'll use in the loop
     Double_t Etot = 0.;
-    
+
     // Fills the macro file with ndecays
     for (UInt_t n = 0; n < ndecays; n++) {
-      
+
       // Initialization
-      v_gammas.clear(); 
+      v_gammas.clear();
       nb_gammas = 0;
-      
-      
+
+
       level = Levels[0];
       while (level != Levels[13]) {
-	
+
 	if (level == Levels[0]) {
 	  probability = rdef->Uniform(10.9+37.5+25.0+0.8+1.6+3.2+0.8+1.8+13.4+2.7+2.4);
 	  if (probability <= 10.9){
@@ -517,9 +517,9 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    level = Levels[1];
 	    v_gammas.push_back(1966.7); nb_gammas++;
 	    continue;
-	  }	
+	  }
 	}
-	
+
 	if (level == Levels[1]) {
 	  probability = rdef->Uniform(5.0); //it's ACTUALLY < 5.0
 	  if (probability <= 5.0){
@@ -528,7 +528,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[2]) {
 	  probability = rdef->Uniform(0.2);
 	  if (probability <= 0.2){
@@ -537,7 +537,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[3]) {
 	  probability = rdef->Uniform(7.9+3.1);
 	  if (probability <= 7.9){
@@ -550,7 +550,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[4]) {
 	  probability = rdef->Uniform(1.0+0.2);
 	  if (probability <= 1.0){
@@ -563,7 +563,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[5]) {
 	  probability = rdef->Uniform(0.3);
 	  if (probability <= 0.3) {
@@ -572,7 +572,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[6]) {
 	  probability = rdef->Uniform(2.0);
 	  if (probability <= 2.0) {
@@ -581,7 +581,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[7]) {
 	  probability = rdef->Uniform(1.3);
 	  if (probability <= 1.3) {
@@ -590,7 +590,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[8]) {
 	  probability = rdef->Uniform(1.0);
 	  if (probability <= 1.0) {
@@ -599,7 +599,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[9]) {
 	  probability = rdef->Uniform(23.7+2.7);
 	  if (probability <= 23.7){
@@ -612,7 +612,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[10]) {
 	  probability = rdef->Uniform(57.0+0.5);
 	  if (probability <= 57.0){
@@ -625,7 +625,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[11]) {
 	  probability = rdef->Uniform(3.4);
 	  if (probability <= 3.4) {
@@ -634,7 +634,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[12]) {
 	  probability = rdef->Uniform(33.0);
 	  if (probability <= 33.0) {
@@ -642,9 +642,9 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    v_gammas.push_back(1410.3); nb_gammas++;
 	    continue;
 	  }
-	}	
+	}
       }
-      
+
       // Check if sum of gammas is 6.1
       for( UInt_t i = 0; i < v_gammas.size(); ++i) {
 	Etot += v_gammas.at(i);
@@ -655,8 +655,8 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	Etot = 0.; continue;
       }
       Etot = 0.; // re-initialize Etot
-      
-      
+
+
       // Print and fill histograms
       //     cout << nb_gammas << endl;
       for( UInt_t i = 0; i < v_gammas.size(); ++i) {
@@ -664,36 +664,36 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	Gamma_spectrum->Fill(v_gammas.at(i));
       }
       //     cout << endl;
-      
+
       // Generates position in DUNE (for each event, not each gamma)
       //Xg.SetXYZ(rdef->Uniform(-4000.,4000),rdef->Uniform(0.,6000),rdef->Uniform(0.,7000));
       Xg.SetXYZ(-100, 400, 100);
-      
-      
+
+
       // Now the part where the HEPEvt and DANCE input files are written
       output_dance << nb_gammas << endl;
       output_hepevt_larsoft << n << " " << nb_gammas << endl;
       output_hepevt_g4 << nb_gammas << endl;
-      
+
       for (Int_t i=0; i < nb_gammas; i++) {
 	// HEPEvt part
 	// generate energy, momentum and position
-	gRandom->Sphere(Pg[0],Pg[1],Pg[2], v_gammas.at(i)*1e-6); //random momentum over a sphere (in GeV)     
+	gRandom->Sphere(Pg[0],Pg[1],Pg[2], v_gammas.at(i)*1e-6); //random momentum over a sphere (in GeV)
 	// write in HEPEvt file
 	output_hepevt_larsoft << "1 22 0 0 0 0 "
 			      << Pg[0] << " " << Pg[1] << " " << Pg[2] << " " << v_gammas.at(i)*1e-6 << " 0 "
 			      << Xg[0] << " " << Xg[1] << " " << Xg[2] << " 0 0 0 " << endl;
-	
+
 	output_hepevt_g4 << "1 22 0 0 "
 			 << Pg[0] << " " << Pg[1] << " " << Pg[2] << " 0\n";
-	
+
 	// DANCE input part
 	output_dance << v_gammas.at(i)*1e-3 << " "; // in MeV
       }
       output_dance << endl;
-      
+
     } //end of nb decays loop
-    
+
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -702,7 +702,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -710,39 +710,39 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
   if (isotope == "H2") {
-    // List of levels    0        1    
+    // List of levels    0        1
     double Levels[2] = {2224.572, 0.0};
     double level = 0.0;
-    
-    
+
+
     std::vector<double> v_gammas; v_gammas.clear(); // gammas for this event
     Int_t nb_gammas = 0; // number of gammas for this decay
     Double_t probability = 0.; // the probability we'll use in the loop
     Double_t Etot = 0.;
-    
+
     // Fills the macro file with ndecays
     for (UInt_t n = 0; n < ndecays; n++) {
-      
+
       // Initialization
-      v_gammas.clear(); 
+      v_gammas.clear();
       nb_gammas = 0;
-      
-      
+
+
       level = Levels[0];
       while (level != Levels[1]) {
-	
+
 	if (level == Levels[0]) {
 	  probability = rdef->Uniform(100.0);
 	  if (probability <= 100.){
 	    level = Levels[1];
 	    v_gammas.push_back(2223.245); nb_gammas++;
 	    continue;
-	  } 	
-	}	
+	  }
+	}
       }
-      
+
       // Check if sum of gammas is 6.1
       for( UInt_t i = 0; i < v_gammas.size(); ++i) {
 	Etot += v_gammas.at(i);
@@ -753,8 +753,8 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	Etot = 0.; continue;
       }
       Etot = 0.; // re-initialize Etot
-      
-      
+
+
       // Print and fill histograms
       //     cout << nb_gammas << endl;
       for( UInt_t i = 0; i < v_gammas.size(); ++i) {
@@ -762,36 +762,36 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	Gamma_spectrum->Fill(v_gammas.at(i));
       }
       //     cout << endl;
-      
+
       // Generates position in DUNE (for each event, not each gamma)
       //Xg.SetXYZ(rdef->Uniform(-4000.,4000),rdef->Uniform(0.,6000),rdef->Uniform(0.,7000));
       Xg.SetXYZ(-100, 400, 100);
-      
-      
+
+
       // Now the part where the HEPEvt and DANCE input files are written
       output_dance << nb_gammas << endl;
       output_hepevt_larsoft << n << " " << nb_gammas << endl;
       output_hepevt_g4 << nb_gammas << endl;
-      
+
       for (Int_t i=0; i < nb_gammas; i++) {
 	// HEPEvt part
 	// generate energy, momentum and position
-	gRandom->Sphere(Pg[0],Pg[1],Pg[2], v_gammas.at(i)*1e-6); //random momentum over a sphere (in GeV)     
+	gRandom->Sphere(Pg[0],Pg[1],Pg[2], v_gammas.at(i)*1e-6); //random momentum over a sphere (in GeV)
 	// write in HEPEvt file
 	output_hepevt_larsoft << "1 22 0 0 0 0 "
 			      << Pg[0] << " " << Pg[1] << " " << Pg[2] << " " << v_gammas.at(i)*1e-6 << " 0 "
 			      << Xg[0] << " " << Xg[1] << " " << Xg[2] << " 0 0 0 " << endl;
-	
+
 	output_hepevt_g4 << "1 22 0 0 "
 			 << Pg[0] << " " << Pg[1] << " " << Pg[2] << " 0\n";
-	
+
 	// DANCE input part
 	output_dance << v_gammas.at(i)*1e-3 << " "; // in MeV
       }
       output_dance << endl;
-      
+
     } //end of nb decays loop
-    
+
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -800,7 +800,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -808,31 +808,31 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
   if (isotope == "C13") {
-    // List of levels    0        1         2       3 
+    // List of levels    0        1         2       3
     double Levels[4] = {4946.3120, 3684.475, 3089.446, 0.0};
     double level = 0.0;
-    
-    
+
+
     std::vector<double> v_gammas; v_gammas.clear(); // gammas for this event
     Int_t nb_gammas = 0; // number of gammas for this decay
     Double_t probability = 0.; // the probability we'll use in the loop
     Double_t Etot = 0.;
-    
+
     // Fills the macro file with ndecays
     for (UInt_t n = 0; n < ndecays; n++) {
-      
+
       // Initialization
-      v_gammas.clear(); 
+      v_gammas.clear();
       nb_gammas = 0;
-      
-      
+
+
       level = Levels[0];
       while (level != Levels[3]) {
-	
+
 	if (level == Levels[0]) {
-	  probability = rdef->Uniform(100.0); 
+	  probability = rdef->Uniform(100.0);
 	  if (probability <= 67.5){
 	    level = Levels[3];
 	    v_gammas.push_back(4945.301); nb_gammas++;
@@ -847,7 +847,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[1]) {
 	  probability = rdef->Uniform(32.1 + 0.24);
 	  if (probability <= 32.1){
@@ -860,7 +860,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[2]) {
 	  probability = rdef->Uniform(0.43);
 	  if (probability <= 0.43) {
@@ -870,7 +870,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	  }
 	}
       }
-      
+
       // Check if sum of gammas is 6.1
       for( UInt_t i = 0; i < v_gammas.size(); ++i) {
 	Etot += v_gammas.at(i);
@@ -881,8 +881,8 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	Etot = 0.; continue;
       }
       Etot = 0.; // re-initialize Etot
-      
-      
+
+
       // Print and fill histograms
       //     cout << nb_gammas << endl;
       for( UInt_t i = 0; i < v_gammas.size(); ++i) {
@@ -890,36 +890,36 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	Gamma_spectrum->Fill(v_gammas.at(i));
       }
       //     cout << endl;
-      
+
       // Generates position in DUNE (for each event, not each gamma)
       //Xg.SetXYZ(rdef->Uniform(-4000.,4000),rdef->Uniform(0.,6000),rdef->Uniform(0.,7000));
       Xg.SetXYZ(-100, 400, 100);
-      
-      
+
+
       // Now the part where the HEPEvt and DANCE input files are written
       output_dance << nb_gammas << endl;
       output_hepevt_larsoft << n << " " << nb_gammas << endl;
       output_hepevt_g4 << nb_gammas << endl;
-      
+
       for (Int_t i=0; i < nb_gammas; i++) {
 	// HEPEvt part
 	// generate energy, momentum and position
-	gRandom->Sphere(Pg[0],Pg[1],Pg[2], v_gammas.at(i)*1e-6); //random momentum over a sphere (in GeV)     
+	gRandom->Sphere(Pg[0],Pg[1],Pg[2], v_gammas.at(i)*1e-6); //random momentum over a sphere (in GeV)
 	// write in HEPEvt file
 	output_hepevt_larsoft << "1 22 0 0 0 0 "
 			      << Pg[0] << " " << Pg[1] << " " << Pg[2] << " " << v_gammas.at(i)*1e-6 << " 0 "
 			      << Xg[0] << " " << Xg[1] << " " << Xg[2] << " 0 0 0 " << endl;
-	
+
 	output_hepevt_g4 << "1 22 0 0 "
 			 << Pg[0] << " " << Pg[1] << " " << Pg[2] << " 0\n";
-	
+
 	// DANCE input part
 	output_dance << v_gammas.at(i)*1e-3 << " "; // in MeV
       }
       output_dance << endl;
-      
+
     } //end of nb decays loop
-    
+
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -928,7 +928,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -936,31 +936,31 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
   if (isotope == "O17") {
-    // List of levels    0        1         2       3 
+    // List of levels    0        1         2       3
     double Levels[4] = {4143.33, 3055.36, 870.73, 0.0};
     double level = 0.0;
-    
-    
+
+
     std::vector<double> v_gammas; v_gammas.clear(); // gammas for this event
     Int_t nb_gammas = 0; // number of gammas for this decay
     Double_t probability = 0.; // the probability we'll use in the loop
     Double_t Etot = 0.;
-    
+
     // Fills the macro file with ndecays
     for (UInt_t n = 0; n < ndecays; n++) {
-      
+
       // Initialization
-      v_gammas.clear(); 
+      v_gammas.clear();
       nb_gammas = 0;
-      
-      
+
+
       level = Levels[0];
       while (level != Levels[3]) {
-	
+
 	if (level == Levels[0]) {
-	  probability = rdef->Uniform(18.0 + 82.0); 
+	  probability = rdef->Uniform(18.0 + 82.0);
 	  if (probability <= 18.0){
 	    level = Levels[2];
 	    v_gammas.push_back(3272.26); nb_gammas++;
@@ -969,9 +969,9 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    level = Levels[1];
 	    v_gammas.push_back(1087.93); nb_gammas++;
 	    continue;
-	  } 
+	  }
 	}
-	
+
 	if (level == Levels[1]) {
 	  probability = rdef->Uniform(82.0);
 	  if (probability <= 82.0){
@@ -980,7 +980,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	    continue;
 	  }
 	}
-	
+
 	if (level == Levels[2]) {
 	  probability = rdef->Uniform(100.0);
 	  if (probability <= 100.0) {
@@ -990,7 +990,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	  }
 	}
       }
-      
+
       // Check if sum of gammas is 6.1
       for( UInt_t i = 0; i < v_gammas.size(); ++i) {
 	Etot += v_gammas.at(i);
@@ -1001,8 +1001,8 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	Etot = 0.; continue;
       }
       Etot = 0.; // re-initialize Etot
-      
-      
+
+
       // Print and fill histograms
       //     cout << nb_gammas << endl;
       for( UInt_t i = 0; i < v_gammas.size(); ++i) {
@@ -1010,36 +1010,36 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	Gamma_spectrum->Fill(v_gammas.at(i));
       }
       //     cout << endl;
-      
+
       // Generates position in DUNE (for each event, not each gamma)
       //Xg.SetXYZ(rdef->Uniform(-4000.,4000),rdef->Uniform(0.,6000),rdef->Uniform(0.,7000));
       Xg.SetXYZ(-100, 400, 100);
-      
-      
+
+
       // Now the part where the HEPEvt and DANCE input files are written
       output_dance << nb_gammas << endl;
       output_hepevt_larsoft << n << " " << nb_gammas << endl;
       output_hepevt_g4 << nb_gammas << endl;
-      
+
       for (Int_t i=0; i < nb_gammas; i++) {
 	// HEPEvt part
 	// generate energy, momentum and position
-	gRandom->Sphere(Pg[0],Pg[1],Pg[2], v_gammas.at(i)*1e-6); //random momentum over a sphere (in GeV)     
+	gRandom->Sphere(Pg[0],Pg[1],Pg[2], v_gammas.at(i)*1e-6); //random momentum over a sphere (in GeV)
 	// write in HEPEvt file
 	output_hepevt_larsoft << "1 22 0 0 0 0 "
 			      << Pg[0] << " " << Pg[1] << " " << Pg[2] << " " << v_gammas.at(i)*1e-6 << " 0 "
 			      << Xg[0] << " " << Xg[1] << " " << Xg[2] << " 0 0 0 " << endl;
-	
+
 	output_hepevt_g4 << "1 22 0 0 "
 			 << Pg[0] << " " << Pg[1] << " " << Pg[2] << " 0\n";
-	
+
 	// DANCE input part
 	output_dance << v_gammas.at(i)*1e-3 << " "; // in MeV
       }
       output_dance << endl;
-      
+
     } //end of nb decays loop
-    
+
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1048,7 +1048,7 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
   // Edit and plot histo
   Gamma_spectrum->Scale(100./ndecays);
   Gamma_spectrum->GetXaxis()->SetTitle("Energy [keV]");
@@ -1059,15 +1059,15 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
   auto c2 = new TCanvas("c2", "c2");
   c2->cd();
   time->DrawCopy("colz");
-  
+
   time->Write();
-  
-  
+
+
   delete Gamma_spectrum;
   output_hepevt_g4.close();
   output_hepevt_larsoft.close();
   output_dance.close();
   g_out->Close();
-  
+
   cout << "Done! And in " << clock->RealTime() << " s." << endl;
 }

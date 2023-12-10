@@ -3,7 +3,7 @@
 ```
 cd /dune/app/users/weishi/VDPDSAna/PNSCali/NeutronGen
 source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.24.02/x86_64-centos7-gcc48-opt/bin/thisroot.sh
-root -l -b -q 'generate_txtgen_w_t0.C(1, 10000, "VD_ColdBox_1_capture_per_evt_10k_evts")'
+root -l -b -q 'generate_txtgen_w_t0.C(1, 10000, "VDCB_PNS_Side_1_cap_per_evt_10k_evts")'
 # 1 means 1 neutron capture per event, can be more than 1 captures
 ```
 
