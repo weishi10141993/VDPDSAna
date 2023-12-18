@@ -324,7 +324,7 @@
   </material>
 
   <material name="PolyurethaneFoam">
-   <D value="0.088" unit="g/cm3"/>
+   <D value="0.035" unit="g/cm3"/>
    <composite n="17" ref="carbon"/>
    <composite n="16" ref="hydrogen"/>
    <composite n="2" ref="nitrogen"/>

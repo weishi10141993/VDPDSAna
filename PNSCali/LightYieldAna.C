@@ -14,7 +14,8 @@
 
 void LightYieldAna() {
 
-  TFile *file = new TFile("TextFileGen_hist_module1.root");
+  //TFile *file = new TFile("TextFileGen_hist_module1.root");
+  TFile *file = new TFile("SinglesGen_neutron_hist_module1.root");
   TTree* OpDetEventsTree = (TTree*) file->Get("XAresponse/OpDetEvents");
   TTree* DetectedPhotonsTree = (TTree*) file->Get("XAresponse/DetectedPhotons");
 
@@ -54,10 +55,17 @@ void LightYieldAna() {
   TH1D *h_X = new TH1D("h_X", "", 50, -25, 25);
   TH1D *h_Y = new TH1D("h_Y", "", 100, -200, 200);
   TH1D *h_Z = new TH1D("h_Z", "", 100, 0, 300);
-  TH1D *h_totE = new TH1D("h_totE", "", 3000, 6.097, 6.1);
-  TH2D *h_totE_detected                   = new TH2D("h_totE_detected", "",                   30, 6.097, 6.1, 70, 0, 700);
-  TH2D* h_totE_detected_column_normalized = new TH2D("h_totE_detected_column_normalized", "", 30, 6.097, 6.1, 70, 0, 700);
+  TH1D *h_totE = new TH1D("h_totE", "", 30000, 0, 6.1);
+  //TH1D *h_totE = new TH1D("h_totE", "", 3000, 6.097, 6.1);
+  //TH2D *h_totE_detected                   = new TH2D("h_totE_detected", "",                   30, 6.097, 6.1, 70, 0, 700);
+  //TH2D* h_totE_detected_column_normalized = new TH2D("h_totE_detected_column_normalized", "", 30, 6.097, 6.1, 70, 0, 700);
+  TH2D *h_totE_detected                   = new TH2D("h_totE_detected", "",                   300, 0, 6.1, 70, 0, 700);
+  TH2D* h_totE_detected_column_normalized = new TH2D("h_totE_detected_column_normalized", "", 300, 0, 6.1, 70, 0, 700);
   TH1D *h_LY = new TH1D("h_LY", "h_LY", 60, 0, 60.0);
+  TH1D *h_XA0_detected = new TH1D("h_XA0_detected", "h_XA0_detected", 1000, 0, 2000.0);
+  TH1D *h_XA1_detected = new TH1D("h_XA1_detected", "h_XA1_detected", 1000, 0, 2000.0);
+  TH1D *h_XA2_detected = new TH1D("h_XA2_detected", "h_XA2_detected", 1000, 0, 2000.0);
+  TH1D *h_XA3_detected = new TH1D("h_XA3_detected", "h_XA3_detected", 1000, 0, 2000.0);
   TH1D *h_XA_all_detected_capture_topcenter = new TH1D("h_XA_all_detected_capture_topcenter", "h_XA_all_detected_capture_topcenter", 1000, 0, 2000.0);
   TH1D *h_XA0_detected_capture_XA0_topcenter = new TH1D("h_XA0_detected_capture_XA0_topcenter", "h_XA0_detected_capture_XA0_topcenter", 1000, 0, 2000.0);
   TH1D *h_XA1_detected_capture_XA0_topcenter = new TH1D("h_XA1_detected_capture_XA0_topcenter", "h_XA1_detected_capture_XA0_topcenter", 1000, 0, 2000.0);
@@ -126,106 +134,126 @@ void LightYieldAna() {
     h_Y_LY->Fill(gammaposY->at(0), CountDetected_OpDetEvents/totE);
     h_Z_LY->Fill(gammaposZ->at(0), CountDetected_OpDetEvents/totE);
 
-    // If capture happens right on top of each XA (above the PD, around the center)
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA0y - capturerange && gammaposY->at(0) < XA0y + capturerange && gammaposZ->at(0) > XA0z - capturerange && gammaposZ->at(0) < XA0z + capturerange ) h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA1y - capturerange && gammaposY->at(0) < XA1y + capturerange && gammaposZ->at(0) > XA1z - capturerange && gammaposZ->at(0) < XA1z + capturerange ) h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA2y - capturerange && gammaposY->at(0) < XA2y + capturerange && gammaposZ->at(0) > XA2z - capturerange && gammaposZ->at(0) < XA2z + capturerange ) h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA3y - capturerange && gammaposY->at(0) < XA3y + capturerange && gammaposZ->at(0) > XA3z - capturerange && gammaposZ->at(0) < XA3z + capturerange ) h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
 
-    // Right on top of XA0
-    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA0y - capturerange && gammaposY->at(0) < XA0y + capturerange && gammaposZ->at(0) > XA0z - capturerange && gammaposZ->at(0) < XA0z + capturerange ) {
-      h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
-      // Read detected on each XA
-      // ievt: 0 cooresponds to EventID: 1, max EventID is tot number of evts
-      //std::cout << "ievt: " << ievt << ", EventID_OpDetEvents: " << EventID_OpDetEvents << ", EventID_DetectedPhotons: " << EventID_DetectedPhotons << ", OpChannel_DetectedPhotons: " << OpChannel_DetectedPhotons << std::endl;
-      // If EventID_DetectedPhotons == ievt + 1, count OpChannel_DetectedPhotons 0, 1, 2, 3
-      int XA0Detected_captureonXA0top=0;
-      int XA1Detected_captureonXA0top=0;
-      int XA2Detected_captureonXA0top=0;
-      int XA3Detected_captureonXA0top=0;
-      for ( int idetph = 0; idetph < totDetectedPhotons; idetph++ ) {
-        DetectedPhotonsTree->GetEntry(idetph);
-        // Count detected phs in this event on each XA
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 0) XA0Detected_captureonXA0top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 1) XA1Detected_captureonXA0top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 2) XA2Detected_captureonXA0top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 3) XA3Detected_captureonXA0top++;
+    // Fill tot detected at each XA PD module
+    // ievt: 0 cooresponds to EventID: 1, max EventID is tot number of evts
+    //std::cout << "ievt: " << ievt << ", EventID_OpDetEvents: " << EventID_OpDetEvents << ", EventID_DetectedPhotons: " << EventID_DetectedPhotons << ", OpChannel_DetectedPhotons: " << OpChannel_DetectedPhotons << std::endl;
+    // If EventID_DetectedPhotons == ievt + 1, count OpChannel_DetectedPhotons 0, 1, 2, 3
+    int XA0Detected = 0;
+    int XA1Detected = 0;
+    int XA2Detected = 0;
+    int XA3Detected = 0;
 
-      } // end loop over totDetectedPhotons
-      h_XA0_detected_capture_XA0_topcenter->Fill(XA0Detected_captureonXA0top);
-      h_XA1_detected_capture_XA0_topcenter->Fill(XA1Detected_captureonXA0top);
-      h_XA2_detected_capture_XA0_topcenter->Fill(XA2Detected_captureonXA0top);
-      h_XA3_detected_capture_XA0_topcenter->Fill(XA3Detected_captureonXA0top);
+    // Read detected on each XA when capture is right on top of each XA
+    int XA0Detected_captureonXA0top=0;
+    int XA1Detected_captureonXA0top=0;
+    int XA2Detected_captureonXA0top=0;
+    int XA3Detected_captureonXA0top=0;
 
-    }
+    int XA0Detected_captureonXA1top=0;
+    int XA1Detected_captureonXA1top=0;
+    int XA2Detected_captureonXA1top=0;
+    int XA3Detected_captureonXA1top=0;
 
-    // Right on top of XA1
-    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA1y - capturerange && gammaposY->at(0) < XA1y + capturerange && gammaposZ->at(0) > XA1z - capturerange && gammaposZ->at(0) < XA1z + capturerange ) {
-      h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
+    int XA0Detected_captureonXA2top=0;
+    int XA1Detected_captureonXA2top=0;
+    int XA2Detected_captureonXA2top=0;
+    int XA3Detected_captureonXA2top=0;
 
-      int XA0Detected_captureonXA1top=0;
-      int XA1Detected_captureonXA1top=0;
-      int XA2Detected_captureonXA1top=0;
-      int XA3Detected_captureonXA1top=0;
-      for ( int idetph = 0; idetph < totDetectedPhotons; idetph++ ) {
-        DetectedPhotonsTree->GetEntry(idetph);
-        // Count detected phs in this event on each XA
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 0) XA0Detected_captureonXA1top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 1) XA1Detected_captureonXA1top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 2) XA2Detected_captureonXA1top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 3) XA3Detected_captureonXA1top++;
+    int XA0Detected_captureonXA3top=0;
+    int XA1Detected_captureonXA3top=0;
+    int XA2Detected_captureonXA3top=0;
+    int XA3Detected_captureonXA3top=0;
 
-      } // end loop over totDetectedPhotons
-      h_XA0_detected_capture_XA1_topcenter->Fill(XA0Detected_captureonXA1top);
-      h_XA1_detected_capture_XA1_topcenter->Fill(XA1Detected_captureonXA1top);
-      h_XA2_detected_capture_XA1_topcenter->Fill(XA2Detected_captureonXA1top);
-      h_XA3_detected_capture_XA1_topcenter->Fill(XA3Detected_captureonXA1top);
+    for ( int idetph = 0; idetph < totDetectedPhotons; idetph++ ) {
+      DetectedPhotonsTree->GetEntry(idetph);
+      // Count detected phs in this event on each XA
 
-    }
+      // XA0
+      if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 0) {
+        XA0Detected++;
+        //
+        // If capture happens right on top of each XA (above the PD, around the center)
+        //
+        // Right on top of XA0
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA0y - capturerange && gammaposY->at(0) < XA0y + capturerange && gammaposZ->at(0) > XA0z - capturerange && gammaposZ->at(0) < XA0z + capturerange ) XA0Detected_captureonXA0top++;
+        // Right on top of XA1
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA1y - capturerange && gammaposY->at(0) < XA1y + capturerange && gammaposZ->at(0) > XA1z - capturerange && gammaposZ->at(0) < XA1z + capturerange ) XA0Detected_captureonXA1top++;
+        // Right on top of XA2
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA2y - capturerange && gammaposY->at(0) < XA2y + capturerange && gammaposZ->at(0) > XA2z - capturerange && gammaposZ->at(0) < XA2z + capturerange ) XA0Detected_captureonXA2top++;
+        // Right on top of XA3
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA3y - capturerange && gammaposY->at(0) < XA3y + capturerange && gammaposZ->at(0) > XA3z - capturerange && gammaposZ->at(0) < XA3z + capturerange ) XA0Detected_captureonXA3top++;
+      }
 
-    // Right on top of XA2
-    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA2y - capturerange && gammaposY->at(0) < XA2y + capturerange && gammaposZ->at(0) > XA2z - capturerange && gammaposZ->at(0) < XA2z + capturerange ) {
-      h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
+      // XA1
+      if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 1) {
+        XA1Detected++;
+        // Right on top of XA0
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA0y - capturerange && gammaposY->at(0) < XA0y + capturerange && gammaposZ->at(0) > XA0z - capturerange && gammaposZ->at(0) < XA0z + capturerange ) XA1Detected_captureonXA0top++;
+        // Right on top of XA1
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA1y - capturerange && gammaposY->at(0) < XA1y + capturerange && gammaposZ->at(0) > XA1z - capturerange && gammaposZ->at(0) < XA1z + capturerange ) XA1Detected_captureonXA1top++;
+        // Right on top of XA2
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA2y - capturerange && gammaposY->at(0) < XA2y + capturerange && gammaposZ->at(0) > XA2z - capturerange && gammaposZ->at(0) < XA2z + capturerange ) XA1Detected_captureonXA2top++;
+        // Right on top of XA3
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA3y - capturerange && gammaposY->at(0) < XA3y + capturerange && gammaposZ->at(0) > XA3z - capturerange && gammaposZ->at(0) < XA3z + capturerange ) XA1Detected_captureonXA3top++;
+      }
 
-      int XA0Detected_captureonXA2top=0;
-      int XA1Detected_captureonXA2top=0;
-      int XA2Detected_captureonXA2top=0;
-      int XA3Detected_captureonXA2top=0;
-      for ( int idetph = 0; idetph < totDetectedPhotons; idetph++ ) {
-        DetectedPhotonsTree->GetEntry(idetph);
-        // Count detected phs in this event on each XA
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 0) XA0Detected_captureonXA2top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 1) XA1Detected_captureonXA2top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 2) XA2Detected_captureonXA2top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 3) XA3Detected_captureonXA2top++;
+      // XA2
+      if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 2) {
+        XA2Detected++;
+        // Right on top of XA0
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA0y - capturerange && gammaposY->at(0) < XA0y + capturerange && gammaposZ->at(0) > XA0z - capturerange && gammaposZ->at(0) < XA0z + capturerange ) XA2Detected_captureonXA0top++;
+        // Right on top of XA1
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA1y - capturerange && gammaposY->at(0) < XA1y + capturerange && gammaposZ->at(0) > XA1z - capturerange && gammaposZ->at(0) < XA1z + capturerange ) XA2Detected_captureonXA1top++;
+        // Right on top of XA2
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA2y - capturerange && gammaposY->at(0) < XA2y + capturerange && gammaposZ->at(0) > XA2z - capturerange && gammaposZ->at(0) < XA2z + capturerange ) XA2Detected_captureonXA2top++;
+        // Right on top of XA3
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA3y - capturerange && gammaposY->at(0) < XA3y + capturerange && gammaposZ->at(0) > XA3z - capturerange && gammaposZ->at(0) < XA3z + capturerange ) XA2Detected_captureonXA3top++;
+      }
 
-      } // end loop over totDetectedPhotons
-      h_XA0_detected_capture_XA2_topcenter->Fill(XA0Detected_captureonXA2top);
-      h_XA1_detected_capture_XA2_topcenter->Fill(XA1Detected_captureonXA2top);
-      h_XA2_detected_capture_XA2_topcenter->Fill(XA2Detected_captureonXA2top);
-      h_XA3_detected_capture_XA2_topcenter->Fill(XA3Detected_captureonXA2top);
+      // XA3
+      if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 3) {
+        XA3Detected++;
+        // Right on top of XA0
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA0y - capturerange && gammaposY->at(0) < XA0y + capturerange && gammaposZ->at(0) > XA0z - capturerange && gammaposZ->at(0) < XA0z + capturerange ) XA3Detected_captureonXA0top++;
+        // Right on top of XA1
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA1y - capturerange && gammaposY->at(0) < XA1y + capturerange && gammaposZ->at(0) > XA1z - capturerange && gammaposZ->at(0) < XA1z + capturerange ) XA3Detected_captureonXA1top++;
+        // Right on top of XA2
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA2y - capturerange && gammaposY->at(0) < XA2y + capturerange && gammaposZ->at(0) > XA2z - capturerange && gammaposZ->at(0) < XA2z + capturerange ) XA3Detected_captureonXA2top++;
+        // Right on top of XA3
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA3y - capturerange && gammaposY->at(0) < XA3y + capturerange && gammaposZ->at(0) > XA3z - capturerange && gammaposZ->at(0) < XA3z + capturerange ) XA3Detected_captureonXA3top++;
+      }
 
-    }
+    } // end loop over totDetectedPhotons
 
-    // Right on top of XA3
-    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA3y - capturerange && gammaposY->at(0) < XA3y + capturerange && gammaposZ->at(0) > XA3z - capturerange && gammaposZ->at(0) < XA3z + capturerange ) {
-      h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
+    h_XA0_detected->Fill(XA0Detected);
+    h_XA1_detected->Fill(XA1Detected);
+    h_XA2_detected->Fill(XA2Detected);
+    h_XA3_detected->Fill(XA3Detected);
 
-      int XA0Detected_captureonXA3top=0;
-      int XA1Detected_captureonXA3top=0;
-      int XA2Detected_captureonXA3top=0;
-      int XA3Detected_captureonXA3top=0;
-      for ( int idetph = 0; idetph < totDetectedPhotons; idetph++ ) {
-        DetectedPhotonsTree->GetEntry(idetph);
-        // Count detected phs in this event on each XA
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 0) XA0Detected_captureonXA3top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 1) XA1Detected_captureonXA3top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 2) XA2Detected_captureonXA3top++;
-        if ( EventID_DetectedPhotons == ievt + 1 && OpChannel_DetectedPhotons == 3) XA3Detected_captureonXA3top++;
+    h_XA0_detected_capture_XA0_topcenter->Fill(XA0Detected_captureonXA0top);
+    h_XA1_detected_capture_XA0_topcenter->Fill(XA1Detected_captureonXA0top);
+    h_XA2_detected_capture_XA0_topcenter->Fill(XA2Detected_captureonXA0top);
+    h_XA3_detected_capture_XA0_topcenter->Fill(XA3Detected_captureonXA0top);
 
-      } // end loop over totDetectedPhotons
-      h_XA0_detected_capture_XA3_topcenter->Fill(XA0Detected_captureonXA3top);
-      h_XA1_detected_capture_XA3_topcenter->Fill(XA1Detected_captureonXA3top);
-      h_XA2_detected_capture_XA3_topcenter->Fill(XA2Detected_captureonXA3top);
-      h_XA3_detected_capture_XA3_topcenter->Fill(XA3Detected_captureonXA3top);
+    h_XA0_detected_capture_XA1_topcenter->Fill(XA0Detected_captureonXA1top);
+    h_XA1_detected_capture_XA1_topcenter->Fill(XA1Detected_captureonXA1top);
+    h_XA2_detected_capture_XA1_topcenter->Fill(XA2Detected_captureonXA1top);
+    h_XA3_detected_capture_XA1_topcenter->Fill(XA3Detected_captureonXA1top);
 
-    }
+    h_XA0_detected_capture_XA2_topcenter->Fill(XA0Detected_captureonXA2top);
+    h_XA1_detected_capture_XA2_topcenter->Fill(XA1Detected_captureonXA2top);
+    h_XA2_detected_capture_XA2_topcenter->Fill(XA2Detected_captureonXA2top);
+    h_XA3_detected_capture_XA2_topcenter->Fill(XA3Detected_captureonXA2top);
+
+    h_XA0_detected_capture_XA3_topcenter->Fill(XA0Detected_captureonXA3top);
+    h_XA1_detected_capture_XA3_topcenter->Fill(XA1Detected_captureonXA3top);
+    h_XA2_detected_capture_XA3_topcenter->Fill(XA2Detected_captureonXA3top);
+    h_XA3_detected_capture_XA3_topcenter->Fill(XA3Detected_captureonXA3top);
 
   } // end loop over totOpDetEvents
 
@@ -266,6 +294,10 @@ void LightYieldAna() {
     }
   }
   //std::cout << "hist2dentries: " << hist2dentries << std::endl;
+
+  h_totE_detected_projectY->GetXaxis()->SetTitle("Total detected PE");
+  h_totE_detected_projectY->Write();
+
   h_totE_detected_column_normalized->SetTitle("Column Normalized");
   h_totE_detected_column_normalized->GetXaxis()->SetTitle("Total gamma cascade E (MeV)");
   h_totE_detected_column_normalized->GetYaxis()->SetTitle("Total detected photons");
@@ -274,6 +306,14 @@ void LightYieldAna() {
   h_LY->GetXaxis()->SetTitle("Light yield (PE/MeV)");
   h_LY->Write();
 
+  h_XA0_detected->GetXaxis()->SetTitle("Detected PEs");
+  h_XA0_detected->Write();
+  h_XA1_detected->GetXaxis()->SetTitle("Detected PEs");
+  h_XA1_detected->Write();
+  h_XA2_detected->GetXaxis()->SetTitle("Detected PEs");
+  h_XA2_detected->Write();
+  h_XA3_detected->GetXaxis()->SetTitle("Detected PEs");
+  h_XA3_detected->Write();
   h_XA_all_detected_capture_topcenter->GetXaxis()->SetTitle("Detected PEs");
   h_XA_all_detected_capture_topcenter->Write();
   h_XA0_detected_capture_XA0_topcenter->GetXaxis()->SetTitle("Detected PEs");
@@ -368,5 +408,7 @@ void LightYieldAna() {
   h_Z_LY_column_normalized->Write();
 
   myPlot.Close();
+
+  std::cout << "Program finished" << std::endl;
 
 } // End function: void

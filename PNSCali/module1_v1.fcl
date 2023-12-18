@@ -190,44 +190,26 @@ outputs:
 
 #Reset the particles used in the simulation---
 #PDG Code:
-#mu+=-13, mu-=+13, p=2212, pi+=211, K+=321, e-=11---
-physics.producers.generator.PDG: [ 2112 ] #change------
-#physics.producers.generator.PDG: [ 13 ] #change------
+physics.producers.generator.PDG: [ 22 ]
 
 #initial momentum in GeV---
-#physics.producers.generator.P0: [ 7.0 ] #change------
-#physics.producers.generator.P0: [ 0.00001 ] #change------
-physics.producers.generator.P0: [ 0.0000005 ] #change------
-
+physics.producers.generator.P0: [ 0.0047 ]
 
 #uncertainty in momentum---
 physics.producers.generator.SigmaP: [ 0.0 ]
 
-#Initial angle in XZ plan(from z axis to x axis) in degress---
-physics.producers.generator.Theta0XZ: [ 0 ] #approximate, -7.7---
-#Angle in Z'Y plane, from z' to x---
-physics.producers.generator.Theta0YZ: [ 60 ] #approximate, -45.0---
+#Initial angle in XZ plane (from z axis to x axis) in degress---
+physics.producers.generator.Theta0XZ: [ 0 ]
+#Angle in ZY plane, from z to x---
+physics.producers.generator.Theta0YZ: [ 0 ]
 
 #Angle uncertainties---
 physics.producers.generator.SigmaThetaXZ: [ 0.0 ]
 physics.producers.generator.SigmaThetaYZ: [ 0.0 ]
 
-#Starting point of particles; in cm---
-#physics.producers.generator.X0:       [ 0.0 ] #approximate, 94.8---
-#physics.producers.generator.Y0:       [ -160.0 ] #approximate, 142.6---
-#physics.producers.generator.Z0:       [ 0 ] #approximate, 0.0---
-#physics.producers.generator.X0:       [ 7.0 ] #approximate, 94.8---
-#physics.producers.generator.Y0:       [ 37.0 ] #approximate, 142.6---
-#physics.producers.generator.Z0:       [ 37.0 ] #approximate, 0.0---
-
-#position uncertainties---
-#physics.producers.generator.SigmaX:  [  0.0  ]
-#physics.producers.generator.SigmaY:  [  0.0  ]
-#physics.producers.generator.SigmaZ:  [  0.0  ]
-
-#physics.producers.generator.PDist:     0 # uniform
+physics.producers.generator.PDist:     0 # uniform
 physics.producers.generator.PosDist:   0 # uniform
-#physics.producers.generator.ThetaDist: 0 # uniform
+physics.producers.generator.AngleDist: 0 # uniform
 #services.LArPropertiesService.ScintPreScale: 90e-2
 services.LArPropertiesService.LoadExtraMatProperties: true
 services.DetectorPropertiesService.SimpleBoundaryProcess: false
@@ -246,10 +228,11 @@ services.LArPropertiesService.ReflectiveSurfaceDiffuseFractions:[ [ 0, 0, 0, 0, 
                                           [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
 
 ############coordinates based on gdml file
-
-physics.producers.generator.X0:       [ -10.7 ] #approximate, 94.8---
-physics.producers.generator.Y0:       [ 37.0 ] #approximate, 142.6---
-physics.producers.generator.Z0:       [ 37.0 ] #approximate, 0.0---
-physics.producers.generator.SigmaX:  [  10.7  ]
-physics.producers.generator.SigmaY:  [  0.0 ]
-physics.producers.generator.SigmaZ:  [  0.0  ]
+#Starting point of particles; in cm---
+physics.producers.generator.X0:       [ 0.0 ]
+physics.producers.generator.Y0:       [ -38 ]
+physics.producers.generator.Z0:       [ 257.9 ]
+#position uncertainties---
+physics.producers.generator.SigmaX:  [ 0.0 ]
+physics.producers.generator.SigmaY:  [ 0.0 ]
+physics.producers.generator.SigmaZ:  [ 0.0 ]
