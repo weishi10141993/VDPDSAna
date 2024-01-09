@@ -1,0 +1,15 @@
+#
+# Generate a 1.2 MeV gamma beamed in the downstream direction.
+#
+
+# Define the particle and it's energy.
+/gps/particle gamma
+/gps/energy 1.2 MeV
+
+# Set the position of the particle gun.
+/gps/position 0.0 0.0 0.0 m
+
+# This generates the particle isotropically
+/gps/ang/type iso
+/gps/ang/rot1 1 0 0
+/gps/ang/rot2 0 -1 0

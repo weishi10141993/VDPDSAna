@@ -53,3 +53,21 @@ To analyze the light yield,
 source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.24.02/x86_64-centos7-gcc48-opt/bin/thisroot.sh
 root -l -b -q LightYieldAna.C
 ```
+
+## Set up edep-sim
+
+Run edep-sim to simulate event energy deposits in LAr.
+
+```
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+setup geant4 v4_10_6_p01e -q e20:prof
+setup edepsim v3_2_0 -q e20:prof
+
+edep-sim \
+    -C \
+    -g LArBath.gdml \
+    -o edep_LArBath_1.2MeV_gamma.root \
+    -u \
+    -e 200 \
+    Gen_edepsim.mac
+```
