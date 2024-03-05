@@ -15,7 +15,7 @@
 void LightYieldAna() {
 
   //TFile *file = new TFile("TextFileGen_hist_module1.root");
-  TFile *file = new TFile("SinglesGen_neutron_hist_module1.root");
+  TFile *file = new TFile("SinglesGen_hist_module1.root");
   TTree* OpDetEventsTree = (TTree*) file->Get("XAresponse/OpDetEvents");
   TTree* DetectedPhotonsTree = (TTree*) file->Get("XAresponse/DetectedPhotons");
 
@@ -36,6 +36,7 @@ void LightYieldAna() {
   vector<double> *gammaposY = 0;
   vector<double> *gammaposZ = 0;
   vector<double> *gammaenergy = 0;
+  bool positronprod = false;
   int EventID_OpDetEvents = 0;
   int EventID_DetectedPhotons = 0;
 
@@ -46,6 +47,7 @@ void LightYieldAna() {
   OpDetEventsTree->SetBranchAddress("posYMC", &gammaposY);
   OpDetEventsTree->SetBranchAddress("posZMC", &gammaposZ);
   OpDetEventsTree->SetBranchAddress("energyMC", &gammaenergy);
+  OpDetEventsTree->SetBranchAddress("pairprod", &positronprod);
   OpDetEventsTree->SetBranchAddress("EventID", &EventID_OpDetEvents);
 
   DetectedPhotonsTree->SetBranchAddress("OpChannel", &OpChannel_DetectedPhotons);
@@ -66,23 +68,24 @@ void LightYieldAna() {
   TH1D *h_XA1_detected = new TH1D("h_XA1_detected", "h_XA1_detected", 1000, 0, 2000.0);
   TH1D *h_XA2_detected = new TH1D("h_XA2_detected", "h_XA2_detected", 1000, 0, 2000.0);
   TH1D *h_XA3_detected = new TH1D("h_XA3_detected", "h_XA3_detected", 1000, 0, 2000.0);
-  TH1D *h_XA_all_detected_capture_topcenter = new TH1D("h_XA_all_detected_capture_topcenter", "h_XA_all_detected_capture_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA0_detected_capture_XA0_topcenter = new TH1D("h_XA0_detected_capture_XA0_topcenter", "h_XA0_detected_capture_XA0_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA1_detected_capture_XA0_topcenter = new TH1D("h_XA1_detected_capture_XA0_topcenter", "h_XA1_detected_capture_XA0_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA2_detected_capture_XA0_topcenter = new TH1D("h_XA2_detected_capture_XA0_topcenter", "h_XA2_detected_capture_XA0_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA3_detected_capture_XA0_topcenter = new TH1D("h_XA3_detected_capture_XA0_topcenter", "h_XA3_detected_capture_XA0_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA0_detected_capture_XA1_topcenter = new TH1D("h_XA0_detected_capture_XA1_topcenter", "h_XA0_detected_capture_XA1_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA1_detected_capture_XA1_topcenter = new TH1D("h_XA1_detected_capture_XA1_topcenter", "h_XA1_detected_capture_XA1_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA2_detected_capture_XA1_topcenter = new TH1D("h_XA2_detected_capture_XA1_topcenter", "h_XA2_detected_capture_XA1_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA3_detected_capture_XA1_topcenter = new TH1D("h_XA3_detected_capture_XA1_topcenter", "h_XA3_detected_capture_XA1_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA0_detected_capture_XA2_topcenter = new TH1D("h_XA0_detected_capture_XA2_topcenter", "h_XA0_detected_capture_XA2_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA1_detected_capture_XA2_topcenter = new TH1D("h_XA1_detected_capture_XA2_topcenter", "h_XA1_detected_capture_XA2_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA2_detected_capture_XA2_topcenter = new TH1D("h_XA2_detected_capture_XA2_topcenter", "h_XA2_detected_capture_XA2_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA3_detected_capture_XA2_topcenter = new TH1D("h_XA3_detected_capture_XA2_topcenter", "h_XA3_detected_capture_XA2_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA0_detected_capture_XA3_topcenter = new TH1D("h_XA0_detected_capture_XA3_topcenter", "h_XA0_detected_capture_XA3_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA1_detected_capture_XA3_topcenter = new TH1D("h_XA1_detected_capture_XA3_topcenter", "h_XA1_detected_capture_XA3_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA2_detected_capture_XA3_topcenter = new TH1D("h_XA2_detected_capture_XA3_topcenter", "h_XA2_detected_capture_XA3_topcenter", 1000, 0, 2000.0);
-  TH1D *h_XA3_detected_capture_XA3_topcenter = new TH1D("h_XA3_detected_capture_XA3_topcenter", "h_XA3_detected_capture_XA3_topcenter", 1000, 0, 2000.0);
+  TH1D *h_SourceXAsTop_XAsDet = new TH1D("h_SourceXAsTop_XAsDet", "h_SourceXAsTop_XAsDet", 1000, 0, 2000.0);
+  TH1D *h_SourceXA0Top_XA0Det = new TH1D("h_SourceXA0Top_XA0Det", "h_SourceXA0Top_XA0Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA0Top_XA0Det_positronprod = new TH1D("h_SourceXA0Top_XA0Det_positronprod", "h_SourceXA0Top_XA0Det_positronprod", 1000, 0, 2000.0);
+  TH1D *h_SourceXA0Top_XA1Det = new TH1D("h_SourceXA0Top_XA1Det", "h_SourceXA0Top_XA1Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA0Top_XA2Det = new TH1D("h_SourceXA0Top_XA2Det", "h_SourceXA0Top_XA2Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA0Top_XA3Det = new TH1D("h_SourceXA0Top_XA3Det", "h_SourceXA0Top_XA3Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA1Top_XA0Det = new TH1D("h_SourceXA1Top_XA0Det", "h_SourceXA1Top_XA0Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA1Top_XA1Det = new TH1D("h_SourceXA1Top_XA1Det", "h_SourceXA1Top_XA1Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA1Top_XA2Det = new TH1D("h_SourceXA1Top_XA2Det", "h_SourceXA1Top_XA2Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA1Top_XA3Det = new TH1D("h_SourceXA1Top_XA3Det", "h_SourceXA1Top_XA3Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA2Top_XA0Det = new TH1D("h_SourceXA2Top_XA0Det", "h_SourceXA2Top_XA0Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA2Top_XA1Det = new TH1D("h_SourceXA2Top_XA1Det", "h_SourceXA2Top_XA1Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA2Top_XA2Det = new TH1D("h_SourceXA2Top_XA2Det", "h_SourceXA2Top_XA2Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA2Top_XA3Det = new TH1D("h_SourceXA2Top_XA3Det", "h_SourceXA2Top_XA3Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA3Top_XA0Det = new TH1D("h_SourceXA3Top_XA0Det", "h_SourceXA3Top_XA0Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA3Top_XA1Det = new TH1D("h_SourceXA3Top_XA1Det", "h_SourceXA3Top_XA1Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA3Top_XA2Det = new TH1D("h_SourceXA3Top_XA2Det", "h_SourceXA3Top_XA2Det", 1000, 0, 2000.0);
+  TH1D *h_SourceXA3Top_XA3Det = new TH1D("h_SourceXA3Top_XA3Det", "h_SourceXA3Top_XA3Det", 1000, 0, 2000.0);
   TH2D *h_X_LY                   = new TH2D("h_X_LY",                   "", 50, -25, 25, 30, 0, 60.0);
   TH2D *h_X_LY_column_normalized = new TH2D("h_X_LY_column_normalized", "", 50, -25, 25, 30, 0, 60.0);
   TH2D *h_Y_LY                   = new TH2D("h_Y_LY",                   "", 40, -200, 200, 30, 0, 60.0);
@@ -116,7 +119,9 @@ void LightYieldAna() {
     //std::cout << "number of cascades: " << numgamma << ", totE (MeV): " << totE << std::endl;
 
     // Plot capture position
-    h_X->Fill(gammaposX->at(0)); // since all gammas in each evt are at same pos
+    // Since all cascade gammas are primary particles in G4 and they are at the same pos,
+    // use the first particle's (i.e., one of the gammas) position as capture position
+    h_X->Fill(gammaposX->at(0));
     h_Y->Fill(gammaposY->at(0));
     h_Z->Fill(gammaposZ->at(0));
 
@@ -134,10 +139,10 @@ void LightYieldAna() {
     h_Y_LY->Fill(gammaposY->at(0), CountDetected_OpDetEvents/totE);
     h_Z_LY->Fill(gammaposZ->at(0), CountDetected_OpDetEvents/totE);
 
-    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA0y - capturerange && gammaposY->at(0) < XA0y + capturerange && gammaposZ->at(0) > XA0z - capturerange && gammaposZ->at(0) < XA0z + capturerange ) h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
-    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA1y - capturerange && gammaposY->at(0) < XA1y + capturerange && gammaposZ->at(0) > XA1z - capturerange && gammaposZ->at(0) < XA1z + capturerange ) h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
-    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA2y - capturerange && gammaposY->at(0) < XA2y + capturerange && gammaposZ->at(0) > XA2z - capturerange && gammaposZ->at(0) < XA2z + capturerange ) h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
-    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA3y - capturerange && gammaposY->at(0) < XA3y + capturerange && gammaposZ->at(0) > XA3z - capturerange && gammaposZ->at(0) < XA3z + capturerange ) h_XA_all_detected_capture_topcenter->Fill(CountDetected_OpDetEvents);
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA0y - capturerange && gammaposY->at(0) < XA0y + capturerange && gammaposZ->at(0) > XA0z - capturerange && gammaposZ->at(0) < XA0z + capturerange ) h_SourceXAsTop_XAsDet->Fill(CountDetected_OpDetEvents);
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA1y - capturerange && gammaposY->at(0) < XA1y + capturerange && gammaposZ->at(0) > XA1z - capturerange && gammaposZ->at(0) < XA1z + capturerange ) h_SourceXAsTop_XAsDet->Fill(CountDetected_OpDetEvents);
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA2y - capturerange && gammaposY->at(0) < XA2y + capturerange && gammaposZ->at(0) > XA2z - capturerange && gammaposZ->at(0) < XA2z + capturerange ) h_SourceXAsTop_XAsDet->Fill(CountDetected_OpDetEvents);
+    if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength && gammaposY->at(0) > XA3y - capturerange && gammaposY->at(0) < XA3y + capturerange && gammaposZ->at(0) > XA3z - capturerange && gammaposZ->at(0) < XA3z + capturerange ) h_SourceXAsTop_XAsDet->Fill(CountDetected_OpDetEvents);
 
     // Fill tot detected at each XA PD module
     // ievt: 0 cooresponds to EventID: 1, max EventID is tot number of evts
@@ -150,6 +155,7 @@ void LightYieldAna() {
 
     // Read detected on each XA when capture is right on top of each XA
     int XA0Detected_captureonXA0top=0;
+    int XA0Detected_captureonXA0top_positronprod=0; // this is pair prod
     int XA1Detected_captureonXA0top=0;
     int XA2Detected_captureonXA0top=0;
     int XA3Detected_captureonXA0top=0;
@@ -180,7 +186,12 @@ void LightYieldAna() {
         // If capture happens right on top of each XA (above the PD, around the center)
         //
         // Right on top of XA0
-        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA0y - capturerange && gammaposY->at(0) < XA0y + capturerange && gammaposZ->at(0) > XA0z - capturerange && gammaposZ->at(0) < XA0z + capturerange ) XA0Detected_captureonXA0top++;
+        if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA0y - capturerange && gammaposY->at(0) < XA0y + capturerange && gammaposZ->at(0) > XA0z - capturerange && gammaposZ->at(0) < XA0z + capturerange ) {
+          XA0Detected_captureonXA0top++;
+          if (positronprod == 1) {
+            XA0Detected_captureonXA0top_positronprod++;
+          }
+        }
         // Right on top of XA1
         if ( gammaposX->at(0) > XAplaneX && gammaposX->at(0) < XAplaneX + driftlength  && gammaposY->at(0) > XA1y - capturerange && gammaposY->at(0) < XA1y + capturerange && gammaposZ->at(0) > XA1z - capturerange && gammaposZ->at(0) < XA1z + capturerange ) XA0Detected_captureonXA1top++;
         // Right on top of XA2
@@ -235,25 +246,26 @@ void LightYieldAna() {
     h_XA2_detected->Fill(XA2Detected);
     h_XA3_detected->Fill(XA3Detected);
 
-    h_XA0_detected_capture_XA0_topcenter->Fill(XA0Detected_captureonXA0top);
-    h_XA1_detected_capture_XA0_topcenter->Fill(XA1Detected_captureonXA0top);
-    h_XA2_detected_capture_XA0_topcenter->Fill(XA2Detected_captureonXA0top);
-    h_XA3_detected_capture_XA0_topcenter->Fill(XA3Detected_captureonXA0top);
+    h_SourceXA0Top_XA0Det->Fill(XA0Detected_captureonXA0top);
+    if (XA0Detected_captureonXA0top_positronprod > 0) h_SourceXA0Top_XA0Det_positronprod->Fill(XA0Detected_captureonXA0top_positronprod);
+    h_SourceXA0Top_XA1Det->Fill(XA1Detected_captureonXA0top);
+    h_SourceXA0Top_XA2Det->Fill(XA2Detected_captureonXA0top);
+    h_SourceXA0Top_XA3Det->Fill(XA3Detected_captureonXA0top);
 
-    h_XA0_detected_capture_XA1_topcenter->Fill(XA0Detected_captureonXA1top);
-    h_XA1_detected_capture_XA1_topcenter->Fill(XA1Detected_captureonXA1top);
-    h_XA2_detected_capture_XA1_topcenter->Fill(XA2Detected_captureonXA1top);
-    h_XA3_detected_capture_XA1_topcenter->Fill(XA3Detected_captureonXA1top);
+    h_SourceXA1Top_XA0Det->Fill(XA0Detected_captureonXA1top);
+    h_SourceXA1Top_XA1Det->Fill(XA1Detected_captureonXA1top);
+    h_SourceXA1Top_XA2Det->Fill(XA2Detected_captureonXA1top);
+    h_SourceXA1Top_XA3Det->Fill(XA3Detected_captureonXA1top);
 
-    h_XA0_detected_capture_XA2_topcenter->Fill(XA0Detected_captureonXA2top);
-    h_XA1_detected_capture_XA2_topcenter->Fill(XA1Detected_captureonXA2top);
-    h_XA2_detected_capture_XA2_topcenter->Fill(XA2Detected_captureonXA2top);
-    h_XA3_detected_capture_XA2_topcenter->Fill(XA3Detected_captureonXA2top);
+    h_SourceXA2Top_XA0Det->Fill(XA0Detected_captureonXA2top);
+    h_SourceXA2Top_XA1Det->Fill(XA1Detected_captureonXA2top);
+    h_SourceXA2Top_XA2Det->Fill(XA2Detected_captureonXA2top);
+    h_SourceXA2Top_XA3Det->Fill(XA3Detected_captureonXA2top);
 
-    h_XA0_detected_capture_XA3_topcenter->Fill(XA0Detected_captureonXA3top);
-    h_XA1_detected_capture_XA3_topcenter->Fill(XA1Detected_captureonXA3top);
-    h_XA2_detected_capture_XA3_topcenter->Fill(XA2Detected_captureonXA3top);
-    h_XA3_detected_capture_XA3_topcenter->Fill(XA3Detected_captureonXA3top);
+    h_SourceXA3Top_XA0Det->Fill(XA0Detected_captureonXA3top);
+    h_SourceXA3Top_XA1Det->Fill(XA1Detected_captureonXA3top);
+    h_SourceXA3Top_XA2Det->Fill(XA2Detected_captureonXA3top);
+    h_SourceXA3Top_XA3Det->Fill(XA3Detected_captureonXA3top);
 
   } // end loop over totOpDetEvents
 
@@ -306,48 +318,50 @@ void LightYieldAna() {
   h_LY->GetXaxis()->SetTitle("Light yield (PE/MeV)");
   h_LY->Write();
 
-  h_XA0_detected->GetXaxis()->SetTitle("Detected PEs");
+  h_XA0_detected->GetXaxis()->SetTitle("XA0 Detected PEs");
   h_XA0_detected->Write();
-  h_XA1_detected->GetXaxis()->SetTitle("Detected PEs");
+  h_XA1_detected->GetXaxis()->SetTitle("XA1 Detected PEs");
   h_XA1_detected->Write();
-  h_XA2_detected->GetXaxis()->SetTitle("Detected PEs");
+  h_XA2_detected->GetXaxis()->SetTitle("XA2 Detected PEs");
   h_XA2_detected->Write();
-  h_XA3_detected->GetXaxis()->SetTitle("Detected PEs");
+  h_XA3_detected->GetXaxis()->SetTitle("XA3 Detected PEs");
   h_XA3_detected->Write();
-  h_XA_all_detected_capture_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA_all_detected_capture_topcenter->Write();
-  h_XA0_detected_capture_XA0_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA0_detected_capture_XA0_topcenter->Write();
-  h_XA1_detected_capture_XA0_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA1_detected_capture_XA0_topcenter->Write();
-  h_XA2_detected_capture_XA0_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA2_detected_capture_XA0_topcenter->Write();
-  h_XA3_detected_capture_XA0_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA3_detected_capture_XA0_topcenter->Write();
-  h_XA0_detected_capture_XA1_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA0_detected_capture_XA1_topcenter->Write();
-  h_XA1_detected_capture_XA1_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA1_detected_capture_XA1_topcenter->Write();
-  h_XA2_detected_capture_XA1_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA2_detected_capture_XA1_topcenter->Write();
-  h_XA3_detected_capture_XA1_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA3_detected_capture_XA1_topcenter->Write();
-  h_XA0_detected_capture_XA2_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA0_detected_capture_XA2_topcenter->Write();
-  h_XA1_detected_capture_XA2_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA1_detected_capture_XA2_topcenter->Write();
-  h_XA2_detected_capture_XA2_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA2_detected_capture_XA2_topcenter->Write();
-  h_XA3_detected_capture_XA2_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA3_detected_capture_XA2_topcenter->Write();
-  h_XA0_detected_capture_XA3_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA0_detected_capture_XA3_topcenter->Write();
-  h_XA1_detected_capture_XA3_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA1_detected_capture_XA3_topcenter->Write();
-  h_XA2_detected_capture_XA3_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA2_detected_capture_XA3_topcenter->Write();
-  h_XA3_detected_capture_XA3_topcenter->GetXaxis()->SetTitle("Detected PEs");
-  h_XA3_detected_capture_XA3_topcenter->Write();
+  h_SourceXAsTop_XAsDet->GetXaxis()->SetTitle("All XAs Detected PEs");
+  h_SourceXAsTop_XAsDet->Write();
+  h_SourceXA0Top_XA0Det->GetXaxis()->SetTitle("XA0 Detected PEs");
+  h_SourceXA0Top_XA0Det->Write();
+  h_SourceXA0Top_XA0Det_positronprod->GetXaxis()->SetTitle("XA0 Detected PEs");
+  h_SourceXA0Top_XA0Det_positronprod->Write();
+  h_SourceXA0Top_XA1Det->GetXaxis()->SetTitle("XA1 Detected PEs");
+  h_SourceXA0Top_XA1Det->Write();
+  h_SourceXA0Top_XA2Det->GetXaxis()->SetTitle("XA2 Detected PEs");
+  h_SourceXA0Top_XA2Det->Write();
+  h_SourceXA0Top_XA3Det->GetXaxis()->SetTitle("XA3 Detected PEs");
+  h_SourceXA0Top_XA3Det->Write();
+  h_SourceXA1Top_XA0Det->GetXaxis()->SetTitle("XA0 Detected PEs");
+  h_SourceXA1Top_XA0Det->Write();
+  h_SourceXA1Top_XA1Det->GetXaxis()->SetTitle("XA1 Detected PEs");
+  h_SourceXA1Top_XA1Det->Write();
+  h_SourceXA1Top_XA2Det->GetXaxis()->SetTitle("XA2 Detected PEs");
+  h_SourceXA1Top_XA2Det->Write();
+  h_SourceXA1Top_XA3Det->GetXaxis()->SetTitle("XA3 Detected PEs");
+  h_SourceXA1Top_XA3Det->Write();
+  h_SourceXA2Top_XA0Det->GetXaxis()->SetTitle("XA0 Detected PEs");
+  h_SourceXA2Top_XA0Det->Write();
+  h_SourceXA2Top_XA1Det->GetXaxis()->SetTitle("XA1 Detected PEs");
+  h_SourceXA2Top_XA1Det->Write();
+  h_SourceXA2Top_XA2Det->GetXaxis()->SetTitle("XA2 Detected PEs");
+  h_SourceXA2Top_XA2Det->Write();
+  h_SourceXA2Top_XA3Det->GetXaxis()->SetTitle("XA3 Detected PEs");
+  h_SourceXA2Top_XA3Det->Write();
+  h_SourceXA3Top_XA0Det->GetXaxis()->SetTitle("XA0 Detected PEs");
+  h_SourceXA3Top_XA0Det->Write();
+  h_SourceXA3Top_XA1Det->GetXaxis()->SetTitle("XA1 Detected PEs");
+  h_SourceXA3Top_XA1Det->Write();
+  h_SourceXA3Top_XA2Det->GetXaxis()->SetTitle("XA2 Detected PEs");
+  h_SourceXA3Top_XA2Det->Write();
+  h_SourceXA3Top_XA3Det->GetXaxis()->SetTitle("XA3 Detected PEs");
+  h_SourceXA3Top_XA3Det->Write();
 
   // Column normalize
   TH1D *h_X_LY_projectX = h_X_LY->ProjectionX();

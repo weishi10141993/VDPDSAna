@@ -65,6 +65,8 @@ services.PhotonVisibilityService: {
 
 
 services.LArG4Parameters.UseCustomPhysics: true
+# Want to see daughter/secondary particle from primaries
+services.LArG4Parameters.KeepEMShowerDaughters: true
 # Fast simulation is 'FastOptical' option.
 # Full simulation is 'Optical' option.
 services.LArG4Parameters.EnabledPhysics: [ "Em",
@@ -140,7 +142,7 @@ physics:
    XAresponse: #XArapuca response; Shu, 20230308---
    {
      module_type:             "SimPhotonCounter"
-     Verbosity:               4 # 1: output less on terminal---
+     Verbosity:               1
      InputModule:             "largeant"
      MakeAllPhotonsTree:      true
      MakeDetectedPhotonsTree: true
