@@ -107,13 +107,38 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
     Int_t tot_gammas =0; //number of gammas for the entire event
     Double_t probMyGamma = 51.2;
 
-    Int_t nb1 = 0, nb2 = 0, nb3 = 0, nb4 = 0, nb5 = 0;
+    Int_t nb1 = 0, nb2 = 0, nb3 = 0, nb4 = 0, nb5 = 0, nb6 = 0, nb7 = 0, nb8 = 0, nb9 = 0, nb10 = 0, nb11 = 0, nb12 = 0;
+    Int_t nb13 = 0, nb14 = 0, nb15 = 0, nb16 = 0, nb17 = 0, nb18 = 0, nb19 = 0, nb20 = 0, nb21 = 0;
+    Int_t nb22 = 0, nb23 = 0, nb24 = 0, nb25 = 0, nb26 = 0, nb27 = 0, nb28 = 0, nb29 = 0;
     // 1 is 4.7+1.18+0.167
     // 2 is 5582+516
     // 3 is 4.7+0.8+0.5
     // 4 is 3.7+1+1.18+0.167
     // 5 is 2771.8 1972.6 837.7 348.7 167.3
-
+    // 6 is 3.7MeV, 1.04MeV, 837keV, 516keV
+    // 7 is 3.7MeV, 1.88MeV, 516keV
+    // 8 is 3.7MeV, 2.23MeV, 167keV
+    // 9 is 2.77MeV, 1.97MeV, 1.18MeV, 167keV
+    // 10 is 2.77MeV, 1.97MeV, 837keV, 516keV
+    // 11 is 2.77MeV, 2.29MeV, 867keV, 167keV
+    // 12 is 2.77MeV, 2.81MeV, 516keV
+    // 13 is 5.063MeV, 867keV, 167keV
+    // 14 is 3.36MeV,  2.56MeV, 167keV
+    // 15 is 3.15MeV, 2.78MeV, 167keV
+    // 16 is 3.15MeV, 2.43MeV, 516keV
+    // 17 is 3.089MeV, 2.8MeV, 167keV
+    // 18 is 2.1MeV, 2.6MeV, 1.18MeV, 167keV
+    // 19 is 2.1MeV, 2.6MeV, 837keV, 516keV
+    // 20 is 2.1MeV, 3.45MeV, 516keV
+    // 21 is 1.83MeV, 4.1MeV, 163MeV
+    // 22 is 5.58MeV, 348keV, 167keV
+    // 23 is 4.7MeV, 837keV, 348keV, 167keV
+    // 24 is 3.7MeV, 1.04MeV, 837keV, 348keV, 167keV
+    // 25 is 3.7MeV, 1.88MeV, 348keV, 167keV
+    // 26 is 2.77MeV, 2.81MeV, 348keV, 167keV
+    // 27 is 3.15MeV, 2.43MeV, 348keV, 167keV
+    // 28 is 2.1MeV, 2.6MeV, 837keV, 348keV, 167keV
+    // 29 is 2.1MeV, 3.45MeV, 348keV, 167keV
 
     for (UInt_t e = 0; e <nevents; e++){
       // Initialization
@@ -396,10 +421,76 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	  if (v_gammas.at(0) == 4745.0 && v_gammas.at(1) == 837.7 && v_gammas.at(2) == 516.0) {
 	    nb3++;
 	  }
+    if (v_gammas.at(0) == 3700.4 && v_gammas.at(1) == 1881.5 && v_gammas.at(2) == 516.0) {
+	    nb7++;
+	  }
+    if (v_gammas.at(0) == 3700.4 && v_gammas.at(1) == 2229.5 && v_gammas.at(2) == 167.3) {
+	    nb8++;
+	  }
+    if (v_gammas.at(0) == 2771.8 && v_gammas.at(1) == 2810.5 && v_gammas.at(2) == 516.0) {
+	    nb12++;
+	  }
+    if (v_gammas.at(0) == 5063.7 && v_gammas.at(1) == 867.3 && v_gammas.at(2) == 167.3) {
+	    nb13++;
+	  }
+    if (v_gammas.at(0) == 3365.5 && v_gammas.at(1) == 2566.1 && v_gammas.at(2) == 167.3) {
+	    nb14++;
+	  }
+    if (v_gammas.at(0) == 3150.2 && v_gammas.at(1) == 2781.8 && v_gammas.at(2) == 167.3) {
+	    nb15++;
+	  }
+    if (v_gammas.at(0) == 3150.2 && v_gammas.at(1) == 2432.5 && v_gammas.at(2) == 516.0) {
+	    nb16++;
+	  }
+    if (v_gammas.at(0) == 3089.4 && v_gammas.at(1) == 2842.5 && v_gammas.at(2) == 167.3) {
+	    nb17++;
+	  }
+    if (v_gammas.at(0) == 2130.7 && v_gammas.at(1) == 3451.8 && v_gammas.at(2) == 516.0 ) {
+	    nb20++;
+	  }
+    if (v_gammas.at(0) == 1828.8 && v_gammas.at(1) == 4102.5 && v_gammas.at(2) == 167.3 ) {
+	    nb21++;
+	  }
+    if (v_gammas.at(0) == 5582.0 && v_gammas.at(1) == 348.7 && v_gammas.at(2) == 167.3 ) {
+	    nb22++;
+	  }
 	}
 	if (v_gammas.size() == 4) {
 	  if (v_gammas.at(0) == 3700.4 && v_gammas.at(1) == 1044.3 && v_gammas.at(2) == 1186.8 && v_gammas.at(3) == 167.3) {
 	    nb4++;
+	  }
+    if (v_gammas.at(0) == 3700.4 && v_gammas.at(1) == 1044.3 && v_gammas.at(2) == 837.7 && v_gammas.at(3) == 516.0) {
+	    nb6++;
+	  }
+    if (v_gammas.at(0) == 2771.8 && v_gammas.at(1) == 1972.6 && v_gammas.at(2) == 1186.8 && v_gammas.at(3) == 167.3) {
+	    nb9++;
+	  }
+    if (v_gammas.at(0) == 2771.8 && v_gammas.at(1) == 1972.6 && v_gammas.at(2) == 837.7 && v_gammas.at(3) == 516.0) {
+	    nb10++;
+	  }
+    if (v_gammas.at(0) == 2771.8 && v_gammas.at(1) == 2291.6 && v_gammas.at(2) == 867.3 && v_gammas.at(3) == 167.3) {
+	    nb11++;
+	  }
+    if (v_gammas.at(0) == 2130.7 && v_gammas.at(1) == 2614.3 && v_gammas.at(2) == 1186.8 && v_gammas.at(3) == 167.3) {
+	    nb18++;
+	  }
+    if (v_gammas.at(0) == 2130.7 && v_gammas.at(1) == 2614.3 && v_gammas.at(2) == 837.7 && v_gammas.at(3) == 516.0) {
+	    nb19++;
+	  }
+    if (v_gammas.at(0) == 4745.0 && v_gammas.at(1) == 837.7 && v_gammas.at(2) == 348.7 && v_gammas.at(3) == 167.3) {
+	    nb23++;
+	  }
+    if (v_gammas.at(0) == 3700.4 && v_gammas.at(1) == 1881.5 && v_gammas.at(2) == 348.7 && v_gammas.at(3) == 167.3) {
+	    nb25++;
+	  }
+    if (v_gammas.at(0) == 2771.8 && v_gammas.at(1) == 2810.5 && v_gammas.at(2) == 348.7 && v_gammas.at(3) == 167.3) {
+	    nb26++;
+	  }
+    if (v_gammas.at(0) == 3150.2 && v_gammas.at(1) == 2432.5 && v_gammas.at(2) == 348.7 && v_gammas.at(3) == 167.3) {
+	    nb27++;
+	  }
+    if (v_gammas.at(0) == 2130.7 && v_gammas.at(1) == 3451.8 && v_gammas.at(2) == 348.7 && v_gammas.at(3) == 167.3) {
+	    nb29++;
 	  }
 	}
 	if (v_gammas.size() == 2) {
@@ -410,6 +501,12 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
 	if (v_gammas.size() == 5) {
 	  if (v_gammas.at(0) == 2771.8 && v_gammas.at(1) == 1972.6 && v_gammas.at(2) == 837.7 && v_gammas.at(3) == 348.7 && v_gammas.at(4) == 167.3) {
 	    nb5++;
+	  }
+    if (v_gammas.at(0) == 3700.4 && v_gammas.at(1) == 1044.3 && v_gammas.at(2) == 837.7 && v_gammas.at(3) == 348.7 && v_gammas.at(4) == 167.3) {
+	    nb24++;
+	  }
+    if (v_gammas.at(0) == 2130.7 && v_gammas.at(1) == 2614.3 && v_gammas.at(2) == 837.7 && v_gammas.at(3) == 348.7 && v_gammas.at(4) == 167.3) {
+	    nb28++;
 	  }
 	}
 
@@ -431,7 +528,9 @@ void generate_txtgen_w_t0(UInt_t ndecays, UInt_t nevents, string fileout) {
     } //end of nb events loop
 
 
-    cout << nb1 << " " << nb2 << " " << nb3 << " " << nb4 << " " << nb5 << "\n";
+    cout << "nb1: " << nb1 << ", nb2: " << nb2 << ", nb3: " << nb3 << ", nb4: " << nb4 << ", nb5: " << nb5 << ", nb6: " << nb6 << ", nb7: " << nb7 << ", nb8: " << nb8 << ", nb9: " << nb9 << ", nb10: " << nb10 << ", nb11: " << nb11 << ", nb12: " << nb12 << "\n";
+    cout << "nb13: " << nb13 << ", nb14: " << nb14 << ", nb15: " << nb15 << ", nb16: " << nb16 << ", nb17: " << nb17 << ", nb18: " << nb18 << ", nb19: " << nb19 << ", nb20: " << nb20 << ", nb21: " << nb21 << "\n";
+    cout << "nb22: " << nb22 << ", nb23: " << nb23 << ", nb24: " << nb24 << ", nb25: " << nb25 << ", nb26: " << nb26 << ", nb27: " << nb27 << ", nb28: " << nb28 << ", nb29: " << nb29 << "\n";
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

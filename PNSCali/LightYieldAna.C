@@ -10,12 +10,13 @@
 #include "TBranch.h"
 #include "TH2.h"
 #include "TH1.h"
+#include "TH3.h"
 #include "TCanvas.h"
 
 void LightYieldAna() {
 
-  //TFile *file = new TFile("TextFileGen_hist_module1.root");
-  TFile *file = new TFile("SinglesGen_hist_module1.root");
+  TFile *file = new TFile("TextFileGen_hist_module1.root");
+  //TFile *file = new TFile("SinglesGen_hist_module1.root");
   TTree* OpDetEventsTree = (TTree*) file->Get("XAresponse/OpDetEvents");
   TTree* DetectedPhotonsTree = (TTree*) file->Get("XAresponse/DetectedPhotons");
 
@@ -57,6 +58,7 @@ void LightYieldAna() {
   TH1D *h_X = new TH1D("h_X", "", 50, -25, 25);
   TH1D *h_Y = new TH1D("h_Y", "", 100, -200, 200);
   TH1D *h_Z = new TH1D("h_Z", "", 100, 0, 300);
+  TH3D *h_YZX = new TH3D("h_YZX", "",  400, -200, 200, 300, 0, 300, 50, -25, 25);
   TH1D *h_totE = new TH1D("h_totE", "", 30000, 0, 6.1);
   //TH1D *h_totE = new TH1D("h_totE", "", 3000, 6.097, 6.1);
   //TH2D *h_totE_detected                   = new TH2D("h_totE_detected", "",                   30, 6.097, 6.1, 70, 0, 700);
@@ -124,6 +126,7 @@ void LightYieldAna() {
     h_X->Fill(gammaposX->at(0));
     h_Y->Fill(gammaposY->at(0));
     h_Z->Fill(gammaposZ->at(0));
+    h_YZX->Fill(gammaposY->at(0), gammaposZ->at(0), gammaposX->at(0));
 
     // Plot tot E distribution of all events
     h_totE->Fill(totE);
@@ -283,6 +286,11 @@ void LightYieldAna() {
   h_Z->GetXaxis()->SetTitle("Capture position Z (cm)");
   h_Z->GetYaxis()->SetTitle("Events/3cm");
   h_Z->Write();
+
+  h_YZX->GetXaxis()->SetTitle("Y (cm)");
+  h_YZX->GetYaxis()->SetTitle("Z (cm)");
+  h_YZX->GetZaxis()->SetTitle("X (cm)");
+  h_YZX->Write();
 
   h_totE->GetXaxis()->SetTitle("Total gamma cascade E (MeV)");
   h_totE->GetYaxis()->SetTitle("Events/eV");

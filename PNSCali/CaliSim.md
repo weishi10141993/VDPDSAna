@@ -29,8 +29,8 @@ mrbsetenv
 mrb b
 
 cd /exp/dune/app/users/weishi/VDPDSAna/PNSCali
-lar -c module1_v1.fcl -n 100     # this uses SinglesGen particle gun
-lar -c module1_v1data.fcl -n 100 # this uses gamma cascade input from neutron captures
+lar -c module1_v1.fcl -n 10     # this uses SinglesGen particle gun
+lar -c module1_v1data.fcl -n 10 # this uses gamma cascade input from neutron captures
 ```
 
 If re-login,
@@ -43,7 +43,6 @@ mrbsetenv
 
 cd /exp/dune/app/users/weishi/VDPDSAna/PNSCali
 nohup lar -c module1_v1.fcl -n 10000 >& output.log &
- # this uses gamma cascade input from neutron captures
 ```
 
 To analyze the light yield,
