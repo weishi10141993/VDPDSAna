@@ -1721,6 +1721,27 @@
       y="60"
       z="60"/>
 
+      <box name="MembraneArapucaOut" lunit="cm"
+        x="65"
+        y="2.5"
+        z="65"/>
+
+      <box name="MembraneArapucaIn" lunit="cm"
+        x="60"
+        y="2.5"
+        z="60"/>
+
+       <subtraction name="MembraneArapucaWalls">
+        <first  ref="MembraneArapucaOut"/>
+        <second ref="MembraneArapucaIn"/>
+        <position name="posMembraneArapucaSub" x="0." y="1.25" z="0." unit="cm"/>
+        </subtraction>
+
+      <box name="MembraneArapucaAcceptanceWindow" lunit="cm"
+        x="60"
+        y="1"
+        z="60"/>
+
     <!--
     <box name="MiniArapucaOut" lunit="cm"
       x="2.5"
@@ -7346,6 +7367,22 @@
       <materialref ref="LAr"/>
       <solidref ref="TileAcceptanceWindow"/>
     </volume>
+    <volume name="volTile-4">
+      <materialref ref="G10"/>
+      <solidref ref="MembraneArapucaWalls"/>
+    </volume>
+    <volume name="volOpDetSensitive_Tile-4">
+      <materialref ref="LAr"/>
+      <solidref ref="MembraneArapucaAcceptanceWindow"/>
+    </volume>
+    <volume name="volTile-5">
+      <materialref ref="G10"/>
+      <solidref ref="MembraneArapucaWalls"/>
+    </volume>
+    <volume name="volOpDetSensitive_Tile-5">
+      <materialref ref="LAr"/>
+      <solidref ref="MembraneArapucaAcceptanceWindow"/>
+    </volume>
     <!--
     <volume name="volMiniArapuca-0">
       <materialref ref="G10" />
@@ -9716,6 +9753,34 @@
          x="-36.967"
 	 y="-38"
 	 z="108.5"/>
+     </physvol>
+     <physvol>
+       <volumeref ref="volTile-4"/>
+       <position name="posTile4" unit="cm"
+         x="-27"
+	 y="188"
+	 z="37.3"/>
+     </physvol>
+     <physvol>
+       <volumeref ref="volOpDetSensitive_Tile-4"/>
+       <position name="posOpTile4" unit="cm"
+         x="-27"
+	 y="187.2"
+	 z="37.3"/>
+     </physvol>
+     <physvol>
+       <volumeref ref="volTile-5"/>
+       <position name="posTile5" unit="cm"
+         x="-27"
+  y="188"
+  z="-37.7"/>
+     </physvol>
+     <physvol>
+       <volumeref ref="volOpDetSensitive_Tile-5"/>
+       <position name="posOpTile5" unit="cm"
+         x="-27"
+  y="187.2"
+  z="-37.7"/>
      </physvol>
      <!--
      <physvol>

@@ -226,9 +226,9 @@ services.LArPropertiesService.ReflectiveSurfaceDiffuseFractions:[ [ 0, 0, 0, 0, 
 
 ############coordinates based on gdml file
 #Starting point of particles; in cm---
-physics.producers.generator.X0:       [ 0.0, 0.0, 0.0 ]
-physics.producers.generator.Y0:       [ -38, -38, -38 ]
-physics.producers.generator.Z0:       [ 257.9, 257.9, 257.9 ]
+physics.producers.generator.X0:       [ -5.42, -5.42, -5.42 ]
+physics.producers.generator.Y0:       [ 160.2, 160.2, 160.2 ]
+physics.producers.generator.Z0:       [ 186.701, 186.701, 186.701 ]
 physics.producers.generator.T0:       [ 0, 0, 0]
 #position uncertainties---
 physics.producers.generator.SigmaX:  [ 0.0, 0.0, 0.0 ]
