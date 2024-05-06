@@ -1,3 +1,73 @@
+# Analyzed reconstructed ColdBox data (on Fermilab dunegpvm*)
+
+```
+# preliminary reconstructed data from L. Zambelli (April-2024 CRP6+PDS runs)
+/pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068
+
+# location on CERN lxplus eos
+/eos/user/l/lzambell/analysis/coldbox/lardon/reco/CRP6
+```
+
+To analyze the .h5 files:
+```
+[First time only]
+pip install --force-reinstall --target=/exp/dune/app/users/weishi/python3libs tables
+pip install --force-reinstall --target=/exp/dune/app/users/weishi/python3libs fast-histogram
+pip install --force-reinstall --target=/exp/dune/app/users/weishi/python3libs colorcet
+pip install --force-reinstall --target=/exp/dune/app/users/weishi/python3libs "matplotlib==3.1.3"
+pip install --force-reinstall --target=/exp/dune/app/users/weishi/python3libs scipy
+
+[Everytime relogin]
+export PYTHONPATH=/exp/dune/app/users/weishi/python3libs:$PYTHONPATH
+
+python ana_blip.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068/cbbot_25068_100_newcrp.h5
+```
+
+# Reconstruct ColdBox data (on Fermilab dunegpvm*)
+
+We use an existing framework developed by L. Zambelli called [LArDon](https://github.com/dune-lardon/lardon).
+
+[First time only]
+```
+# Install minicoda
+mkdir -p ~/miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+rm -rf ~/miniconda3/miniconda.sh
+
+# initiate minicoda
+~/miniconda3/bin/conda init bash
+```
+
+Install LArdon,
+```
+[First time only]
+git clone https://github.com/weishi10141993/lardon.git
+
+[Everytime relogin]
+export PATH=/exp/dune/app/users/weishi/miniconda3/bin:$PATH
+
+[First time only]
+conda env create -f lardenv.yml
+# activate the environment
+conda activate lardenv
+# check env is activated --> this doesn't seem to work properly
+conda env list
+```
+
+```
+# run lardon to reconstruct events
+# change json files in settings/cbbot regarding reco parameters and detector geo
+
+# test
+/exp/dune/app/users/weishi/miniconda3/envs/lardenv/bin/python3 lardon.py -det cbbot -run 25036 -sub 0000 -trk -pds -out coldbox_LZreco_25036_test
+
+# PNS runs we need
+25068
+25071
+...
+```
+
 # Generate gamma cascades
 
 ```
