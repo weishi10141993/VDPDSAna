@@ -1,26 +1,48 @@
-# Analyzed reconstructed ColdBox data (on Fermilab dunegpvm*)
+# Analyze reconstructed ColdBox data (on Fermilab dunegpvm*)
 
 ```
-# preliminary reconstructed data from L. Zambelli (April-2024 CRP6+PDS runs)
-/pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068
+# preliminary reconstructed data from L. Zambelli
+/pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco
 
 # location on CERN lxplus eos
 /eos/user/l/lzambell/analysis/coldbox/lardon/reco/CRP6
 ```
+To view the h5 file, install hdfview (with brew on mac).
 
 To analyze the .h5 files:
 ```
 [First time only]
-pip install --force-reinstall --target=/exp/dune/app/users/weishi/python3libs tables
-pip install --force-reinstall --target=/exp/dune/app/users/weishi/python3libs fast-histogram
-pip install --force-reinstall --target=/exp/dune/app/users/weishi/python3libs colorcet
-pip install --force-reinstall --target=/exp/dune/app/users/weishi/python3libs "matplotlib==3.1.3"
-pip install --force-reinstall --target=/exp/dune/app/users/weishi/python3libs scipy
+pip install --force-reinstall --target=/exp/dune/app/users/weishi/lardonlibs tables
+pip install --force-reinstall --target=/exp/dune/app/users/weishi/lardonlibs fast-histogram
+pip install --force-reinstall --target=/exp/dune/app/users/weishi/lardonlibs colorcet
+pip install --force-reinstall --target=/exp/dune/app/users/weishi/lardonlibs "matplotlib==3.1.3"
+pip install --force-reinstall --target=/exp/dune/app/users/weishi/lardonlibs scipy
 
 [Everytime relogin]
-export PYTHONPATH=/exp/dune/app/users/weishi/python3libs:$PYTHONPATH
+export PYTHONPATH=/exp/dune/app/users/weishi/lardonlibs:$PYTHONPATH
 
-python ana_blip.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068/cbbot_25068_100_newcrp.h5
+nohup python ncap_fastpdsearch.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25078/cbbot_25078_*.h5 >& output_25078.log &
+nohup python ana_blip.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068/cbbot_25068_100_newcrp.h5 >& output_25068.log &
+```
+
+Here are PD channel maps:
+```
+PD channel map
+
+# April 16-17 (run: 25034)
+    # C1->0, 7
+    # C2->10, 17
+    # C3->20, 27
+    # C4->40, 47
+    # HD-->1
+    # VD-->36
+# April 18-19 run 25050, 25068, 25071
+    # C1->0, 7
+    # C2->10, 17
+    # C3->30, 37
+    # C4->40, 47
+    # HD-->1
+    # VD-->26
 ```
 
 # Reconstruct ColdBox data (on Fermilab dunegpvm*)

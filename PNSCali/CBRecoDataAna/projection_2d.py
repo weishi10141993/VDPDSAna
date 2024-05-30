@@ -7,7 +7,7 @@ import colorcet as cc
 col_density = cc.cm.fire_r
 from matplotlib.colors import LogNorm
 
-def draw_proj(xy, plot_xrange, plot_yrange, plot_bins, ax, ax_col, fig):
+def draw_proj(xy, plot_xrange, plot_yrange, plot_bins, ax, ax_col, fig, coloraxis=True):
     h_fast = fh.histogram2d(*zip(*xy),
                             range=[plot_xrange, plot_yrange],
                             bins = plot_bins)
@@ -16,9 +16,10 @@ def draw_proj(xy, plot_xrange, plot_yrange, plot_bins, ax, ax_col, fig):
     xy_range.extend(plot_yrange)
     im = ax.imshow(h_fast.transpose(), origin='lower',aspect='auto', interpolation='none', extent=xy_range, cmap=col_density)
 
-    cb = fig.colorbar(im, cax=ax_col, orientation='horizontal')
-    cb.ax.xaxis.set_ticks_position('top')
-    cb.ax.xaxis.set_label_position('top')
+    if (coloraxis):
+        cb = fig.colorbar(im, cax=ax_col, orientation='horizontal')
+        cb.ax.xaxis.set_ticks_position('top')
+        cb.ax.xaxis.set_label_position('top')
 
 def scatter_start_stop(x,y, point, out):
     fig = plt.figure(figsize=(4,7))
@@ -65,31 +66,28 @@ def arrow_above(xy, ang, point, out):
     plt.close()
 
 
-def proj_above_all(xy, out, the_title='All Views Together', show=True, point=None):
+def proj_above_all(xy, out, xmin=-168., xmax=168., ymin= -148.896, ymax=148.896, the_title='All Views Together', the_x_title='x [cm]', the_y_title='y [cm]', show=True, point=None, coloraxis=True):
     fig = plt.figure(figsize=(6,5.5))
     gs = gridspec.GridSpec(nrows=2, ncols=1, height_ratios=[1,30])
 
     ax = fig.add_subplot(gs[1,0])
     ax_col = fig.add_subplot(gs[0,0])
 
-
     nx = 380
     ny = 584
 
-    xmin, xmax = -168., 168.
-    ymin, ymax = -148.896, 148.896
+    draw_proj(xy, [xmin, xmax], [ymin, ymax], [nx, ny], ax, ax_col, fig, coloraxis)
 
-
-    draw_proj(xy, [xmin, xmax], [ymin, ymax], [nx, ny], ax, ax_col, fig)
-
-    ax.set_xlabel('x [cm]')
-    ax.set_ylabel('y [cm]')
+    ax.set_xlabel(the_x_title)
+    ax.set_ylabel(the_y_title)
     ax.set_title(the_title)
-    ax_col.set_title('Hit Density')
+    if (coloraxis): ax_col.set_title('Hit Density')
 
     if(point):
         ax.scatter(*zip(*xy), marker='o', facecolors='none', edgecolors='k', s=8)
-        
+        ax.set_xlim((xmin,xmax))
+        ax.set_ylim((ymin,ymax))
+
     plt.tight_layout()
     fig.savefig('results/run_'+out+'_tracks3D_hitsXY_all_views.png', dpi=200)
     if(show):
