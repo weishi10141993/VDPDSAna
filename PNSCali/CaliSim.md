@@ -21,28 +21,36 @@ pip install --force-reinstall --target=/exp/dune/app/users/weishi/lardonlibs sci
 [Everytime relogin]
 export PYTHONPATH=/exp/dune/app/users/weishi/lardonlibs:$PYTHONPATH
 
-nohup python ncap_fastpdsearch.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25078/cbbot_25078_*.h5 >& output_25078.log &
-nohup python ana_blip.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068/cbbot_25068_100_newcrp.h5 >& output_25068.log &
+# access pyroot
+source /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh
+spack load root@6.28.12
+
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068/cbbot_25068_*.h5 >& output_25068.log &
 ```
 
 Here are PD channel maps:
 ```
 PD channel map
 
-# April 16-17 (run: 25034)
+# April 16-17 run: 25036, 25034-1k events
     # C1->0, 7
     # C2->10, 17
     # C3->20, 27
     # C4->40, 47
     # HD-->1
     # VD-->36
-# April 18-19 run 25050, 25068, 25071
+# April 18-19 run 25068, 25071
     # C1->0, 7
     # C2->10, 17
     # C3->30, 37
     # C4->40, 47
     # HD-->1
     # VD-->26
+
+# PDS only run
+25050, 25080
+# cosmic
+25078
 ```
 
 # Reconstruct ColdBox data (on Fermilab dunegpvm*)
@@ -83,11 +91,6 @@ conda env list
 
 # test
 /exp/dune/app/users/weishi/miniconda3/envs/lardenv/bin/python3 lardon.py -det cbbot -run 25036 -sub 0000 -trk -pds -out coldbox_LZreco_25036_test
-
-# PNS runs we need
-25068
-25071
-...
 ```
 
 # Generate gamma cascades
