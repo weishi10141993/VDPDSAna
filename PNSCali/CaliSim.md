@@ -102,6 +102,15 @@ root -l -b -q 'generate_txtgen_w_t0.C(1, 10000, "VDCB_PNS_Side_1_cap_per_evt_10k
 
 # Light Simulation Analysis Setup
 
+On Fermilab Alma9 machines, the simulation needs to run in a SL7 container. Set up container first:
+```
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash \
+-B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid \
+/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+export UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
+```
+
 First time set up
 ```
 cd /exp/dune/app/users/weishi/PDSPNSCali
