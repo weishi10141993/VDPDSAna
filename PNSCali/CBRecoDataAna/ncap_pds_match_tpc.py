@@ -58,6 +58,18 @@ ROI_radius = 30
 # tpc time window (ticks) relative to PD peak time
 time_window_min = 0
 time_window_max = 275
+t_coincidence = 10
+max_time_tick_pd = 65625 # for pd system, each tick is 16 ns
+max_time_tick_tpc = 2100 # for tpc system, each tick is 512 ns
+max_adc_pd = 33000
+n_cap_pd_adc_cut = 5000
+pd_time_gap = 625 # 10us, typical length of pd wfm
+#pd_time_gap = 8750 # 1 tpc drfit window in pd time ticks
+
+if run_number == 25068 or run_number == 25078:
+    beam_stop_time = 11500 # in pd time ticks, for cosmic run doesn't matter
+if run_number == 25050 or run_number == 25071 or run_number == 25036:
+    beam_stop_time = 6563 # 105us in pd time ticks
 
 inname = sys.argv[1]
 inname = inname[inname.rfind("/")+1:]
@@ -74,14 +86,7 @@ if(inname[:3]=="bot"):
 print(inname)
 print('Is top? ', is_top)
 
-n_evt, n_sh = 0, 0
-t_coincidence = 10
-max_time_tick_pd = 65625 # for pd system, each tick is 16 ns
-max_time_tick_tpc = 2100 # for tpc system, each tick is 512 ns
-max_adc_pd = 33000
-n_cap_pd_adc_cut = 5000
-pd_time_gap = 625 # 10us, typical length of pd wfm
-#pd_time_gap = 8750 # 1 tpc drfit window in pd time ticks
+n_evt = 0
 
 # Add two channels per trigger record
 # not across multiple triggers
@@ -154,7 +159,8 @@ for files in sys.argv[1:]:
 
                             """ For PD: only look at peaks with totADC >5000ADC """
                             """ and no other >5000ADC peaks +/- pd time gap """
-                            if C1_per_evt[ipdpeak][0] > n_cap_pd_adc_cut and C1_per_evt[ipdpeak+1][1] - C1_per_evt[ipdpeak][1] > pd_time_gap and C1_per_evt[ipdpeak][1] - C1_per_evt[ipdpeak-1][1] > pd_time_gap:
+                            """ and after neutron beam is not active """
+                            if C1_per_evt[ipdpeak][0] > n_cap_pd_adc_cut and C1_per_evt[ipdpeak][1] > beam_stop_time and  C1_per_evt[ipdpeak+1][1] - C1_per_evt[ipdpeak][1] > pd_time_gap and C1_per_evt[ipdpeak][1] - C1_per_evt[ipdpeak-1][1] > pd_time_gap:
 
                                 """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks """
                                 """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time) """
@@ -228,8 +234,9 @@ for files in sys.argv[1:]:
                         if ipdpeak != 0 and ipdpeak != len(C2_per_evt)-1:
 
                             """ For PD: only look at peaks with totADC >5000ADC """
-                            """ and no other >5000ADC peaks +/-pd time gap  """
-                            if C2_per_evt[ipdpeak][0] > n_cap_pd_adc_cut and C2_per_evt[ipdpeak+1][1] - C2_per_evt[ipdpeak][1] > pd_time_gap and C2_per_evt[ipdpeak][1] - C2_per_evt[ipdpeak-1][1] > pd_time_gap:
+                            """ and no other >5000ADC peaks +/- pd time gap """
+                            """ and after neutron beam is not active """
+                            if C2_per_evt[ipdpeak][0] > n_cap_pd_adc_cut and C2_per_evt[ipdpeak][1] > beam_stop_time and C2_per_evt[ipdpeak+1][1] - C2_per_evt[ipdpeak][1] > pd_time_gap and C2_per_evt[ipdpeak][1] - C2_per_evt[ipdpeak-1][1] > pd_time_gap:
 
                                 """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks"""
                                 """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time)"""
@@ -303,8 +310,9 @@ for files in sys.argv[1:]:
                         if ipdpeak != 0 and ipdpeak != len(C3_per_evt)-1:
 
                             """ For PD: only look at peaks with totADC >5000ADC """
-                            """ and no other >5000ADC peaks +/- pd time gap  """
-                            if C3_per_evt[ipdpeak][0] > n_cap_pd_adc_cut and C3_per_evt[ipdpeak+1][1] - C3_per_evt[ipdpeak][1] > pd_time_gap and C3_per_evt[ipdpeak][1] - C3_per_evt[ipdpeak-1][1] > pd_time_gap:
+                            """ and no other >5000ADC peaks +/- pd time gap """
+                            """ and after neutron beam is not active """
+                            if C3_per_evt[ipdpeak][0] > n_cap_pd_adc_cut and C3_per_evt[ipdpeak][1] > beam_stop_time and C3_per_evt[ipdpeak+1][1] - C3_per_evt[ipdpeak][1] > pd_time_gap and C3_per_evt[ipdpeak][1] - C3_per_evt[ipdpeak-1][1] > pd_time_gap:
 
                                 """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks"""
                                 """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time)"""
@@ -381,7 +389,8 @@ for files in sys.argv[1:]:
 
                             """ For PD: only look at peaks with totADC >5000ADC """
                             """ and no other >5000ADC peaks +/- pd time gap """
-                            if C4_per_evt[ipdpeak][0] > n_cap_pd_adc_cut and C4_per_evt[ipdpeak+1][1] - C4_per_evt[ipdpeak][1] > pd_time_gap and C4_per_evt[ipdpeak][1] - C4_per_evt[ipdpeak-1][1] > pd_time_gap:
+                            """ and after neutron beam is not active """
+                            if C4_per_evt[ipdpeak][0] > n_cap_pd_adc_cut and C4_per_evt[ipdpeak][1] > beam_stop_time and C4_per_evt[ipdpeak+1][1] - C4_per_evt[ipdpeak][1] > pd_time_gap and C4_per_evt[ipdpeak][1] - C4_per_evt[ipdpeak-1][1] > pd_time_gap:
 
                                 """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks"""
                                 """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time)"""

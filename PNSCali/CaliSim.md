@@ -21,11 +21,11 @@ pip install --force-reinstall --target=/exp/dune/app/users/weishi/lardonlibs sci
 [Everytime relogin]
 export PYTHONPATH=/exp/dune/app/users/weishi/lardonlibs:$PYTHONPATH
 
-# access pyroot
-source /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh
-spack load root@6.28.12
+# access pyroot [doesn't work yet]
+#source /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh
+#spack load root@6.28.12
 
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068/cbbot_25068_*.h5 >& output_25068.log &
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25036/cbbot_25036_*.h5 >& output_25036.log &
 ```
 
 Here are PD channel maps:
@@ -88,9 +88,7 @@ conda env list
 ```
 # run lardon to reconstruct events
 # change json files in settings/cbbot regarding reco parameters and detector geo
-
-# test
-/exp/dune/app/users/weishi/miniconda3/envs/lardenv/bin/python3 lardon.py -det cbbot -run 25036 -sub 0000 -trk -pds -out coldbox_LZreco_25036_test
+/exp/dune/app/users/weishi/miniconda3/envs/lardenv/bin/python3 lardon.py -det cbbot -run 25036 -sub 0000 -trk -pds -out coldbox_LZreco_25036_0000
 ```
 
 # Generate gamma cascades
@@ -102,7 +100,7 @@ root -l -b -q 'generate_txtgen_w_t0.C(1, 10000, "VDCB_PNS_Side_1_cap_per_evt_10k
 # 1 means 1 neutron capture per event, can be more than 1 captures
 ```
 
-# Analysis Setup
+# Light Simulation Analysis Setup
 
 First time set up
 ```
