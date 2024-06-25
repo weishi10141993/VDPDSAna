@@ -21,7 +21,7 @@ with tab.open_file(sys.argv[1],"r") as f:
 v_drift = lar.drift_velocity(e_drift)
 print("v_drift = ", v_drift)
 
-run_number = 25036
+run_number = 25078
 # PD channel map for runs on April 18-19
 if run_number == 25050 or run_number == 25068 or run_number == 25071 or run_number == 25078:
     C1_ch1 = 0 # closest to PNS
@@ -165,7 +165,7 @@ for files in sys.argv[1:]:
                                 """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks """
                                 """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time) """
                                 for ish in range(len(shs)):
-                                    if shs[ish][0] > C1_x - ROI_radius and shs[ish][0] < C1_x + ROI_radius and shs[ish][1] > C1_y - ROI_radius and shs[ish][1] < C1_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C1_per_evt[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C1_per_evt[ipdpeak][1]*16/512 + time_window_min and shmatched[ish] == False:
+                                    if shs[ish][0] > C1_x - ROI_radius and shs[ish][0] < C1_x + ROI_radius and shs[ish][1] > C1_y - ROI_radius and shs[ish][1] < C1_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C1_per_evt[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C1_per_evt[ipdpeak][1]*16/512 + time_window_min and shs[ish][3] > 100 and shs[ish][4] < 3 and shmatched[ish] == False:
                                         shmatched[ish] = True
                                         C1_pdmatched_shs_per_evt.append((shs[ish][0], shs[ish][1], shs[ish][2][2] - C1_per_evt[ipdpeak][1]*16/512))
 
@@ -241,7 +241,7 @@ for files in sys.argv[1:]:
                                 """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks"""
                                 """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time)"""
                                 for ish in range(len(shs)):
-                                    if shs[ish][0] > C2_x - ROI_radius and shs[ish][0] < C2_x + ROI_radius and shs[ish][1] > C2_y - ROI_radius and shs[ish][1] < C2_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C2_per_evt[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C2_per_evt[ipdpeak][1]*16/512 + time_window_min and shmatched[ish] == False:
+                                    if shs[ish][0] > C2_x - ROI_radius and shs[ish][0] < C2_x + ROI_radius and shs[ish][1] > C2_y - ROI_radius and shs[ish][1] < C2_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C2_per_evt[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C2_per_evt[ipdpeak][1]*16/512 + time_window_min and shs[ish][3] > 100 and shs[ish][4] < 3 and shmatched[ish] == False:
                                         shmatched[ish] = True
                                         C2_pdmatched_shs_per_evt.append((shs[ish][0], shs[ish][1], shs[ish][2][2] - C2_per_evt[ipdpeak][1]*16/512))
 
@@ -317,7 +317,7 @@ for files in sys.argv[1:]:
                                 """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks"""
                                 """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time)"""
                                 for ish in range(len(shs)):
-                                    if shs[ish][0] > C3_x - ROI_radius and shs[ish][0] < C3_x + ROI_radius and shs[ish][1] > C3_y - ROI_radius and shs[ish][1] < C3_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C3_per_evt[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C3_per_evt[ipdpeak][1]*16/512 + time_window_min and shmatched[ish] == False:
+                                    if shs[ish][0] > C3_x - ROI_radius and shs[ish][0] < C3_x + ROI_radius and shs[ish][1] > C3_y - ROI_radius and shs[ish][1] < C3_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C3_per_evt[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C3_per_evt[ipdpeak][1]*16/512 + time_window_min and shs[ish][3] > 100 and shs[ish][4] < 3 and shmatched[ish] == False:
                                         shmatched[ish] = True
                                         C3_pdmatched_shs_per_evt.append((shs[ish][0], shs[ish][1], shs[ish][2][2] - C3_per_evt[ipdpeak][1]*16/512))
 
@@ -395,7 +395,7 @@ for files in sys.argv[1:]:
                                 """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks"""
                                 """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time)"""
                                 for ish in range(len(shs)):
-                                    if shs[ish][0] > C4_x - ROI_radius and shs[ish][0] < C4_x + ROI_radius and shs[ish][1] > C4_y - ROI_radius and shs[ish][1] < C4_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C4_per_evt[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C4_per_evt[ipdpeak][1]*16/512 + time_window_min and shmatched[ish] == False:
+                                    if shs[ish][0] > C4_x - ROI_radius and shs[ish][0] < C4_x + ROI_radius and shs[ish][1] > C4_y - ROI_radius and shs[ish][1] < C4_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C4_per_evt[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C4_per_evt[ipdpeak][1]*16/512 + time_window_min and shs[ish][3] > 100 and shs[ish][4] < 3 and shmatched[ish] == False:
                                         shmatched[ish] = True
                                         C4_pdmatched_shs_per_evt.append((shs[ish][0], shs[ish][1], shs[ish][2][2] - C4_per_evt[ipdpeak][1]*16/512))
 
@@ -452,7 +452,7 @@ for files in sys.argv[1:]:
                 """ Only need to do one time whenever we switch to new trigger """
                 for row_sh in d_sh:
                     if row_sh['trigger'] == current_trigger and row_sh['tdc_max'][2] <= max_time_tick_tpc:
-                        shs.append((row_sh['x'], row_sh['y'], row_sh['tdc_max']))
+                        shs.append((row_sh['x'], row_sh['y'], row_sh['tdc_max'], row_sh['d_track_2D'], row_sh['d_bary_max']))
                         shmatched.append(False) # False indicate the hit is not matched to pd signal yet
 
             """ Always append a new pd row """
