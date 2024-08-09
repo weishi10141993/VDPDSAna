@@ -1,8 +1,10 @@
 # Analyze reconstructed ColdBox data (on Fermilab dunegpvm*)
 
 ```
-# preliminary reconstructed data from L. Zambelli
+# preliminary reconstructed data from L. Zambelli: 3 max raw hits per view, 2.5cm outlier
 /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco
+# single hits reconstruct with 4 max raw hits per view, 2.5cm outlier
+/pnfs/dune/persistent/users/weishi/PNSPDSColdBox/reco_sh_maxperview4_outlierdmax2p5
 
 # location on CERN lxplus eos
 /eos/user/l/lzambell/analysis/coldbox/lardon/reco/CRP6
@@ -25,7 +27,7 @@ export PYTHONPATH=/exp/dune/app/users/weishi/lardonlibs:$PYTHONPATH
 #source /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh
 #spack load root@6.28.12
 
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25036/cbbot_25036_*.h5 >& output_25036.log &
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/reco_sh_maxperview4_outlierdmax2p5/cbbot_25036/cbbot_25036_*.h5 >& output_25036.log &
 ```
 
 Here are PD channel maps:
@@ -138,13 +140,18 @@ lar -c module1_v1data.fcl -n 10 # this uses gamma cascade input from neutron cap
 If re-login,
 
 ```
-source /grid/fermiapp/products/dune/setup_dune.sh
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 setup dunesw v09_75_00d00 -q e20:prof
 source /exp/dune/app/users/weishi/PDSPNSCali/localProducts_larsoft_v09_75_00_e20_prof/setup
 mrbsetenv
 
 cd /exp/dune/app/users/weishi/VDPDSAna/PNSCali
-nohup lar -c module1_v1.fcl -n 10000 >& output.log &
+nohup lar -c module1_v1data.fcl -n 10000 >& output.log &
+
+# Run on grid
+tar -czvf PDSPNSCali.tar.gz PDSPNSCali Setup_LArSoft.sh dunevdcb1_v2_refactored_M1.gdml dunevdcb1_v2_refactored_M1_nowires.gdml module1_v1data.fcl VDCB_PNS_Side_1_cap_per_evt_600k_evts.dat
+
+jobsub_submit -G dune -N 1 --memory=1000MB --disk=1GB --expected-lifetime=24h --cpu=1 --resource-provides=usage_model=DEDICATED,OPPORTUNISTIC,OFFSITE --tar_file_name=dropbox:///exp/dune/app/users/weishi/PDSPNSCali.tar.gz --use-cvmfs-dropbox -l '+SingularityImage=\"/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest\"' --append_condor_requirements='(TARGET.HAS_Singularity==true&&TARGET.HAS_CVMFS_dune_opensciencegrid_org==true&&TARGET.HAS_CVMFS_larsoft_opensciencegrid_org==true&&TARGET.CVMFS_dune_opensciencegrid_org_REVISION>=1105&&TARGET.HAS_CVMFS_fifeuser1_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser2_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser3_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser4_opensciencegrid_org==true)' file:///exp/dune/app/users/weishi/Run_PNSncapsim_grid.sh
 ```
 
 To analyze the light yield,
@@ -158,6 +165,13 @@ nohup root -l -b -q LightYieldAna.C >& macrooutput.log &
 Run edep-sim to simulate event energy deposits in LAr.
 
 ```
+# Work in dunegpvm alma9
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash \
+-B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid \
+/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+export UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
+
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 setup geant4 v4_10_6_p01e -q e20:prof
 setup edepsim v3_2_0 -q e20:prof
@@ -165,8 +179,8 @@ setup edepsim v3_2_0 -q e20:prof
 edep-sim \
     -C \
     -g LArBath.gdml \
-    -o edep_LArBath_1.2MeV_gamma.root \
+    -o edep_LArBath_6.1MeV_gammas_10k.root \
     -u \
-    -e 200 \
-    Gen_edepsim.mac
+    -e 10000 \
+    Gen_edepsim_3gamma.mac
 ```

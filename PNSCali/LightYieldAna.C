@@ -15,7 +15,7 @@
 
 void LightYieldAna() {
 
-  TFile *file = new TFile("TextFileGen_hist_module1.root");
+  TFile *file = new TFile("TextFileGen_hist_module1_PNS-side_10k.root");
   //TFile *file = new TFile("SinglesGen_hist_module1.root");
   TTree* OpDetEventsTree = (TTree*) file->Get("XAresponse/OpDetEvents");
   TTree* DetectedPhotonsTree = (TTree*) file->Get("XAresponse/DetectedPhotons");
@@ -29,8 +29,8 @@ void LightYieldAna() {
   double XA4z = 111.701;
   double XA5y = 37.2;
   double XA5z = 40.9009;
-  double driftlength = 20; // small CB
-  double capturerange = 28; // 2x14cm radiation length
+  double driftlength = 10; // small CB
+  double capturerange = 5;
 
   int CountDetected_OpDetEvents = 0;
   vector<double> *gammaposX = 0;
@@ -66,32 +66,32 @@ void LightYieldAna() {
   TH2D *h_totE_detected                   = new TH2D("h_totE_detected", "",                   300, 0, 6.1, 70, 0, 700);
   TH2D* h_totE_detected_column_normalized = new TH2D("h_totE_detected_column_normalized", "", 300, 0, 6.1, 70, 0, 700);
   TH1D *h_LY = new TH1D("h_LY", "h_LY", 60, 0, 60.0);
-  TH1D *h_XA0_detected = new TH1D("h_XA0_detected", "h_XA0_detected", 1000, 0, 2000.0); // Membrane 0
-  TH1D *h_XA1_detected = new TH1D("h_XA1_detected", "h_XA1_detected", 1000, 0, 2000.0); // Membrane 1
-  TH1D *h_XA2_detected = new TH1D("h_XA2_detected", "h_XA2_detected", 1000, 0, 2000.0);
-  TH1D *h_XA3_detected = new TH1D("h_XA3_detected", "h_XA3_detected", 1000, 0, 2000.0);
-  TH1D *h_XA3_detected_combo_XA0 = new TH1D("h_XA3_detected_combo_XA0", "h_XA3_detected_combo_XA0", 1000, 0, 2000.0);
-  TH1D *h_XA3_detected_combo_XA0_XA1 = new TH1D("h_XA3_detected_combo_XA0_XA1", "h_XA3_detected_combo_XA0_XA1", 1000, 0, 2000.0);
-  TH1D *h_XA4_detected = new TH1D("h_XA4_detected", "h_XA4_detected", 1000, 0, 2000.0);
-  TH1D *h_XA5_detected = new TH1D("h_XA5_detected", "h_XA5_detected", 1000, 0, 2000.0);
-  TH1D *h_SourceXAsTop_XAsDet = new TH1D("h_SourceXAsTop_XAsDet", "h_SourceXAsTop_XAsDet", 1000, 0, 2000.0);
-  TH1D *h_SourceXA2Top_XA2Det = new TH1D("h_SourceXA2Top_XA2Det", "h_SourceXA2Top_XA2Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA2Top_XA2Det_positronprod = new TH1D("h_SourceXA2Top_XA2Det_positronprod", "h_SourceXA2Top_XA2Det_positronprod", 1000, 0, 2000.0);
-  TH1D *h_SourceXA2Top_XA3Det = new TH1D("h_SourceXA2Top_XA3Det", "h_SourceXA2Top_XA3Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA2Top_XA4Det = new TH1D("h_SourceXA2Top_XA4Det", "h_SourceXA2Top_XA4Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA2Top_XA5Det = new TH1D("h_SourceXA2Top_XA5Det", "h_SourceXA2Top_XA5Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA3Top_XA2Det = new TH1D("h_SourceXA3Top_XA2Det", "h_SourceXA3Top_XA2Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA3Top_XA3Det = new TH1D("h_SourceXA3Top_XA3Det", "h_SourceXA3Top_XA3Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA3Top_XA4Det = new TH1D("h_SourceXA3Top_XA4Det", "h_SourceXA3Top_XA4Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA3Top_XA5Det = new TH1D("h_SourceXA3Top_XA5Det", "h_SourceXA3Top_XA5Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA4Top_XA2Det = new TH1D("h_SourceXA4Top_XA2Det", "h_SourceXA4Top_XA2Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA4Top_XA3Det = new TH1D("h_SourceXA4Top_XA3Det", "h_SourceXA4Top_XA3Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA4Top_XA4Det = new TH1D("h_SourceXA4Top_XA4Det", "h_SourceXA4Top_XA4Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA4Top_XA5Det = new TH1D("h_SourceXA4Top_XA5Det", "h_SourceXA4Top_XA5Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA5Top_XA2Det = new TH1D("h_SourceXA5Top_XA2Det", "h_SourceXA5Top_XA2Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA5Top_XA3Det = new TH1D("h_SourceXA5Top_XA3Det", "h_SourceXA5Top_XA3Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA5Top_XA4Det = new TH1D("h_SourceXA5Top_XA4Det", "h_SourceXA5Top_XA4Det", 1000, 0, 2000.0);
-  TH1D *h_SourceXA5Top_XA5Det = new TH1D("h_SourceXA5Top_XA5Det", "h_SourceXA5Top_XA5Det", 1000, 0, 2000.0);
+  TH1D *h_XA0_detected = new TH1D("h_XA0_detected", "h_XA0_detected", 69, 50, 3500); // Membrane 0
+  TH1D *h_XA1_detected = new TH1D("h_XA1_detected", "h_XA1_detected", 69, 50, 3500); // Membrane 1
+  TH1D *h_XA2_detected = new TH1D("h_XA2_detected", "h_XA2_detected", 69, 50, 3500);
+  TH1D *h_XA3_detected = new TH1D("h_XA3_detected", "h_XA3_detected", 69, 50, 3500);
+  TH1D *h_XA3_detected_combo_XA0 = new TH1D("h_XA3_detected_combo_XA0", "h_XA3_detected_combo_XA0", 69, 50, 3500);
+  TH1D *h_XA3_detected_combo_XA0_XA1 = new TH1D("h_XA3_detected_combo_XA0_XA1", "h_XA3_detected_combo_XA0_XA1", 69, 50, 3500);
+  TH1D *h_XA4_detected = new TH1D("h_XA4_detected", "h_XA4_detected", 69, 50, 3500);
+  TH1D *h_XA5_detected = new TH1D("h_XA5_detected", "h_XA5_detected", 69, 50, 3500);
+  TH1D *h_SourceXAsTop_XAsDet = new TH1D("h_SourceXAsTop_XAsDet", "h_SourceXAsTop_XAsDet", 69, 50, 3500);
+  TH1D *h_SourceXA2Top_XA2Det = new TH1D("h_SourceXA2Top_XA2Det", "h_SourceXA2Top_XA2Det", 69, 50, 3500);
+  TH1D *h_SourceXA2Top_XA2Det_positronprod = new TH1D("h_SourceXA2Top_XA2Det_positronprod", "h_SourceXA2Top_XA2Det_positronprod", 69, 50, 3500);
+  TH1D *h_SourceXA2Top_XA3Det = new TH1D("h_SourceXA2Top_XA3Det", "h_SourceXA2Top_XA3Det", 69, 50, 3500);
+  TH1D *h_SourceXA2Top_XA4Det = new TH1D("h_SourceXA2Top_XA4Det", "h_SourceXA2Top_XA4Det", 69, 50, 3500);
+  TH1D *h_SourceXA2Top_XA5Det = new TH1D("h_SourceXA2Top_XA5Det", "h_SourceXA2Top_XA5Det", 69, 50, 3500);
+  TH1D *h_SourceXA3Top_XA2Det = new TH1D("h_SourceXA3Top_XA2Det", "h_SourceXA3Top_XA2Det", 69, 50, 3500);
+  TH1D *h_SourceXA3Top_XA3Det = new TH1D("h_SourceXA3Top_XA3Det", "h_SourceXA3Top_XA3Det", 69, 50, 3500);
+  TH1D *h_SourceXA3Top_XA4Det = new TH1D("h_SourceXA3Top_XA4Det", "h_SourceXA3Top_XA4Det", 69, 50, 3500);
+  TH1D *h_SourceXA3Top_XA5Det = new TH1D("h_SourceXA3Top_XA5Det", "h_SourceXA3Top_XA5Det", 69, 50, 3500);
+  TH1D *h_SourceXA4Top_XA2Det = new TH1D("h_SourceXA4Top_XA2Det", "h_SourceXA4Top_XA2Det", 69, 50, 3500);
+  TH1D *h_SourceXA4Top_XA3Det = new TH1D("h_SourceXA4Top_XA3Det", "h_SourceXA4Top_XA3Det", 69, 50, 3500);
+  TH1D *h_SourceXA4Top_XA4Det = new TH1D("h_SourceXA4Top_XA4Det", "h_SourceXA4Top_XA4Det", 69, 50, 3500);
+  TH1D *h_SourceXA4Top_XA5Det = new TH1D("h_SourceXA4Top_XA5Det", "h_SourceXA4Top_XA5Det", 69, 50, 3500);
+  TH1D *h_SourceXA5Top_XA2Det = new TH1D("h_SourceXA5Top_XA2Det", "h_SourceXA5Top_XA2Det", 69, 50, 3500);
+  TH1D *h_SourceXA5Top_XA3Det = new TH1D("h_SourceXA5Top_XA3Det", "h_SourceXA5Top_XA3Det", 69, 50, 3500);
+  TH1D *h_SourceXA5Top_XA4Det = new TH1D("h_SourceXA5Top_XA4Det", "h_SourceXA5Top_XA4Det", 69, 50, 3500);
+  TH1D *h_SourceXA5Top_XA5Det = new TH1D("h_SourceXA5Top_XA5Det", "h_SourceXA5Top_XA5Det", 69, 50, 3500);
   TH2D *h_X_LY                   = new TH2D("h_X_LY",                   "", 50, -25, 25, 30, 0, 60.0);
   TH2D *h_X_LY_column_normalized = new TH2D("h_X_LY_column_normalized", "", 50, -25, 25, 30, 0, 60.0);
   TH2D *h_Y_LY                   = new TH2D("h_Y_LY",                   "", 40, -200, 200, 30, 0, 60.0);
@@ -288,7 +288,7 @@ void LightYieldAna() {
   } // end loop over totOpDetEvents
 
   // Output file
-  TFile myPlot("PDS_PNS_Calib_ColdBox.root", "RECREATE");
+  TFile myPlot("PDS_PNS_Calib_ColdBox_10k.root", "RECREATE");
 
   h_X->GetXaxis()->SetTitle("Capture position X (cm)");
   h_X->GetYaxis()->SetTitle("Events/cm");

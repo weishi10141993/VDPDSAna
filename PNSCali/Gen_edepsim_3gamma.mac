@@ -1,0 +1,54 @@
+#
+# Generate three gammas from n capture beamed in the downstream direction.
+#
+
+# Clear the source and tell GPS to make multiple vertices
+/gps/source/clear
+/gps/source/multiplevertex true
+
+# Create the first particle.  This can be done using any of the GPS macro
+# commands.
+/gps/source/add 1
+# Define the particle and it's energy.
+/gps/particle gamma
+/gps/energy 4.7 MeV
+# Set the position of the particle gun.
+/gps/position 0.0 0.0 0.0 m
+# This generates the particle isotropically
+/gps/ang/type iso
+/gps/ang/rot1 1 0 0
+/gps/ang/rot2 0 -1 0
+
+# Create the second particle.  This can be done using any of the GPS macro
+# commands.  The position will be overridden below.
+/gps/source/add 2
+/gps/particle gamma
+/gps/energy 1.2 MeV
+# Set the position of the particle gun.
+/gps/position 0.0 0.0 0.0 m
+# This generates the particle isotropically
+/gps/ang/type iso
+/gps/ang/rot1 1 0 0
+/gps/ang/rot2 0 -1 0
+
+# Create the 3rd particle.  This can be done using any of the GPS macro
+# commands.  The position will be overridden below.
+/gps/source/add 3
+/gps/particle gamma
+/gps/energy 0.167 MeV
+# Set the position of the particle gun.
+/gps/position 0.0 0.0 0.0 m
+# This generates the particle isotropically
+/gps/ang/type iso
+/gps/ang/rot1 1 0 0
+/gps/ang/rot2 0 -1 0
+
+# Add the GPS generator.  It will create 3 primary vertices
+# (G4PrimaryVertex objects).
+/generator/add
+
+# Copy the vertex position from the first G4PrimaryVertex object to the
+# second.  Notice that the vertices in GPS are numbered from one, but that
+# the G4PrimaryVertex objects are numbered from zero.
+
+/generator/combine 0 1 2

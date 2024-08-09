@@ -1,10 +1,10 @@
 #
-# Generate a 1.2 MeV gamma beamed in the downstream direction.
+# Generate a 4.7 MeV gamma beamed in the downstream direction.
 #
 
 # Define the particle and it's energy.
 /gps/particle gamma
-/gps/energy 1.2 MeV
+/gps/energy 4.7 MeV
 
 # Set the position of the particle gun.
 /gps/position 0.0 0.0 0.0 m
