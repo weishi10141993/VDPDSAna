@@ -159,7 +159,7 @@ physics:
 
 
  #define the output stream, there could be more than one if using filters---
- stream1:  [ out1 ]
+ #stream1:  [ out1 ]
 
  #trigger_paths is a keyword and contains the paths that modify the art::event---
  #ie filters and producers---
@@ -168,8 +168,9 @@ physics:
  #end_paths is a keyword and contains the paths that do not modify the art::Event---
  #ie analyzers and output streams.  these all run simultaneously---
 
- end_paths:     [analyzeIt, stream1]
-# end_paths:     [stream1]
+ end_paths:     [analyzeIt]
+ #end_paths:     [analyzeIt, stream1]
+ #end_paths:     [stream1]
 }
 
 

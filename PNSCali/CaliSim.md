@@ -158,6 +158,11 @@ To analyze the light yield,
 ```
 source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.24.02/x86_64-centos7-gcc48-opt/bin/thisroot.sh
 nohup root -l -b -q LightYieldAna.C >& macrooutput.log &
+
+# Run on grid
+tar -czvf LightYieldAna.tar.gz Setup_LArSoft_LYA.sh LightYieldAna_797.C PDS_PNS_Calib_ColdBox_100k_12681797_0.root
+
+jobsub_submit -G dune -N 1 --memory=2000MB --disk=10GB --expected-lifetime=96h --cpu=4 --resource-provides=usage_model=DEDICATED,OPPORTUNISTIC,OFFSITE --tar_file_name=dropbox:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/LightYieldAna.tar.gz --use-cvmfs-dropbox -l '+SingularityImage=\"/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest\"' --append_condor_requirements='(TARGET.HAS_Singularity==true&&TARGET.HAS_CVMFS_dune_opensciencegrid_org==true&&TARGET.HAS_CVMFS_larsoft_opensciencegrid_org==true&&TARGET.CVMFS_dune_opensciencegrid_org_REVISION>=1105&&TARGET.HAS_CVMFS_fifeuser1_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser2_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser3_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser4_opensciencegrid_org==true)' file:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/Run_lightsim_grid.sh
 ```
 
 ## Set up edep-sim

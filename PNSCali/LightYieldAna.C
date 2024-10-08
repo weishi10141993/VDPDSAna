@@ -15,7 +15,11 @@
 
 void LightYieldAna() {
 
-  TFile *file = new TFile("TextFileGen_hist_module1_PNS-side_10k.root");
+  ProcInfo_t procinfo;
+  gSystem->GetProcInfo(&procinfo);
+  std::cerr << "[MEM]: Resident = " << procinfo.fMemResident << std::endl;
+
+  TFile *file = new TFile("PDS_PNS_Calib_ColdBox_10k.root");
   //TFile *file = new TFile("SinglesGen_hist_module1.root");
   TTree* OpDetEventsTree = (TTree*) file->Get("XAresponse/OpDetEvents");
   TTree* DetectedPhotonsTree = (TTree*) file->Get("XAresponse/DetectedPhotons");
@@ -108,6 +112,10 @@ void LightYieldAna() {
   totDetectedPhotons = DetectedPhotonsTree->GetEntries();
   std::cout << "Total evts in OpDetEventsTree: " << totOpDetEvents << std::endl;
   std::cout << "Total evts in DetectedPhotonsTree: " << totDetectedPhotons << std::endl;
+
+  ProcInfo_t procinfo2;
+  gSystem->GetProcInfo(&procinfo2);
+  std::cerr << "[MEM]: Resident2 = " << procinfo2.fMemResident << std::endl;
 
   // Loop over totOpDetEvents
   for ( int ievt = 0; ievt < totOpDetEvents; ievt++ ) {
@@ -288,7 +296,7 @@ void LightYieldAna() {
   } // end loop over totOpDetEvents
 
   // Output file
-  TFile myPlot("PDS_PNS_Calib_ColdBox_10k.root", "RECREATE");
+  TFile myPlot("Plots_10k_grid.root", "RECREATE");
 
   h_X->GetXaxis()->SetTitle("Capture position X (cm)");
   h_X->GetYaxis()->SetTitle("Events/cm");
