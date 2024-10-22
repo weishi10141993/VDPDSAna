@@ -4,7 +4,7 @@ echo "Running on $(hostname) at ${GLIDEIN_Site}. GLIDEIN_DUNESite = ${GLIDEIN_DU
 
 # Set the output location for copyback
 #OUTDIR=/pnfs/dune/persistent/users/${GRID_USER}/PNSPDSColdBox
-OUTDIR=/pnfs/dune/scratch/users/${GRID_USER}/PNSPDSColdBox
+OUTDIR=/pnfs/dune/scratch/users/${GRID_USER}/PNSCaliLightAna
 
 # Make sure we see what we expect
 echo "See where are at: pwd" # this normally is _CONDOR_JOB_IWD
@@ -19,15 +19,15 @@ ls -l $CONDOR_DIR_INPUT
 echo "ls -l INPUT_TAR_DIR_LOCAL: ${INPUT_TAR_DIR_LOCAL} (should see .sh and the untarred FDEff folder)"
 ls -l $INPUT_TAR_DIR_LOCAL
 
-if [ -e ${INPUT_TAR_DIR_LOCAL}/Setup_LArSoft.sh ]; then
+if [ -e ${INPUT_TAR_DIR_LOCAL}/Setup_LArSoft_LYA.sh ]; then
   echo "Start to run Setup_LArSoft.sh"
-  . ${INPUT_TAR_DIR_LOCAL}/Setup_LArSoft.sh
+  . ${INPUT_TAR_DIR_LOCAL}/Setup_LArSoft_LYA.sh
 else
   echo "Error, setup script not found. Exiting."
   exit 1
 fi
 
-echo "Finished run Setup_LArSoft.sh"
+echo "Finished run Setup_LArSoft_LYA.sh"
 
 # Go back to the top-level directory since we know that's writable
 echo "cd _CONDOR_JOB_IWD: ${_CONDOR_JOB_IWD}"
@@ -47,6 +47,9 @@ echo "And ls _CONDOR_DIR_INPUT: ${_CONDOR_DIR_INPUT}"
 ls ${_CONDOR_DIR_INPUT}
 
 # Set some other very useful environment variables for xrootd and IFDH
+setup ifdhc
+export IFDH_TOKEN_ENABLE=0
+export IFDH_PROXY_ENABLE=1
 export IFDH_CP_MAXRETRIES=2
 export XRD_CONNECTIONRETRY=32
 export XRD_REQUESTTIMEOUT=14400
@@ -64,9 +67,22 @@ fi
 
 echo "Finished checking outdir: $OUTDIR"
 
+# PROCESS starts from 0, 1, ... N-1
+(( LINE_N = ${PROCESS} + 1 ))
+
+# Loop over file list in txt file (samweb list-files "Dimensions")
+for ifile in $(cat ${INPUT_TAR_DIR_LOCAL}/LightSim.txt | head -${LINE_N} | tail -1); do
+  ifdh cp -D ${ifile} .
+  mv *.root PDS_PNS_Calib_ColdBox_10k.root
+done
+
+echo "Copied dat file: ${ifile}"
+
+ls
+
 # Now we should be in the work dir if setupFDEffTarBall-grid.sh worked
-echo "lar -c module1_v1data.fcl -n 100"
-lar -c module1_v1data.fcl -n 100
+echo "root -l -b -q LightYieldAna.C"
+root -l -b -q LightYieldAna.C
 LAR_RESULT=$?   # check the exit status!!!
 
 if [ $LAR_RESULT -ne 0 ]; then
@@ -77,12 +93,12 @@ fi
 echo "Have output"
 
 # Unique name in case we send multiple jobs.
-OUTFILE=PDS_PNS_Calib_ColdBox_100_${CLUSTER}_${PROCESS}.root
+OUTFILE=Plots_10k_grid_${CLUSTER}_${PROCESS}.root
 
-if [ -f TextFileGen_hist_module1.root ]; then
+if [ -f Plots_10k_grid.root ]; then
 
-  echo "mv TextFileGen_hist_module1.root $OUTFILE"
-  mv TextFileGen_hist_module1.root $OUTFILE
+  echo "mv Plots_10k_grid.root $OUTFILE"
+  mv Plots_10k_grid.root $OUTFILE
 
   # and copy our output file back
   ifdh cp -D $OUTFILE $OUTDIR

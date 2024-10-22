@@ -7,7 +7,7 @@
 void vbox::Loop()
 {
 //   In a ROOT session, you can do:
-//      root> .L vbox_sep24.C
+//      root> .L vbox.C
 //      root> vbox t
 //      root> t.GetEntry(12); // Fill t data members with entry number 12
 //      root> t.Show();       // Show values of entry 12
@@ -42,11 +42,11 @@ void vbox::Loop()
    Double_t thr1=10.0; //total phe on 1 tile to get above threshold
    //  Double_t thr2=14.5*10.;
    Double_t thr2=14.5*5.; // 5 phe
-   Double_t effi=0.3; // Efficiency. Factor 0.10 already accounted in sim.
+   Double_t effi=0.3; // Efficiency. Factor 0.10 already accounted in sim. 
    TFile* rfile= TFile::Open("sample.root");
    //            TCanvas *c2 =new TCanvas("c2","c2",1500,1500);
    //gROOT->ForceStyle(kTRUE);
-   //gStyle->SetHistLineWidth(5);
+   //gStyle->SetHistLineWidth(5); 
 gStyle->SetOptStat(11);
    TCanvas* h = nullptr;
 rfile->GetObject("cpers_s",h);
@@ -56,7 +56,7 @@ rfile->GetObject("cpers_s",h);
 	 }
 	   Int_t imax=avg->GetMaximumBin();
 	   cout << imax << " max " << response[imax-388] << endl;
-
+   
    rfile->Close();
    int ngoodevts=0;
    int ngoodevts_noconv=0;
@@ -73,7 +73,7 @@ rfile->GetObject("cpers_s",h);
       if (tc != nullptr ) {delete tc;}
 
 	  tc= new TH1F("tc","convoluted",75000,0.,1200.);
-	  tc->GetXaxis()->SetRange(1,75000);
+	  tc->GetXaxis()->SetRange(1,75000);  
 	  int nnvtx =0;
 	  int tnvtx=0;
 	  ntotevts++;
@@ -85,7 +85,7 @@ rfile->GetObject("cpers_s",h);
 	  int i1stlar=0; //which was the first int in act LAr, capture in act
 	  int i1stlarall=0; //which was the first int in LAr, capture all
 	  //fill energy
-	  energy_all->Fill(Edeptot*1000.);
+	  energy_all->Fill(Edeptot*1000.);		  
 	  for (int ihit=0; ihit<NCalHits; ihit++)
 		{
 		  eall2d->Fill(PosCal[ihit][1],PosCal[ihit][2],EneCal[ihit]);
@@ -126,11 +126,11 @@ rfile->GetObject("cpers_s",h);
 				ene1stin->Fill(log10(PInc[ihit][4]*1000.));
 				nintlar->Fill(-(float)RegInc[ihit]);
 				break;
-			  }
+			  }	
 		  }
-
+		
 	  } // end if on ncaptures>0
-	  // fill photons/electrons
+	  // fill photons/electrons  
 	  for (int ihit=0; ihit<NIneHits; ihit++)
 		{
 		  if (TypeIne[ihit]==306 && RegIne[ihit]==14)
@@ -150,7 +150,7 @@ rfile->GetObject("cpers_s",h);
 					  ene1stall->Fill(log10(PInc[ih][4]*1000.));
 					  break;
 					}
-
+				  
 				}
 			}
 		else if (TypeIne[ihit]>300 && RegIne[ihit]==13) {
@@ -198,7 +198,7 @@ rfile->GetObject("cpers_s",h);
 	  if (TotPhe[2]*effi>thr1) {
 		ngoodevts_noconv++;
 		for (int ihit=0; ihit<NIneHits; ihit++){
-		  if(TypeIne[ihit]>299 && RegIne[ihit]==14) {nnvtx=nnvtx+1;} //active Ar
+		  if(TypeIne[ihit]>299 && RegIne[ihit]==14) {nnvtx=nnvtx+1;} 
 		}
         if (nnvtx ==0){
 		  for (int isec=0; isec<NTIneSec; isec++){
@@ -207,7 +207,7 @@ rfile->GetObject("cpers_s",h);
 			if (abs(IdSecIne[isec])==11 && RegIne[HitSecIne[isec]] ==14 ) {
 			  regneu->Fill(NeuRegSec[isec]);
 			  intneu->Fill(NeuOldSec[isec]);
-			}
+			}  
 		  }
 		  }
 		rr2=myran->Rndm();
@@ -217,21 +217,17 @@ rfile->GetObject("cpers_s",h);
 		offset2=rr*60.0+rr2;
 		offset1=offset2-280.0;
 		for (int iph=0; iph<NPheHits; iph++) {
-		  if (PheTile[iph] == 2 && Phe[iph]>0.5) { // Most active tile is #2, above 0.5PE theshold
+		  if (PheTile[iph] == 2 && Phe[iph]>0.5) {
 			timeh3->Fill(PheTime[iph]/1000.+offset2);
 			// 60 microseconds bunches
 			timeh1->Fill(PheTime[iph]/1000.);}
 			timeh2->Fill(PheTime[iph]/1000.+offset1);
-      petot->Fill(Phe[iph]);
-			if (ncaptures==1) {// capture signal time
-        timcap->Fill(PheTime[iph]/1000.+offset1);
-        pecap->Fill(Phe[iph]);
-			} else if ( nnvtx >0 ) {// active Ar inelastic
-        timine->Fill(PheTime[iph]/1000.+offset1);
-        peine->Fill(Phe[iph]);
-      } else {
-        timoth->Fill(PheTime[iph]/1000.+offset1);
-        peoth->Fill(Phe[iph]);
+			if (ncaptures==1)
+			  {
+			timcap->Fill(PheTime[iph]/1000.+offset1);
+			  }
+			else if ( nnvtx >0 ) {timine->Fill(PheTime[iph]/1000.+offset1); }
+			else  {timoth->Fill(PheTime[iph]/1000.+offset1);
 			}
 			if (EveNum==myevent){ cout << Phe[iph] << " filling " << PheTime[iph]<<" moved to " << PheTime[iph]+offset1*1000.<< " offset1 "<< offset1<<endl;}
 			for ( int i=0; i<115;  i++){
@@ -253,19 +249,19 @@ rfile->GetObject("cpers_s",h);
 			//		  cout << ngoodevts <<" good event " << EveNum<<endl;
 
 		  //			cout << tc->GetBinContent(dum) << " above " << thr2 <<" thresh " <<ngoodevts<<endl;
-
+		  
 			if (EveNum== myevent ) {
 			  myfile.open("dump.dat");
 			  for (int jj=1; jj<75000; jj++){
 				myfile<< jj<< " " << tc->GetBinContent(jj) <<endl;}
-			  myfile.close();}
+			  myfile.close();} 
 			int jmin=1;
 			Float_t mymax=0.0;
 			Float_t mymax_prev=0.0;
 			int k=0;
 			Float_t val=0.;
 			while (jmin < 74000 ){
-			  tc->GetXaxis()->SetRange(jmin,75000);
+			  tc->GetXaxis()->SetRange(jmin,75000);  
 			  if (EveNum== myevent ) {cout << k <<" k, jmin " << jmin << endl;}
 			  k=-1;
 			  for (int jj=jmin; jj<75000; jj++){
@@ -273,7 +269,7 @@ rfile->GetObject("cpers_s",h);
 				if (EveNum== myevent ){cout<<jj<< " looking " << val<<endl;}
 				if (val > thr2) {
 				  k=jj;
-				  break;
+				  break;	
 				}
 			  }
 			  if (EveNum== myevent ) {cout << k <<" kfound " << val << endl;}
@@ -286,7 +282,7 @@ rfile->GetObject("cpers_s",h);
 			 // stop when decreasing
 				  mymax_prev = mymax;
 				  kprev=kmax;
-				  tc->GetXaxis()->SetRange(k+1,k+100);
+				  tc->GetXaxis()->SetRange(k+1,k+100);  
 				  kmax= tc->GetMaximumBin();
 				  mymax=tc->GetBinContent(kmax);
 				  k=k+100;
@@ -309,7 +305,7 @@ rfile->GetObject("cpers_s",h);
 				  }
 		   // set to start next window: see when it rises again
 				mymax_prev=mymax;
-
+			  
 				while (mymax_prev >= mymax && k<74900){
 				  mymax_prev=mymax;
 				  tc->GetXaxis()->SetRange(k+1,k+100);
@@ -374,29 +370,20 @@ for (int ix=1;ix<=nx;ix++) regneu->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
 
  regneu->Draw();
   c3->Print("vbox_sep24_regneu.png");
-
-  timeh2->SetLineWidth(5); // time smear
+   string goon="y";
+   getline (cin, goon);
+  timeh2->SetLineWidth(5);
   timeh2->Draw("PLC");
-  timoth->SetLineWidth(5); // non LAr interactions
-  timoth->Draw("SAME PLC");
-  timcap->SetLineWidth(5); // capture signal
-  timcap->Draw("SAME PLC");
-  timine->SetLineWidth(5); // inelastic
-  timine->Draw("SAME PLC");
-  gPad->BuildLegend();
-  c3->Print("vbox_sep24_times.root"); // time distribution of signals and bkgs
-
-  petot->SetLineWidth(5); // time smear
-  petot->Draw("PLC");
-  peoth->SetLineWidth(5); // non LAr interactions
-  peoth->Draw("SAME PLC");
-  pecap->SetLineWidth(5); // capture signal
-  pecap->Draw("SAME PLC");
-  peine->SetLineWidth(5); // inelastic
-  peine->Draw("SAME PLC");
-  gPad->BuildLegend();
-  c3->Print("vbox_sep24_pe.root");
-
+  timoth->SetLineWidth(5);
+ timoth->Draw("SAME PLC");
+  timcap->SetLineWidth(5);
+ timcap->Draw("SAME PLC");
+  timine->SetLineWidth(5);
+timine->Draw("SAME PLC"); 
+//gPad->BuildLegend(.7,.9,.8,.9);
+ gPad->BuildLegend();
+  c3->Print("vbox_sep24_times.png");
+   getline (cin, goon);
   c3->SetLogy();
   energy_all->GetXaxis()->SetTitle("MeV");
   energy_all->SetLineWidth(5);
@@ -407,11 +394,13 @@ for (int ix=1;ix<=nx;ix++) regneu->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
  energy_cap2->Draw("SAME PLC");
 gPad->BuildLegend();
   c3->Print("vbox_sep24_energies.png");
+  getline (cin, goon);
   eelecap->Draw("plc");
   eelear->Draw("plc same");
   eeleout->Draw("plc same");
  gPad->BuildLegend();
   c3->Print("vbox_sep24_electrons.png");
+  getline (cin, goon);
 
    c3->SetLogy(0);
   gamcap->GetXaxis()->SetTitle("MeV");
@@ -419,11 +408,13 @@ gPad->BuildLegend();
   //gPad->BuildLegend();
   c3->Print("vbox_sep24_gamcap.png");
 
+   getline (cin, goon);
   gamcapo->GetXaxis()->SetTitle("MeV");
   gamcapo->Draw();
   //gPad->BuildLegend();
   c3->Print("vbox_sep24_gamcapo.png");
 
+   getline (cin, goon);
    ene1st->SetLineColor(1);
    ene1st->SetLineWidth(5);
    ene1stin->SetLineWidth(5);
@@ -433,12 +424,13 @@ gPad->BuildLegend();
    enelstcryo->SetLineColor(4);
    enelstcryo->SetLineWidth(5);
  ene1st->GetXaxis()->SetTitle("log10(E) (MeV)");
- //   ene1stall->Draw("hist");
-    ene1stin->Draw(" hist");
+ //   ene1stall->Draw("hist");  
+    ene1stin->Draw(" hist");  
    enelstcryo->Draw("SAME hist");
-    ene1st->Draw("SAME hist");
+    ene1st->Draw("SAME hist");  
 	gPad->BuildLegend(.6,.7,.9,.9 );
   c3->Print("vbox_sep24_ene1st.png");
+   getline (cin, goon);
 for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
  nintlar->Draw();
   c3->Print("vbox_sep24_nintlar.png");
@@ -453,3 +445,5 @@ for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
    getline (cin, goon);
    nintine->Draw();*/
 }
+
+

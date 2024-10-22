@@ -100,6 +100,20 @@ cd /exp/dune/app/users/weishi/VDPDSAna/PNSCali/NeutronGen
 source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.24.02/x86_64-centos7-gcc48-opt/bin/thisroot.sh
 root -l -b -q 'generate_txtgen_w_t0.C(1, 10000, "VDCB_PNS_Side_1_cap_per_evt_10k_evts")'
 # 1 means 1 neutron capture per event, can be more than 1 captures
+
+## Run on grid ##
+tar -czvf BatchNeutronGen.tar.gz coldbox_side_dist.root generate_txtgen_w_t0.C Outputname.txt
+
+jobsub_submit -G dune -N 100 --memory=1000MB --disk=1GB --expected-lifetime=1h --cpu=1 --resource-provides=usage_model=DEDICATED,OPPORTUNISTIC,OFFSITE --tar_file_name=dropbox:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/BatchNeutronGen/BatchNeutronGen.tar.gz --use-cvmfs-dropbox -l '+SingularityImage=\"/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest\"' --append_condor_requirements='(TARGET.HAS_Singularity==true&&TARGET.HAS_CVMFS_dune_opensciencegrid_org==true&&TARGET.HAS_CVMFS_larsoft_opensciencegrid_org==true&&TARGET.CVMFS_dune_opensciencegrid_org_REVISION>=1105&&TARGET.HAS_CVMFS_fifeuser1_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser2_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser3_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser4_opensciencegrid_org==true)' file:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/BatchNeutronGen/Run_NeutronGen_grid.sh
+```
+
+To cp files from scratch to perisitent:
+```
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+setup ifdhc
+export IFDH_TOKEN_ENABLE=0
+export IFDH_PROXY_ENABLE=1
+ifdh cp -D /pnfs/dune/scratch/users/weishi/PNSCaliNeutronGen/* .
 ```
 
 # Light Simulation Analysis Setup
@@ -148,21 +162,21 @@ mrbsetenv
 cd /exp/dune/app/users/weishi/VDPDSAna/PNSCali
 nohup lar -c module1_v1data.fcl -n 10000 >& output.log &
 
-# Run on grid
-tar -czvf PDSPNSCali.tar.gz PDSPNSCali Setup_LArSoft.sh dunevdcb1_v2_refactored_M1.gdml dunevdcb1_v2_refactored_M1_nowires.gdml module1_v1data.fcl VDCB_PNS_Side_1_cap_per_evt_600k_evts.dat
+## Run on grid ##
+tar -czvf PDSPNSCali.tar.gz /exp/dune/app/users/weishi/PDSPNSCali Setup_LArSoft.sh dunevdcb1_v2_refactored_M1.gdml dunevdcb1_v2_refactored_M1_nowires.gdml module1_v1data.fcl NeutronGen.txt
 
-jobsub_submit -G dune -N 1 --memory=1000MB --disk=1GB --expected-lifetime=24h --cpu=1 --resource-provides=usage_model=DEDICATED,OPPORTUNISTIC,OFFSITE --tar_file_name=dropbox:///exp/dune/app/users/weishi/PDSPNSCali.tar.gz --use-cvmfs-dropbox -l '+SingularityImage=\"/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest\"' --append_condor_requirements='(TARGET.HAS_Singularity==true&&TARGET.HAS_CVMFS_dune_opensciencegrid_org==true&&TARGET.HAS_CVMFS_larsoft_opensciencegrid_org==true&&TARGET.CVMFS_dune_opensciencegrid_org_REVISION>=1105&&TARGET.HAS_CVMFS_fifeuser1_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser2_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser3_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser4_opensciencegrid_org==true)' file:///exp/dune/app/users/weishi/Run_PNSncapsim_grid.sh
+jobsub_submit -G dune -N 100 --memory=2000MB --disk=1GB --expected-lifetime=2h --cpu=1 --resource-provides=usage_model=DEDICATED,OPPORTUNISTIC,OFFSITE --tar_file_name=dropbox:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/BatchLightSim/PDSPNSCali.tar.gz --use-cvmfs-dropbox -l '+SingularityImage=\"/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest\"' --append_condor_requirements='(TARGET.HAS_Singularity==true&&TARGET.HAS_CVMFS_dune_opensciencegrid_org==true&&TARGET.HAS_CVMFS_larsoft_opensciencegrid_org==true&&TARGET.CVMFS_dune_opensciencegrid_org_REVISION>=1105&&TARGET.HAS_CVMFS_fifeuser1_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser2_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser3_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser4_opensciencegrid_org==true)' file:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/BatchLightSim/Run_LightSim_grid.sh
 ```
 
-To analyze the light yield,
+# Analyze the light yield
 ```
 source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.24.02/x86_64-centos7-gcc48-opt/bin/thisroot.sh
 nohup root -l -b -q LightYieldAna.C >& macrooutput.log &
 
 # Run on grid
-tar -czvf LightYieldAna.tar.gz Setup_LArSoft_LYA.sh LightYieldAna_797.C PDS_PNS_Calib_ColdBox_100k_12681797_0.root
+tar -czvf LightYieldAna.tar.gz Setup_LArSoft_LYA.sh LightYieldAna.C LightSim.txt
 
-jobsub_submit -G dune -N 1 --memory=2000MB --disk=10GB --expected-lifetime=96h --cpu=4 --resource-provides=usage_model=DEDICATED,OPPORTUNISTIC,OFFSITE --tar_file_name=dropbox:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/LightYieldAna.tar.gz --use-cvmfs-dropbox -l '+SingularityImage=\"/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest\"' --append_condor_requirements='(TARGET.HAS_Singularity==true&&TARGET.HAS_CVMFS_dune_opensciencegrid_org==true&&TARGET.HAS_CVMFS_larsoft_opensciencegrid_org==true&&TARGET.CVMFS_dune_opensciencegrid_org_REVISION>=1105&&TARGET.HAS_CVMFS_fifeuser1_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser2_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser3_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser4_opensciencegrid_org==true)' file:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/Run_lightsim_grid.sh
+jobsub_submit -G dune -N 100 --memory=2000MB --disk=2GB --expected-lifetime=24h --cpu=1 --resource-provides=usage_model=DEDICATED,OPPORTUNISTIC,OFFSITE --tar_file_name=dropbox:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/BatchAna/LightYieldAna.tar.gz --use-cvmfs-dropbox -l '+SingularityImage=\"/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest\"' --append_condor_requirements='(TARGET.HAS_Singularity==true&&TARGET.HAS_CVMFS_dune_opensciencegrid_org==true&&TARGET.HAS_CVMFS_larsoft_opensciencegrid_org==true&&TARGET.CVMFS_dune_opensciencegrid_org_REVISION>=1105&&TARGET.HAS_CVMFS_fifeuser1_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser2_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser3_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser4_opensciencegrid_org==true)' file:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/BatchAna/Run_LightAna_grid.sh
 ```
 
 ## Set up edep-sim

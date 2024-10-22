@@ -295,7 +295,6 @@ void LightYieldAna() {
 
   } // end loop over totOpDetEvents
 
-  // Output file
   TFile myPlot("Plots_10k_grid.root", "RECREATE");
 
   h_X->GetXaxis()->SetTitle("Capture position X (cm)");

@@ -1,0 +1,113 @@
+#!/bin/bash
+
+echo "Running on $(hostname) at ${GLIDEIN_Site}. GLIDEIN_DUNESite = ${GLIDEIN_DUNESite}"
+
+# Set the output location for copyback
+OUTDIR=/pnfs/dune/scratch/users/${GRID_USER}/PNSCaliLightSim
+
+# Make sure we see what we expect
+echo "See where are at: pwd" # this normally is _CONDOR_JOB_IWD
+pwd
+
+echo "tarball is copied and untarred at this worker node directory CONDOR_DIR_INPUT: ${CONDOR_DIR_INPUT}"
+
+echo "ls -l CONDOR_DIR_INPUT"
+# Tarball is copied and untarred into a directory on the worker node, accessed via this CONDOR_DIR_INPUT environment variable
+ls -l $CONDOR_DIR_INPUT
+
+echo "ls -l INPUT_TAR_DIR_LOCAL: ${INPUT_TAR_DIR_LOCAL} (should see .sh and the untarred FDEff folder)"
+ls -l $INPUT_TAR_DIR_LOCAL
+
+if [ -e ${INPUT_TAR_DIR_LOCAL}/Setup_LArSoft.sh ]; then
+  echo "Start to run Setup_LArSoft.sh"
+  . ${INPUT_TAR_DIR_LOCAL}/Setup_LArSoft.sh
+else
+  echo "Error, setup script not found. Exiting."
+  exit 1
+fi
+
+echo "Finished run Setup_LArSoft.sh"
+
+# Go back to the top-level directory since we know that's writable
+echo "cd _CONDOR_JOB_IWD: ${_CONDOR_JOB_IWD}"
+cd ${_CONDOR_JOB_IWD}
+
+echo "ls _CONDOR_JOB_IWD"
+ls
+
+# Symlink the desired fcl to the current directory
+#ln -s ${INPUT_TAR_DIR_LOCAL}/module1_v1data.fcl .
+#ln -s ${INPUT_TAR_DIR_LOCAL}/dunevdcb1_v2_refactored_M1.gdml .
+#ln -s ${INPUT_TAR_DIR_LOCAL}/dunevdcb1_v2_refactored_M1_nowires.gdml .
+#ln -s ${INPUT_TAR_DIR_LOCAL}/VDCB_PNS_Side_1_cap_per_evt_600k_evts.dat .
+#echo "Did the symlink"
+
+echo "And ls _CONDOR_DIR_INPUT: ${_CONDOR_DIR_INPUT}"
+ls ${_CONDOR_DIR_INPUT}
+
+# Set some other very useful environment variables for xrootd and IFDH
+setup ifdhc
+export IFDH_TOKEN_ENABLE=0
+export IFDH_PROXY_ENABLE=1
+export IFDH_CP_MAXRETRIES=2
+export XRD_CONNECTIONRETRY=32
+export XRD_REQUESTTIMEOUT=14400
+export XRD_REDIRECTLIMIT=255
+export XRD_LOADBALANCERTTL=7200
+export XRD_STREAMTIMEOUT=14400 # may vary for your job/file type
+
+# Make sure the output directory exists
+#ifdh ls $OUTDIR 0 # set recursion depth to 0 since we are only checking for the directory; we don't care about the full listing.
+
+if [ $? -ne 0 ]; then
+  # if ifdh ls failed, try to make the directory
+  ifdh mkdir_p $OUTDIR || { echo "Error creating or checking $OUTDIR"; exit 2; }
+fi
+
+echo "Finished checking outdir: $OUTDIR"
+
+# PROCESS starts from 0, 1, ... N-1
+(( LINE_N = ${PROCESS} + 1 ))
+
+# Loop over file list in txt file (samweb list-files "Dimensions")
+for ifile in $(cat ${INPUT_TAR_DIR_LOCAL}/NeutronGen.txt | head -${LINE_N} | tail -1); do
+  ifdh cp -D ${ifile} .
+  mv *.dat VDCB_PNS_Side_1_cap_per_evt_10k_evts.dat
+done
+
+echo "Copied dat file: ${ifile}"
+
+# Now we should be in the work dir if setupFDEffTarBall-grid.sh worked
+echo "lar -c module1_v1data.fcl -n 10000"
+lar -c module1_v1data.fcl -n 10000
+LAR_RESULT=$?   # check the exit status!!!
+
+if [ $LAR_RESULT -ne 0 ]; then
+  echo "lar exited with abnormal status $LAR_RESULT. See error outputs."
+  exit $LAR_RESULT
+fi
+
+echo "Have output"
+
+# Unique name in case we send multiple jobs.
+OUTFILE=PDS_PNS_Calib_ColdBox_10k_${CLUSTER}_${PROCESS}.root
+
+if [ -f TextFileGen_hist_module1.root ]; then
+
+  echo "mv TextFileGen_hist_module1.root $OUTFILE"
+  mv TextFileGen_hist_module1.root $OUTFILE
+
+  # and copy our output file back
+  ifdh cp -D $OUTFILE $OUTDIR
+
+  # check the exit status to see if the copyback actually worked. Print a message if it did not.
+  IFDH_RESULT=$?
+  if [ $IFDH_RESULT -ne 0 ]; then
+    echo "Error during output copyback. See output logs."
+    exit $IFDH_RESULT
+  fi
+fi
+
+#If we got this far, we succeeded.
+echo "Completed successfully."
+exit 0

@@ -64,9 +64,9 @@ public :
    Float_t         PIne[MAXINEHITS][5];   //[NIneHits]
    Float_t         PosIne[MAXINEHITS][3];   //[NIneHits]
    Float_t         TimeIne[MAXINEHITS];   //[NIneHits]
-   Int_t           RegIne[MAXINEHITS];   
-  //   Int_t           NeuOldIne[MAXINEHITS];   
-  //   Int_t           NeuRegIne[MAXINEHITS];   
+   Int_t           RegIne[MAXINEHITS];
+  //   Int_t           NeuOldIne[MAXINEHITS];
+  //   Int_t           NeuRegIne[MAXINEHITS];
    Int_t           NSecIne[MAXINEHITS];   //[NIneHits]
    Int_t           FirstSec[MAXINEHITS];   //[NIneHits]
    Int_t           NTIneSec;
@@ -225,13 +225,17 @@ public :
   TH1F* timeh1=new TH1F("timeh1","no smear",1200,0.,1200.);
   TH1F* timeh2=new TH1F("timeh2","time smear",1200,0.,1200.);
   TH1F* timeh3=new TH1F("timeh3","time smear all bunches",1200,0.,1200.);
-  TH1F* tall= new TH1F("tall","convoluted",75000,0.,1200.); 
-  TH1F* tcglob= new TH1F("tcglob","convoluted",75000,0.,1200.); 
-  TH1F* tcompact= new TH1F("tcompact","convoluted",1200,0.,1200.); 
-  TH1F* tc=nullptr; 
+  TH1F* tall= new TH1F("tall","convoluted",75000,0.,1200.);
+  TH1F* tcglob= new TH1F("tcglob","convoluted",75000,0.,1200.);
+  TH1F* tcompact= new TH1F("tcompact","convoluted",1200,0.,1200.);
+  TH1F* tc=nullptr;
+  TH1F* petot=new TH1F("petot","total",1000,0.,5000.);
   TH1F* timcap=new TH1F("timcap","capture ",1200,0.,1200.);
+  TH1F* pecap=new TH1F("pecap","capture ",1000,0.,5000.);
   TH1F* timine=new TH1F("timine","inelastic ",1200,0.,1200.);
-  TH1F* timoth=new TH1F("timoth","no neutron int in LAr",1200,0.,1200.);
+  TH1F* peine=new TH1F("peine","inelastic ",1000,0.,5000.);
+  TH1F* timoth=new TH1F("timoth","no neutron int in activeLAr",1200,0.,1200.);
+  TH1F* peoth=new TH1F("peoth","no neutron int in activeLAr",1000,0.,5000.);
   TH1F* regneu=new TH1F("regneu","outside neutron reg",30,0.5,30.5);
   TH1F* intneu=new TH1F("intneu","outside neutron int",100,299.5,399.5);
   TH1F* energy_all=new TH1F("energy_all","energy deposition",100,0.,10.);
@@ -277,7 +281,7 @@ public :
 #endif
 
 #ifdef vbox_cxx
-vbox::vbox(TTree *hitstree,TTree *headertree ) : fhits(0) 
+vbox::vbox(TTree *hitstree,TTree *headertree ) : fhits(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.

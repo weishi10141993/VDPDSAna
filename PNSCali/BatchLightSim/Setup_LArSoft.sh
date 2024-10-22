@@ -24,8 +24,8 @@ pwd
 # Copy the untarred folder and remove the CVMFS linked read-only version
 # because later mrbsetenv needs to modify larsoft-v09_22_02 in build* directory
 # which can't be done in the CVMFS read-only version
-echo "copy ${INPUT_TAR_DIR_LOCAL}/${DIRECTORY} as ${DIRECTORY}_copy"
-cp -r ${INPUT_TAR_DIR_LOCAL}/${DIRECTORY} ${DIRECTORY}_copy
+echo "copy ${INPUT_TAR_DIR_LOCAL}/exp/dune/app/users/weishi/${DIRECTORY} as ${DIRECTORY}_copy"
+cp -r ${INPUT_TAR_DIR_LOCAL}/exp/dune/app/users/weishi/${DIRECTORY} ${DIRECTORY}_copy
 
 echo "remove CVMFS version: rm -rf ${DIRECTORY}"
 rm -rf ${DIRECTORY}
@@ -37,7 +37,6 @@ echo "copy other input files to ${_CONDOR_JOB_IWD}"
 cp ${INPUT_TAR_DIR_LOCAL}/module1_v1data.fcl .
 cp ${INPUT_TAR_DIR_LOCAL}/dunevdcb1_v2_refactored_M1.gdml .
 cp ${INPUT_TAR_DIR_LOCAL}/dunevdcb1_v2_refactored_M1_nowires.gdml .
-cp ${INPUT_TAR_DIR_LOCAL}/VDCB_PNS_Side_1_cap_per_evt_600k_evts.dat .
 
 echo "Check work dir again _CONDOR_JOB_IWD: ls -l ${_CONDOR_JOB_IWD}"
 ls -l ${_CONDOR_JOB_IWD}
