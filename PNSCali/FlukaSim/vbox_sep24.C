@@ -217,30 +217,52 @@ rfile->GetObject("cpers_s",h);
 		offset2=rr*60.0+rr2;
 		offset1=offset2-280.0;
 		for (int iph=0; iph<NPheHits; iph++) {
-		  if (PheTile[iph] == 2 && Phe[iph]>0.5) { // Most active tile is #2, above 0.5PE theshold
-			timeh3->Fill(PheTime[iph]/1000.+offset2);
-			// 60 microseconds bunches
-			timeh1->Fill(PheTime[iph]/1000.);}
-			timeh2->Fill(PheTime[iph]/1000.+offset1);
+
+      timeh2->Fill(PheTime[iph]/1000.+offset1);
       petot->Fill(Phe[iph]);
+      if (PheTile[iph] == 2 && Phe[iph]>0.5) {
+        // Most active tile is #2, above 0.5PE theshold
+        timeh3->Fill(PheTime[iph]/1000.+offset2);
+        // 60 microseconds bunches
+        timeh1->Fill(PheTime[iph]/1000.);
+        petotC4->Fill(Phe[iph]);
+      }
+      if (PheTile[iph] == 0 && Phe[iph]>0.5) petotC1->Fill(Phe[iph]);
+      if (PheTile[iph] == 3 && Phe[iph]>0.5) petotC3->Fill(Phe[iph]);
+      if (PheTile[iph] == 1 && Phe[iph]>0.5) petotC2->Fill(Phe[iph]);
+
 			if (ncaptures==1) {// capture signal time
         timcap->Fill(PheTime[iph]/1000.+offset1);
         pecap->Fill(Phe[iph]);
+        if (PheTile[iph] == 2 && Phe[iph]>0.5) pecapC4->Fill(Phe[iph]);
+        if (PheTile[iph] == 0 && Phe[iph]>0.5) pecapC1->Fill(Phe[iph]);
+        if (PheTile[iph] == 3 && Phe[iph]>0.5) pecapC3->Fill(Phe[iph]);
+        if (PheTile[iph] == 1 && Phe[iph]>0.5) pecapC2->Fill(Phe[iph]);
 			} else if ( nnvtx >0 ) {// active Ar inelastic
         timine->Fill(PheTime[iph]/1000.+offset1);
         peine->Fill(Phe[iph]);
-      } else {
+        if (PheTile[iph] == 2 && Phe[iph]>0.5) peineC4->Fill(Phe[iph]);
+        if (PheTile[iph] == 0 && Phe[iph]>0.5) peineC1->Fill(Phe[iph]);
+        if (PheTile[iph] == 3 && Phe[iph]>0.5) peineC3->Fill(Phe[iph]);
+        if (PheTile[iph] == 1 && Phe[iph]>0.5) peineC2->Fill(Phe[iph]);
+      } else { // bkg outside active LAr
         timoth->Fill(PheTime[iph]/1000.+offset1);
         peoth->Fill(Phe[iph]);
+        if (PheTile[iph] == 2 && Phe[iph]>0.5) peothC4->Fill(Phe[iph]);
+        if (PheTile[iph] == 0 && Phe[iph]>0.5) peothC1->Fill(Phe[iph]);
+        if (PheTile[iph] == 3 && Phe[iph]>0.5) peothC3->Fill(Phe[iph]);
+        if (PheTile[iph] == 1 && Phe[iph]>0.5) peothC2->Fill(Phe[iph]);
 			}
-			if (EveNum==myevent){ cout << Phe[iph] << " filling " << PheTime[iph]<<" moved to " << PheTime[iph]+offset1*1000.<< " offset1 "<< offset1<<endl;}
-			for ( int i=0; i<115;  i++){
+
+      if (EveNum==myevent){ cout << Phe[iph] << " filling " << PheTime[iph]<<" moved to " << PheTime[iph]+offset1*1000.<< " offset1 "<< offset1<<endl;}
+
+      for ( int i=0; i<115;  i++){
 			  Float_t newtime=PheTime[iph]+offset1*1000. +i*16.0;
 			  newtime=newtime/1000.;
 			  Float_t cont =response[i]*Phe[iph]*effi;
 			  tcglob->Fill(newtime,cont);
 			  tc->Fill(newtime,cont);
-			if (EveNum==myevent){ cout << i << " newtime " << newtime <<" content" << cont << endl;}
+        if (EveNum==myevent){ cout << i << " newtime " << newtime <<" content" << cont << endl;}
 			}
 		} //end loop on phe hits to generate  non-convoluted analisys
 		  // and convoluted waveform. now find peaks
@@ -384,7 +406,7 @@ for (int ix=1;ix<=nx;ix++) regneu->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
   timine->SetLineWidth(5); // inelastic
   timine->Draw("SAME PLC");
   gPad->BuildLegend();
-  c3->Print("vbox_sep24_times.root"); // time distribution of signals and bkgs
+  c3->Print("vbox_sep24_allXA_times.png"); // time distribution of signals and bkgs
 
   petot->SetLineWidth(5); // time smear
   petot->Draw("PLC");
@@ -395,7 +417,7 @@ for (int ix=1;ix<=nx;ix++) regneu->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
   peine->SetLineWidth(5); // inelastic
   peine->Draw("SAME PLC");
   gPad->BuildLegend();
-  c3->Print("vbox_sep24_pe.root");
+  c3->Print("vbox_sep24_allXA_pe.png");
 
   c3->SetLogy();
   energy_all->GetXaxis()->SetTitle("MeV");
@@ -442,6 +464,56 @@ gPad->BuildLegend();
 for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
  nintlar->Draw();
   c3->Print("vbox_sep24_nintlar.png");
+
+  TFile *f = new TFile("vbox_sep24_pe.root", "RECREATE");
+  TCanvas *c01 =new TCanvas("c01","c01",3000,1500);
+  c01->cd();
+  petotC1->SetLineWidth(1); // time smear
+  petotC1->Draw("hist");
+  peothC1->SetLineWidth(1); // non LAr interactions
+  peothC1->Draw("SAME hist");
+  pecapC1->SetLineWidth(1); // capture signal
+  pecapC1->Draw("SAME hist");
+  peineC1->SetLineWidth(1); // inelastic
+  peineC1->Draw("SAME hist");
+  gPad->BuildLegend();
+  c01->Write();
+  TCanvas *c02 =new TCanvas("c02","c02",3000,1500);
+  c02->cd();
+  petotC2->SetLineWidth(1); // time smear
+  petotC2->Draw("hist");
+  peothC2->SetLineWidth(1); // non LAr interactions
+  peothC2->Draw("SAME hist");
+  pecapC2->SetLineWidth(1); // capture signal
+  pecapC2->Draw("SAME hist");
+  peineC2->SetLineWidth(1); // inelastic
+  peineC2->Draw("SAME hist");
+  gPad->BuildLegend();
+  c02->Write();
+  TCanvas *c03 =new TCanvas("c03","c03",3000,1500);
+  c03->cd();
+  petotC3->SetLineWidth(1); // time smear
+  petotC3->Draw("hist");
+  peothC3->SetLineWidth(1); // non LAr interactions
+  peothC3->Draw("SAME hist");
+  pecapC3->SetLineWidth(1); // capture signal
+  pecapC3->Draw("SAME hist");
+  peineC3->SetLineWidth(1); // inelastic
+  peineC3->Draw("SAME hist");
+  gPad->BuildLegend();
+  c03->Write();
+  TCanvas *c04 =new TCanvas("c04","c04",3000,1500);
+  c04->cd();
+  petotC4->SetLineWidth(1); // time smear
+  petotC4->Draw("hist");
+  peothC4->SetLineWidth(1); // non LAr interactions
+  peothC4->Draw("SAME hist");
+  pecapC4->SetLineWidth(1); // capture signal
+  pecapC4->Draw("SAME hist");
+  peineC4->SetLineWidth(1); // inelastic
+  peineC4->Draw("SAME hist");
+  gPad->BuildLegend();
+  c04->Write();
   /*   getline (cin, goon);
    nintlar->SetLineWidth(5);
    nintlaract->SetLineWidth(5);

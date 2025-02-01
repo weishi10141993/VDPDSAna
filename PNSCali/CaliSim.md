@@ -22,12 +22,22 @@ pip install --force-reinstall --target=/exp/dune/app/users/weishi/lardonlibs sci
 
 [Everytime relogin]
 export PYTHONPATH=/exp/dune/app/users/weishi/lardonlibs:$PYTHONPATH
-
-# access pyroot [doesn't work yet]
-#source /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh
-#spack load root@6.28.12
+source /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh
+spack load root@6.28.12
 
 nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/reco_sh_maxperview4_outlierdmax2p5/cbbot_25036/cbbot_25036_*.h5 >& output_25036.log &
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/reco_sh_maxperview4_outlierdmax2p5/cbbot_25004/cbbot_25004_*.h5 >& output_25004.log &
+
+# LZreco:
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25036/cbbot_25036_*.h5 >& output_25036_LZ.log &
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068/cbbot_25068_*.h5 >& output_25068_LZ.log &
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25071/cbbot_25071_*.h5 >& output_25071_LZ.log &
+
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25004/cbbot_25004_*.h5 >& output_25004_LZ.log &
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25066/cbbot_25066_*.h5 >& output_25066_LZ.log &
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25078/cbbot_25078_*.h5 >& output_25078_LZ.log &
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25084/cbbot_25084_*.h5 >& output_25084_LZ.log &
+nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25086/cbbot_25086_*.h5 >& output_25086_LZ.log &
 ```
 
 Here are PD channel maps:
@@ -85,6 +95,14 @@ conda env create -f lardenv.yml
 conda activate lardenv
 # check env is activated --> this doesn't seem to work properly
 conda env list
+```
+
+Raw data files are stored at fnal:
+```
+# before 25050
+/pnfs/dune/tape_backed/dunepro/vd-coldbox/raw/2024/detector/test/None/00/02
+# after 25050
+/pnfs/dune/tape_backed/dunepro/vd-coldbox/raw/2024/detector/cosmics/None/00/02
 ```
 
 ```
@@ -176,7 +194,7 @@ nohup root -l -b -q LightYieldAna.C >& macrooutput.log &
 # Run on grid
 tar -czvf LightYieldAna.tar.gz Setup_LArSoft_LYA.sh LightYieldAna.C LightSim.txt
 
-jobsub_submit -G dune -N 100 --memory=2000MB --disk=2GB --expected-lifetime=24h --cpu=1 --resource-provides=usage_model=DEDICATED,OPPORTUNISTIC,OFFSITE --tar_file_name=dropbox:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/BatchAna/LightYieldAna.tar.gz --use-cvmfs-dropbox -l '+SingularityImage=\"/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest\"' --append_condor_requirements='(TARGET.HAS_Singularity==true&&TARGET.HAS_CVMFS_dune_opensciencegrid_org==true&&TARGET.HAS_CVMFS_larsoft_opensciencegrid_org==true&&TARGET.CVMFS_dune_opensciencegrid_org_REVISION>=1105&&TARGET.HAS_CVMFS_fifeuser1_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser2_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser3_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser4_opensciencegrid_org==true)' file:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/BatchAna/Run_LightAna_grid.sh
+jobsub_submit -G dune -N 100 --memory=2000MB --disk=2GB --expected-lifetime=8h --cpu=1 --resource-provides=usage_model=DEDICATED,OPPORTUNISTIC,OFFSITE --tar_file_name=dropbox:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/BatchAna/LightYieldAna.tar.gz --use-cvmfs-dropbox -l '+SingularityImage=\"/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-wn-sl7:latest\"' --append_condor_requirements='(TARGET.HAS_Singularity==true&&TARGET.HAS_CVMFS_dune_opensciencegrid_org==true&&TARGET.HAS_CVMFS_larsoft_opensciencegrid_org==true&&TARGET.CVMFS_dune_opensciencegrid_org_REVISION>=1105&&TARGET.HAS_CVMFS_fifeuser1_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser2_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser3_opensciencegrid_org==true&&TARGET.HAS_CVMFS_fifeuser4_opensciencegrid_org==true)' file:///exp/dune/app/users/weishi/VDPDSAna/PNSCali/BatchAna/Run_LightAna_grid.sh
 ```
 
 ## Set up edep-sim

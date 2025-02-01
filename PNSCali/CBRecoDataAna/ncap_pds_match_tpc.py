@@ -1,14 +1,29 @@
-#import ROOT
+import ROOT
 #from ROOT import TFile, TTree
+from ROOT import gROOT, TFile, TTree, TCanvas, TGraph, TH1D
+from array import array
 import tables as tab
 import numpy as np
 import math
+import os
+import os.path
 import sys
 import lar_param as lar
 import projection_2d as proj2d
 import histograms as hist
 import matplotlib
 import matplotlib.pyplot as plt
+
+#run_number = 25004 # cosmic run
+#run_number = 25066 # cosmic run
+#run_number = 25078 # cosmic run
+#run_number = 25084 # cosmic run
+run_number = 25086 # cosmic run
+
+#run_number = 25036 # PNS+TPC+PDS run
+#run_number = 25050 # PNS+TPC+PDS run? --> do not use
+#run_number = 25068 # PNS+TPC+PDS run
+#run_number = 25071 # PNS+TPC+PDS run
 
 """ get the general infos """
 with tab.open_file(sys.argv[1],"r") as f:
@@ -21,9 +36,8 @@ with tab.open_file(sys.argv[1],"r") as f:
 v_drift = lar.drift_velocity(e_drift)
 print("v_drift = ", v_drift)
 
-run_number = 25004
 # PD channel map for runs on April 18-19
-if run_number == 25050 or run_number == 25068 or run_number == 25071 or run_number == 25078:
+if run_number == 25068 or run_number == 25071 or run_number == 25078 or run_number == 25084 or run_number == 25086:
     C1_ch1 = 0 # 2nd closest to PNS
     C1_ch2 = 7
     C2_ch1 = 10
@@ -32,7 +46,7 @@ if run_number == 25050 or run_number == 25068 or run_number == 25071 or run_numb
     C3_ch2 = 37
     C4_ch1 = 40 # closest to PNS
     C4_ch2 = 47
-if run_number == 25036 or run_number == 25034 or run_number == 25004:
+if run_number == 25004 or run_number == 25034 or run_number == 25036 or run_number == 25066:
     C1_ch1 = 0 # 2nd closest to PNS
     C1_ch2 = 7
     C2_ch1 = 10
@@ -41,6 +55,12 @@ if run_number == 25036 or run_number == 25034 or run_number == 25004:
     C3_ch2 = 27
     C4_ch1 = 40 # closest to PNS
     C4_ch2 = 47
+
+if run_number == 25068:
+    beam_stop_time_inPDticks = 11500 # in pd time ticks, for cosmic run doesn't matter
+if run_number == 25004 or run_number == 25036 or run_number == 25066 or run_number == 25071 or run_number == 25078 or run_number == 25084 or run_number == 25086:
+    beam_stop_time_inPDticks = 6563 # 105us in pd time ticks
+
 # PD coordinates in coldbox: lardon use CB center as origin
 # from geo.json in cbbot
 C1_x = -116.8
@@ -65,23 +85,20 @@ C4_ch2_adcgain = 15
 # area to look for hits on top XA: cm
 ROI_radius = 30
 # tpc time window (ticks) relative to PD peak time
-time_window_min = 0
-time_window_max = 273
+driftt0 = 0
+driftt204 = 204
+fulldriftt = 273 # tpc ticks ~ 140us
 t_coincidence = 5
 max_time_tick_pd = 65625 # for pd system, each tick is 16 ns
 max_time_tick_tpc = 2100 # for tpc system, each tick is 512 ns
 max_PE_pd = 3500
-n_cap_pd_minPE = 200
+n_cap_pd_minPE = 100
 pd_adc_saturation_cut = 14000 # 14-bit saturation 16384 adcs
 #pd_time_gap = 625 # 10us, typical length of pd wfm
 #pd_time_gap = 8750 # 1 tpc drfit window in pd time ticks
 blip_trk_dist = 30 # cm
-trk2d_time_gap = 10 # TPC ticks
-
-if run_number == 25068 or run_number == 25078:
-    beam_stop_time = 11500 # in pd time ticks, for cosmic run doesn't matter
-if run_number == 25050 or run_number == 25071 or run_number == 25036 or run_number == 25004:
-    beam_stop_time = 6563 # 105us in pd time ticks
+trk3d_time_gap = 70 # TPC ticks
+fulldriftd = 19 # cm
 
 inname = sys.argv[1]
 inname = inname[inname.rfind("/")+1:]
@@ -98,7 +115,35 @@ if(inname[:3]=="bot"):
 print(inname)
 print('Is top? ', is_top)
 
+# Create directory for plots to be stored if it doesn't already exist
+out_path = "results"
+if not os.path.exists(out_path):
+    os.makedirs(out_path)
+    print("out_path '" + out_path + "' did not exist. It has been created!")
+print(" \n") # separate output
+
+# Create the ROOT file that will hold the output of this script
+f_out = TFile('{0}/CBAna.root'.format(out_path), 'RECREATE')
+
+myTotTriggers = TTree('myTotTriggers', 'myTotTriggers')
+myMatchedC1Peaks = TTree('myMatchedC1Peaks', 'myMatchedC1Peaks')
+myMatchedC2Peaks = TTree('myMatchedC2Peaks', 'myMatchedC2Peaks')
+myMatchedC3Peaks = TTree('myMatchedC3Peaks', 'myMatchedC3Peaks')
+myMatchedC4Peaks = TTree('myMatchedC4Peaks', 'myMatchedC4Peaks')
+
+my_nTriggers = array('i', [0])
+myTotTriggers.Branch('my_nTriggers', my_nTriggers, 'my_nTriggers/I')
+C1_matched_PDPeak_PE = array('f', [0.0])
+myMatchedC1Peaks.Branch('C1_matched_PDPeak_PE', C1_matched_PDPeak_PE, 'C1_matched_PDPeak_PE/F')
+C2_matched_PDPeak_PE = array('f', [0.0])
+myMatchedC2Peaks.Branch('C2_matched_PDPeak_PE', C2_matched_PDPeak_PE, 'C2_matched_PDPeak_PE/F')
+C3_matched_PDPeak_PE = array('f', [0.0])
+myMatchedC3Peaks.Branch('C3_matched_PDPeak_PE', C3_matched_PDPeak_PE, 'C3_matched_PDPeak_PE/F')
+C4_matched_PDPeak_PE = array('f', [0.0])
+myMatchedC4Peaks.Branch('C4_matched_PDPeak_PE', C4_matched_PDPeak_PE, 'C4_matched_PDPeak_PE/F')
+
 n_evt = 0
+my_nTriggers[0] = 0
 
 # Add two channels per trigger record
 # not across multiple triggers
@@ -109,14 +154,14 @@ C1_chs_dt_all_evts, C2_chs_dt_all_evts, C3_chs_dt_all_evts, C4_chs_dt_all_evts =
 C1_all_evts, C2_all_evts, C3_all_evts, C4_all_evts = [], [], [], []
 C1_per_evt_large_signal, C2_per_evt_large_signal, C3_per_evt_large_signal, C4_per_evt_large_signal = [], [], [], []
 C1_all_evts_large_signals_gaptime, C2_all_evts_large_signals_gaptime, C3_all_evts_large_signals_gaptime, C4_all_evts_large_signals_gaptime = [], [], [], []
-C1_pd_trk2d_dt_all_evts, C2_pd_trk2d_dt_all_evts, C3_pd_trk2d_dt_all_evts, C4_pd_trk2d_dt_all_evts = [], [], [], []
+C1_pd_trk3d_dt_all_evts, C2_pd_trk3d_dt_all_evts, C3_pd_trk3d_dt_all_evts, C4_pd_trk3d_dt_all_evts = [], [], [], []
 C1_pdmatched_shs_all_evts, C2_pdmatched_shs_all_evts, C3_pdmatched_shs_all_evts, C4_pdmatched_shs_all_evts = [], [], [], []
 C1_pdmatched_shs_per_evt, C2_pdmatched_shs_per_evt, C3_pdmatched_shs_per_evt, C4_pdmatched_shs_per_evt = [], [], [], []
 shs = []
-trk2ds = []
-trk2d_time = [] # start and stop time of 2d tracks
-trk2d_dz_all_evts = []
-rawhits = []
+trk3ds = []
+trk3ds_sel = []
+trk3d_time = [] # start and stop time of 3d tracks
+trk3d_dz_all_evts = []
 shmatched = list()
 C1_tpcmatched_totPE_all_evts, C2_tpcmatched_totPE_all_evts, C3_tpcmatched_totPE_all_evts, C4_tpcmatched_totPE_all_evts = [], [], [], []
 C1_tpcmatched_time_all_evts, C2_tpcmatched_time_all_evts, C3_tpcmatched_time_all_evts, C4_tpcmatched_time_all_evts = [], [], [], []
@@ -134,40 +179,24 @@ for files in sys.argv[1:]:
         """ read the single hits table """
         t_sh = f.root.single_hits
         d_sh = t_sh.read()
-        """ read the 2d tracks table """
-        t_trk2d = f.root.tracks2d
-        d_trk2d = t_trk2d.read()
-        """ read the raw hits table """
-        t_rawhits = f.root.hits
-        d_rawhits = t_rawhits.read()
+        """ read the 3d tracks table """
+        t_trk3d = f.root.tracks3d
+        d_trk3d = t_trk3d.read()
 
         """ Find PDS peaks in all events """
         for row_pdpeak in d_pds_peaks:
 
             if row_pdpeak['trigger'] != current_trigger:
                 """ A new trigger record """
+                my_nTriggers[0] = my_nTriggers[0] + 1
 
-                """ Find and store 2D track start/stop time in this trigger window """
-                for itrk2d in range(len(trk2ds)):
-                    trk2d_t_start = -1
-                    trk2d_t_stop = -1
-                    """ find raw hits with same z_ini and z_end as the 2d track and the raw hit time """
-                    for irawhit in range(len(rawhits)):
-                        if rawhits[irawhit][0] == trk2ds[itrk2d][0]:
-                            if rawhits[irawhit][1] == 0 or rawhits[irawhit][1] == 1: # induction view
-                                trk2d_t_start = rawhits[irawhit][2]
-                            elif rawhits[irawhit][1] == 2: # collection view
-                                trk2d_t_start = rawhits[irawhit][3]
-
-                        if rawhits[irawhit][0] == trk2ds[itrk2d][1]:
-                            if rawhits[irawhit][1] == 0 or rawhits[irawhit][1] == 1:
-                                trk2d_t_stop = rawhits[irawhit][2]
-                            elif rawhits[irawhit][1] == 2:
-                                trk2d_t_stop = rawhits[irawhit][3]
-
-                    trk2d_time.append((trk2d_t_start, trk2d_t_stop)) # tpc ticks,
-                    trk2d_dz_all_evts.append((trk2ds[itrk2d][0]-trk2ds[itrk2d][1])) # dz
-
+                """ Find and store 3D track start/stop time in this trigger window """
+                for itrk3d in range(len(trk3ds)):
+                    # Only care trks after beam stops and within 1ms to be consistent to PNS run condition
+                    if trk3ds[itrk3d][6] > beam_stop_time_inPDticks*16/512 and trk3ds[itrk3d][7] <= max_time_tick_tpc:
+                        trk3ds_sel.append((trk3ds[itrk3d][0], trk3ds[itrk3d][1], trk3ds[itrk3d][2], trk3ds[itrk3d][3], trk3ds[itrk3d][4], trk3ds[itrk3d][5], trk3ds[itrk3d][6], trk3ds[itrk3d][7])) # replace trk3ds with trigger time cuts
+                        trk3d_time.append((trk3ds[itrk3d][6], trk3ds[itrk3d][7])) # tpc ticks,
+                        trk3d_dz_all_evts.append((trk3ds[itrk3d][0] - trk3ds[itrk3d][1])) # dz
 
                 """ Compare XA channels in previous trigger record if exists """
                 """ Last trigger will not be processed                       """
@@ -196,7 +225,9 @@ for files in sys.argv[1:]:
                     """ multiple peaks exist in one trigger window """
                     """ Cut: For PD only look at large peaks """
                     for ipdpeak in range(len(C1_per_evt_large_signal)):
-                        n_close2dtrks_C1 = 0
+                        n_close3dtrks_C1 = 0
+                        C1_matched_PDPeak_PE[0] = 0
+
                         # ignore first and last pd peak
                         if ipdpeak != 0 and ipdpeak != len(C1_per_evt_large_signal)-1:
 
@@ -204,28 +235,31 @@ for files in sys.argv[1:]:
                             C1_all_evts_large_signals_gaptime.append(C1_per_evt_large_signal[ipdpeak][1] - C1_per_evt_large_signal[ipdpeak-1][1])
 
                             """ Cut: only look at data after neutron beam stopped """
-                            if C1_per_evt_large_signal[ipdpeak][1] > beam_stop_time:
+                            if C1_per_evt_large_signal[ipdpeak][1] > beam_stop_time_inPDticks:
 
-                                """ Get 2D trk timing """
-                                for itrk2d in range(len(trk2ds)):
-                                    # start time: trk2d_time[itrk2d][0]
-                                    # stop time: trk2d_time[itrk2d][1]
+                                """ Loop 3D trk """
+                                for itrk3d in range(len(trk3ds_sel)):
+                                    # start time: trk3d_time[itrk3d][0]
+                                    # stop time: trk3d_time[itrk3d][1]
 
                                     """ Control plots """
-                                    # crossing tracks timing
-                                    if trk2ds[itrk2d][0]-trk2ds[itrk2d][1] >= 19:
-                                        C1_pd_trk2d_dt_all_evts.append((trk2d_time[itrk2d][0] - C1_per_evt_large_signal[ipdpeak][1]*16/512, trk2d_time[itrk2d][1] - C1_per_evt_large_signal[ipdpeak][1]*16/512))
+                                    # Crossing tracks
+                                    if trk3ds_sel[itrk3d][0] - trk3ds_sel[itrk3d][1] >= fulldriftd:
+                                        C1_pd_trk3d_dt_all_evts.append((trk3d_time[itrk3d][0] - C1_per_evt_large_signal[ipdpeak][1]*16/512, trk3d_time[itrk3d][1] - C1_per_evt_large_signal[ipdpeak][1]*16/512))
 
-                                    if trk2d_time[itrk2d][0] - C1_per_evt_large_signal[ipdpeak][1]*16/512 < trk2d_time_gap or trk2d_time[itrk2d][1] - C1_per_evt_large_signal[ipdpeak][1]*16/512 < trk2d_time_gap:
-                                        n_close2dtrks_C1 = n_close2dtrks_C1 + 1
+                                    # Count crossing tracks near PD signal in time, tpc should see at a short time window as PD
+                                    if trk3d_time[itrk3d][0] - C1_per_evt_large_signal[ipdpeak][1]*16/512 >= 0 and trk3d_time[itrk3d][0] - C1_per_evt_large_signal[ipdpeak][1]*16/512 < trk3d_time_gap:
+                                        n_close3dtrks_C1 = n_close3dtrks_C1 + 1
+
+                                """ End Loop 3D trk """
 
                                 """ Cut: clean pd peaks """
-                                """      No 2D track close in time to PD peak +5us -> crossing anode and cathode  """
-                                if n_close2dtrks_C1 == 0:
+                                """      No 3D track close in time to PD peak """
+                                if n_close3dtrks_C1 == 0:
                                     """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks """
                                     """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time) """
                                     for ish in range(len(shs)):
-                                        if shs[ish][0] > C1_x - ROI_radius and shs[ish][0] < C1_x + ROI_radius and shs[ish][1] > C1_y - ROI_radius and shs[ish][1] < C1_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C1_per_evt_large_signal[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C1_per_evt_large_signal[ipdpeak][1]*16/512 + time_window_min and shs[ish][3] > blip_trk_dist and shs[ish][4] < 3 and shmatched[ish] == False:
+                                        if shs[ish][0] > C1_x - ROI_radius and shs[ish][0] < C1_x + ROI_radius and shs[ish][1] > C1_y - ROI_radius and shs[ish][1] < C1_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C1_per_evt_large_signal[ipdpeak][1]*16/512 + driftt204 and shs[ish][2][0] >= C1_per_evt_large_signal[ipdpeak][1]*16/512 + driftt0 and shs[ish][3] > blip_trk_dist and shs[ish][4] < 3 and shmatched[ish] == False:
                                             shmatched[ish] = True
                                             C1_pdmatched_shs_per_evt.append((shs[ish][0], shs[ish][1], shs[ish][2][2] - C1_per_evt_large_signal[ipdpeak][1]*16/512))
 
@@ -262,8 +296,12 @@ for files in sys.argv[1:]:
                                     if nshs >= 1:
                                         C1_tpcmatched_totPE_all_evts.append((C1_per_evt_large_signal[ipdpeak][0]))
                                         C1_tpcmatched_time_all_evts.append((C1_per_evt_large_signal[ipdpeak][1]))
+                                        # output branch to root file
+                                        C1_matched_PDPeak_PE[0] = C1_per_evt_large_signal[ipdpeak][0]
                                         """ matched sh charge info? charge_pos on collection plane..."""
 
+                        # Filled matched PD peak pe
+                        myMatchedC1Peaks.Fill()
                     """ End C1 matching """
 
                 if len(C2_ch1_peaks) != 0 and len(C2_ch2_peaks) != 0:
@@ -288,7 +326,9 @@ for files in sys.argv[1:]:
 
                     """ multiple peaks exist in one trigger window, match for each peak """
                     for ipdpeak in range(len(C2_per_evt_large_signal)):
-                        n_close2dtrks_C2 = 0
+                        n_close3dtrks_C2 = 0
+                        C2_matched_PDPeak_PE[0] = 0
+
                         # ignore first and last pd peak
                         if ipdpeak != 0 and ipdpeak != len(C2_per_evt_large_signal)-1:
 
@@ -297,27 +337,29 @@ for files in sys.argv[1:]:
                             C2_all_evts_large_signals_gaptime.append(C2_per_evt_large_signal[ipdpeak][1] - C2_per_evt_large_signal[ipdpeak-1][1])
 
                             """ and after neutron beam is not active """
-                            if C2_per_evt_large_signal[ipdpeak][1] > beam_stop_time:
+                            if C2_per_evt_large_signal[ipdpeak][1] > beam_stop_time_inPDticks:
 
-                                """ Also require no 2D track close in time to PD peak +/-5us """
-                                for itrk2d in range(len(trk2ds)):
-                                    # start time: trk2d_time[itrk2d][0]
-                                    # stop time: trk2d_time[itrk2d][1]
+                                """ Loop 3D tracks """
+                                for itrk3d in range(len(trk3ds_sel)):
+                                    # start time: trk3d_time[itrk3d][0]
+                                    # stop time: trk3d_time[itrk3d][1]
 
                                     """ Control plots """
-                                    if trk2ds[itrk2d][0]-trk2ds[itrk2d][1] >= 19:
-                                        C2_pd_trk2d_dt_all_evts.append((trk2d_time[itrk2d][0] - C2_per_evt_large_signal[ipdpeak][1]*16/512, trk2d_time[itrk2d][1] - C2_per_evt_large_signal[ipdpeak][1]*16/512))
-                                    if abs(trk2d_time[itrk2d][0] - C2_per_evt_large_signal[ipdpeak][1]*16/512) < trk2d_time_gap or abs(trk2d_time[itrk2d][1] - C2_per_evt_large_signal[ipdpeak][1]*16/512) < trk2d_time_gap:
-                                        n_close2dtrks_C2 = n_close2dtrks_C2 + 1
+                                    if trk3ds_sel[itrk3d][0] - trk3ds_sel[itrk3d][1] >= fulldriftd:
+                                        C2_pd_trk3d_dt_all_evts.append((trk3d_time[itrk3d][0] - C2_per_evt_large_signal[ipdpeak][1]*16/512, trk3d_time[itrk3d][1] - C2_per_evt_large_signal[ipdpeak][1]*16/512))
+
+                                    if trk3d_time[itrk3d][0] - C2_per_evt_large_signal[ipdpeak][1]*16/512 >= 0  and trk3d_time[itrk3d][0] - C2_per_evt_large_signal[ipdpeak][1]*16/512 < trk3d_time_gap:
+                                        n_close3dtrks_C2 = n_close3dtrks_C2 + 1
+                                """ End Loop 3D trk """
 
                                 """ Cut: clean pd peaks """
-                                """      No 2D track close in time to PD peak +5us -> crossing anode and cathode  """
-                                if n_close2dtrks_C2 == 0:
+                                """      No 3d track close in time to PD peak """
+                                if n_close3dtrks_C2 == 0:
 
                                     """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks"""
                                     """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time)"""
                                     for ish in range(len(shs)):
-                                        if shs[ish][0] > C2_x - ROI_radius and shs[ish][0] < C2_x + ROI_radius and shs[ish][1] > C2_y - ROI_radius and shs[ish][1] < C2_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C2_per_evt_large_signal[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C2_per_evt_large_signal[ipdpeak][1]*16/512 + time_window_min and shs[ish][3] > blip_trk_dist and shs[ish][4] < 3 and shmatched[ish] == False:
+                                        if shs[ish][0] > C2_x - ROI_radius and shs[ish][0] < C2_x + ROI_radius and shs[ish][1] > C2_y - ROI_radius and shs[ish][1] < C2_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C2_per_evt_large_signal[ipdpeak][1]*16/512 + driftt204 and shs[ish][2][0] >= C2_per_evt_large_signal[ipdpeak][1]*16/512 + driftt0 and shs[ish][3] > blip_trk_dist and shs[ish][4] < 3 and shmatched[ish] == False:
                                             shmatched[ish] = True
                                             C2_pdmatched_shs_per_evt.append((shs[ish][0], shs[ish][1], shs[ish][2][2] - C2_per_evt_large_signal[ipdpeak][1]*16/512))
 
@@ -351,10 +393,14 @@ for files in sys.argv[1:]:
                                     """ Match criteria """
                                     #if nshs >= 1 and avg_t >= 200 and avg_t < 275 and max_sh_dt < 50 and avg_x > C2_x - 5 and avg_x < C2_x + 5 and avg_y > C2_y - 5 and avg_y < C2_y + 5 and max_sh_dr < 10:
                                     #if nshs >= 1 and avg_t >= 0 and avg_t < 50:
-                                    if nshs >= 1 and n_close2dtrks_C2 == 0:
+                                    if nshs >= 1 and n_close3dtrks_C2 == 0:
                                         C2_tpcmatched_totPE_all_evts.append((C2_per_evt_large_signal[ipdpeak][0]))
                                         C2_tpcmatched_time_all_evts.append((C2_per_evt_large_signal[ipdpeak][1]))
+                                        # output branch to root file
+                                        C2_matched_PDPeak_PE[0] = C2_per_evt_large_signal[ipdpeak][0]
 
+                        # Filled matched PD peak pe
+                        myMatchedC2Peaks.Fill()
                     """ End C2 matching """
 
                 if len(C3_ch1_peaks) != 0 and len(C3_ch2_peaks) != 0:
@@ -380,7 +426,9 @@ for files in sys.argv[1:]:
                     """ multiple peaks exist in one trigger window, match for each peak """
                     for ipdpeak in range(len(C3_per_evt_large_signal)):
 
-                        n_close2dtrks_C3 = 0
+                        n_close3dtrks_C3 = 0
+                        C3_matched_PDPeak_PE[0] = 0
+
                         # ignore first and last pd peak
                         if ipdpeak != 0 and ipdpeak != len(C3_per_evt_large_signal)-1:
 
@@ -389,27 +437,29 @@ for files in sys.argv[1:]:
                             C3_all_evts_large_signals_gaptime.append(C3_per_evt_large_signal[ipdpeak][1] - C3_per_evt_large_signal[ipdpeak-1][1])
 
                             """ and after neutron beam is not active """
-                            if C3_per_evt_large_signal[ipdpeak][1] > beam_stop_time:
+                            if C3_per_evt_large_signal[ipdpeak][1] > beam_stop_time_inPDticks:
 
-                                """ Also require no 2D track close in time to PD peak +/-5us """
-                                for itrk2d in range(len(trk2ds)):
-                                    # start time: trk2d_time[itrk2d][0]
-                                    # stop time: trk2d_time[itrk2d][1]
+                                """ Loop 3d tracks """
+                                for itrk3d in range(len(trk3ds_sel)):
+                                    # start time: trk3d_time[itrk3d][0]
+                                    # stop time: trk3d_time[itrk3d][1]
 
                                     """ Control plots """
-                                    if trk2ds[itrk2d][0]-trk2ds[itrk2d][1] >= 19:
-                                        C3_pd_trk2d_dt_all_evts.append((trk2d_time[itrk2d][0] - C3_per_evt_large_signal[ipdpeak][1]*16/512, trk2d_time[itrk2d][1] - C3_per_evt_large_signal[ipdpeak][1]*16/512))
-                                    if abs(trk2d_time[itrk2d][0] - C3_per_evt_large_signal[ipdpeak][1]*16/512) < trk2d_time_gap or abs(trk2d_time[itrk2d][1] - C3_per_evt_large_signal[ipdpeak][1]*16/512) < trk2d_time_gap:
-                                        n_close2dtrks_C3 = n_close2dtrks_C3 + 1
+                                    if trk3ds_sel[itrk3d][0] - trk3ds_sel[itrk3d][1] >= fulldriftd:
+                                        C3_pd_trk3d_dt_all_evts.append((trk3d_time[itrk3d][0] - C3_per_evt_large_signal[ipdpeak][1]*16/512, trk3d_time[itrk3d][1] - C3_per_evt_large_signal[ipdpeak][1]*16/512))
+
+                                    if trk3d_time[itrk3d][0] - C3_per_evt_large_signal[ipdpeak][1]*16/512 >= 0 and trk3d_time[itrk3d][0] - C3_per_evt_large_signal[ipdpeak][1]*16/512 < trk3d_time_gap:
+                                        n_close3dtrks_C3 = n_close3dtrks_C3 + 1
+                                """ End Loop 3D trk """
 
                                 """ Cut: clean pd peaks """
-                                """      No 2D track close in time to PD peak +5us -> crossing anode and cathode  """
-                                if n_close2dtrks_C3 == 0:
+                                """      No 3d track close in time to PD peak """
+                                if n_close3dtrks_C3 == 0:
 
                                     """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks"""
                                     """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time)"""
                                     for ish in range(len(shs)):
-                                        if shs[ish][0] > C3_x - ROI_radius and shs[ish][0] < C3_x + ROI_radius and shs[ish][1] > C3_y - ROI_radius and shs[ish][1] < C3_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C3_per_evt_large_signal[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C3_per_evt_large_signal[ipdpeak][1]*16/512 + time_window_min and shs[ish][3] > blip_trk_dist and shs[ish][4] < 3 and shmatched[ish] == False:
+                                        if shs[ish][0] > C3_x - ROI_radius and shs[ish][0] < C3_x + ROI_radius and shs[ish][1] > C3_y - ROI_radius and shs[ish][1] < C3_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C3_per_evt_large_signal[ipdpeak][1]*16/512 + driftt204 and shs[ish][2][0] >= C3_per_evt_large_signal[ipdpeak][1]*16/512 + driftt0 and shs[ish][3] > blip_trk_dist and shs[ish][4] < 3 and shmatched[ish] == False:
                                             shmatched[ish] = True
                                             C3_pdmatched_shs_per_evt.append((shs[ish][0], shs[ish][1], shs[ish][2][2] - C3_per_evt_large_signal[ipdpeak][1]*16/512))
 
@@ -446,7 +496,11 @@ for files in sys.argv[1:]:
                                     if nshs >= 1:
                                         C3_tpcmatched_totPE_all_evts.append((C3_per_evt_large_signal[ipdpeak][0]))
                                         C3_tpcmatched_time_all_evts.append((C3_per_evt_large_signal[ipdpeak][1]))
+                                        # output branch to root file
+                                        C3_matched_PDPeak_PE[0] = C3_per_evt_large_signal[ipdpeak][0]
 
+                        # Filled matched PD peak pe
+                        myMatchedC3Peaks.Fill()
                     """ End C3 matching """
 
                 if len(C4_ch1_peaks) != 0 and len(C4_ch2_peaks) != 0:
@@ -470,7 +524,8 @@ for files in sys.argv[1:]:
 
                     """ multiple peaks exist in one trigger window, match for each peak """
                     for ipdpeak in range(len(C4_per_evt_large_signal)):
-                        n_close2dtrks_C4 = 0
+                        n_close3dtrks_C4 = 0
+                        C4_matched_PDPeak_PE[0] = 0
 
                         # ignore first and last pd peak
                         if ipdpeak != 0 and ipdpeak != len(C4_per_evt_large_signal)-1:
@@ -480,26 +535,28 @@ for files in sys.argv[1:]:
                             C4_all_evts_large_signals_gaptime.append(C4_per_evt_large_signal[ipdpeak][1] - C4_per_evt_large_signal[ipdpeak-1][1])
 
                             """ and after neutron beam is not active """
-                            if C4_per_evt_large_signal[ipdpeak][1] > beam_stop_time:
+                            if C4_per_evt_large_signal[ipdpeak][1] > beam_stop_time_inPDticks:
 
-                                """ Also require no 2D track close in time to PD peak +/-5us """
-                                for itrk2d in range(len(trk2ds)):
-                                    # start time: trk2d_time[itrk2d][0]
-                                    # stop time: trk2d_time[itrk2d][1]
+                                """ Loop 3d tracks """
+                                for itrk3d in range(len(trk3ds_sel)):
+                                    # start time: trk3d_time[itrk3d][0]
+                                    # stop time: trk3d_time[itrk3d][1]
 
                                     """ Control plots """
-                                    if trk2ds[itrk2d][0]-trk2ds[itrk2d][1] >= 19:
-                                        C4_pd_trk2d_dt_all_evts.append((trk2d_time[itrk2d][0] - C4_per_evt_large_signal[ipdpeak][1]*16/512, trk2d_time[itrk2d][1] - C4_per_evt_large_signal[ipdpeak][1]*16/512))
-                                    if abs(trk2d_time[itrk2d][0] - C4_per_evt_large_signal[ipdpeak][1]*16/512) < trk2d_time_gap or abs(trk2d_time[itrk2d][1] - C4_per_evt_large_signal[ipdpeak][1]*16/512) < trk2d_time_gap:
-                                        n_close2dtrks_C4 = n_close2dtrks_C4 + 1
+                                    if trk3ds_sel[itrk3d][0] - trk3ds_sel[itrk3d][1] >= fulldriftd:
+                                        C4_pd_trk3d_dt_all_evts.append((trk3d_time[itrk3d][0] - C4_per_evt_large_signal[ipdpeak][1]*16/512, trk3d_time[itrk3d][1] - C4_per_evt_large_signal[ipdpeak][1]*16/512))
+
+                                    if trk3d_time[itrk3d][0] - C4_per_evt_large_signal[ipdpeak][1]*16/512 >= 0 and trk3d_time[itrk3d][0] - C4_per_evt_large_signal[ipdpeak][1]*16/512 < trk3d_time_gap:
+                                        n_close3dtrks_C4 = n_close3dtrks_C4 + 1
+                                """ End Loop 3D trk """
 
                                 """ Cut: clean pd peaks """
-                                """      No 2D track close in time to PD peak +5us -> crossing anode and cathode  """
-                                if n_close2dtrks_C4 == 0:
+                                """      No 3d track close in time to PD peak  """
+                                if n_close3dtrks_C4 == 0:
                                     """ TPC hit time tick is 512ns, one drift time ~140us, 273 ticks"""
                                     """ For PD peaks on the detector, look for single hits (x, y) on top of it, collection hit time within 140us (1 drift time)"""
                                     for ish in range(len(shs)):
-                                        if shs[ish][0] > C4_x - ROI_radius and shs[ish][0] < C4_x + ROI_radius and shs[ish][1] > C4_y - ROI_radius and shs[ish][1] < C4_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C4_per_evt_large_signal[ipdpeak][1]*16/512 + time_window_max and shs[ish][2][0] >= C4_per_evt_large_signal[ipdpeak][1]*16/512 + time_window_min and shs[ish][3] > blip_trk_dist and shs[ish][4] < 3 and shmatched[ish] == False:
+                                        if shs[ish][0] > C4_x - ROI_radius and shs[ish][0] < C4_x + ROI_radius and shs[ish][1] > C4_y - ROI_radius and shs[ish][1] < C4_y + ROI_radius and shs[ish][2][2] >= shs[ish][2][1] and shs[ish][2][1] >= shs[ish][2][0] and shs[ish][2][2] < C4_per_evt_large_signal[ipdpeak][1]*16/512 + driftt204 and shs[ish][2][0] >= C4_per_evt_large_signal[ipdpeak][1]*16/512 + driftt0 and shs[ish][3] > blip_trk_dist and shs[ish][4] < 3 and shmatched[ish] == False:
                                             shmatched[ish] = True
                                             C4_pdmatched_shs_per_evt.append((shs[ish][0], shs[ish][1], shs[ish][2][2] - C4_per_evt_large_signal[ipdpeak][1]*16/512))
 
@@ -536,19 +593,24 @@ for files in sys.argv[1:]:
                                     if nshs >= 1:
                                         C4_tpcmatched_totPE_all_evts.append((C4_per_evt_large_signal[ipdpeak][0]))
                                         C4_tpcmatched_time_all_evts.append((C4_per_evt_large_signal[ipdpeak][1]))
+                                        # output branch to root file
+                                        C4_matched_PDPeak_PE[0] = C4_per_evt_large_signal[ipdpeak][0]
+
+                        # Filled matched PD peak pe
+                        myMatchedC4Peaks.Fill()
 
                     """ End C4 matching """
 
                 """ Set to new trigger """
                 current_trigger = row_pdpeak['trigger']
 
-                """ Clear arrays """
+                """ Clear arrays per trigger """
                 C1_ch1_peaks, C1_ch2_peaks = [], []
                 C2_ch1_peaks, C2_ch2_peaks = [], []
                 C3_ch1_peaks, C3_ch2_peaks = [], []
                 C4_ch1_peaks, C4_ch2_peaks = [], []
                 C1_per_evt_large_signal, C2_per_evt_large_signal, C3_per_evt_large_signal, C4_per_evt_large_signal = [], [], [], []
-                shs, trk2ds, trk2d_time, rawhits  = [], [], [], []
+                shs, trk3ds, trk3ds_sel, trk3d_time  = [], [], [], []
                 shmatched = list()
                 C1_pdmatched_shs_per_evt, C2_pdmatched_shs_per_evt, C3_pdmatched_shs_per_evt, C4_pdmatched_shs_per_evt = [], [], [], []
 
@@ -559,17 +621,11 @@ for files in sys.argv[1:]:
                         shs.append((row_sh['x'], row_sh['y'], row_sh['tdc_max'], row_sh['d_track_2D'], row_sh['d_bary_max']))
                         shmatched.append(False) # False indicate the hit is not matched to pd signal yet
 
-                """ Collect all 2d tracks in current trigger within 1ms, some cosmic runs has 4ms long wfm, don't need that for comparison """
+                """ Collect all 3d tracks in current trigger within 1ms, some cosmic runs has 4ms long wfm, don't need that for comparison """
                 """ Only need to do one time whenever we switch to new trigger """
-                for row_trk2d in d_trk2d:
-                    if row_trk2d['trigger'] == current_trigger: # no time info, need to associate with raw hits
-                        trk2ds.append((row_trk2d['z_ini'], row_trk2d['z_end']))
-
-                """ Collect all raw hits in current trigger within 1ms, some cosmic runs has 4ms long wfm, don't need that for comparison """
-                """ Only need to do one time whenever we switch to new trigger """
-                for row_rawhit in d_rawhits:
-                    if row_rawhit['trigger'] == current_trigger and row_rawhit['tdc_stop'] <= max_time_tick_tpc:
-                        rawhits.append((row_rawhit['z'], row_rawhit['view'], row_rawhit['tdc_zero'], row_rawhit['tdc_max']))
+                for row_trk3d in d_trk3d:
+                    if row_trk3d['trigger'] == current_trigger:
+                        trk3ds.append((row_trk3d['z_ini'], row_trk3d['z_end'], row_trk3d['y_ini'], row_trk3d['y_end'], row_trk3d['x_ini'], row_trk3d['x_end'], row_trk3d['t_ini'], row_trk3d['t_end']))
 
             # Back to main pd peak for loop
             """ Always append a new pd row """
@@ -584,6 +640,15 @@ for files in sys.argv[1:]:
                 if row_pdpeak['channel'] == C4_ch1: C4_ch1_peaks.append((row_pdpeak['max_adc'], row_pdpeak['max_t'], row_pdpeak['charge']))
                 if row_pdpeak['channel'] == C4_ch2: C4_ch2_peaks.append((row_pdpeak['max_adc'], row_pdpeak['max_t'], row_pdpeak['charge']))
 
+# Filled matched PD peak pe
+myTotTriggers.Fill()
+
+f_out.cd()
+myTotTriggers.Write()
+myMatchedC1Peaks.Write()
+myMatchedC2Peaks.Write()
+myMatchedC3Peaks.Write()
+myMatchedC4Peaks.Write()
 
 """ PD plots """
 # Only plot time
@@ -607,22 +672,24 @@ C2_largepdpeaks_timegap = [(x) for x in C2_all_evts_large_signals_gaptime]
 C3_largepdpeaks_timegap = [(x) for x in C3_all_evts_large_signals_gaptime]
 C4_largepdpeaks_timegap = [(x) for x in C4_all_evts_large_signals_gaptime]
 
-# gap time b/t large pd peak and 2d trks start time
-C1_largepdpeaks_2dtrks_start_timegap = [(x[0]) for x in C1_pd_trk2d_dt_all_evts]
-C2_largepdpeaks_2dtrks_start_timegap = [(x[0]) for x in C2_pd_trk2d_dt_all_evts]
-C3_largepdpeaks_2dtrks_start_timegap = [(x[0]) for x in C3_pd_trk2d_dt_all_evts]
-C4_largepdpeaks_2dtrks_start_timegap = [(x[0]) for x in C4_pd_trk2d_dt_all_evts]
+# gap time b/t large pd peak and 3d trks start time
+C1_largepdpeaks_3dtrks_start_timegap = [(x[0]) for x in C1_pd_trk3d_dt_all_evts]
+C2_largepdpeaks_3dtrks_start_timegap = [(x[0]) for x in C2_pd_trk3d_dt_all_evts]
+C3_largepdpeaks_3dtrks_start_timegap = [(x[0]) for x in C3_pd_trk3d_dt_all_evts]
+C4_largepdpeaks_3dtrks_start_timegap = [(x[0]) for x in C4_pd_trk3d_dt_all_evts]
 
-# gap time b/t large pd peak and 2d trks stop time
-C1_largepdpeaks_2dtrks_stop_timegap = [(x[1]) for x in C1_pd_trk2d_dt_all_evts]
-C2_largepdpeaks_2dtrks_stop_timegap = [(x[1]) for x in C2_pd_trk2d_dt_all_evts]
-C3_largepdpeaks_2dtrks_stop_timegap = [(x[1]) for x in C3_pd_trk2d_dt_all_evts]
-C4_largepdpeaks_2dtrks_stop_timegap = [(x[1]) for x in C4_pd_trk2d_dt_all_evts]
+# gap time b/t large pd peak and 3d trks stop time
+C1_largepdpeaks_3dtrks_stop_timegap = [(x[1]) for x in C1_pd_trk3d_dt_all_evts]
+C2_largepdpeaks_3dtrks_stop_timegap = [(x[1]) for x in C2_pd_trk3d_dt_all_evts]
+C3_largepdpeaks_3dtrks_stop_timegap = [(x[1]) for x in C3_pd_trk3d_dt_all_evts]
+C4_largepdpeaks_3dtrks_stop_timegap = [(x[1]) for x in C4_pd_trk3d_dt_all_evts]
 
-# 2d trk dz in drift
-dz_2dtrks = [(x) for x in trk2d_dz_all_evts]
+# 3d trk dz in drift
+dz_3dtrks = [(x) for x in trk3d_dz_all_evts]
 
 # tpc matched
+print('Tot triggers:', my_nTriggers[0])
+print('Tot evts:', n_evt)
 print('C1 tpc-matched pdpeaks:', len(C1_tpcmatched_totPE_all_evts))
 print('C2 tpc-matched pdpeaks:', len(C2_tpcmatched_totPE_all_evts))
 print('C3 tpc-matched pdpeaks:', len(C3_tpcmatched_totPE_all_evts))
@@ -779,66 +846,66 @@ plt.savefig("results/"+inname+"_largepdpeaks_C4_dt.pdf")
 plt.clf() # important to clear figure
 plt.close()
 
-plt.hist(C1_largepdpeaks_2dtrks_start_timegap, range=(-280,280), bins=280)
-plt.xlabel('trk2d t_start - C1 large pd peak [ticks x 512ns]')
+plt.hist(C1_largepdpeaks_3dtrks_start_timegap, range=(-2200,2200), bins=2200)
+plt.xlabel('trk3d t_start - C1 large pd peak [ticks x 512ns]')
 plt.draw()
-plt.savefig("results/"+inname+"_largepdpeaks_C1_crossing2dtrkstart_dt.pdf")
+plt.savefig("results/"+inname+"_largepdpeaks_C1_crossing3dtrkstart_dt.pdf")
 plt.clf() # important to clear figure
 plt.close()
 
-plt.hist(C2_largepdpeaks_2dtrks_start_timegap, range=(-280,280), bins=280)
-plt.xlabel('trk2d t_start - C2 large pd peak [ticks x 512ns]')
+plt.hist(C2_largepdpeaks_3dtrks_start_timegap, range=(-2200,2200), bins=2200)
+plt.xlabel('trk3d t_start - C2 large pd peak [ticks x 512ns]')
 plt.draw()
-plt.savefig("results/"+inname+"_largepdpeaks_C2_crossing2dtrkstart_dt.pdf")
+plt.savefig("results/"+inname+"_largepdpeaks_C2_crossing3dtrkstart_dt.pdf")
 plt.clf() # important to clear figure
 plt.close()
 
-plt.hist(C3_largepdpeaks_2dtrks_start_timegap, range=(-280,280), bins=280)
-plt.xlabel('trk2d t_start - C3 large pd peak  [ticks x 512ns]')
+plt.hist(C3_largepdpeaks_3dtrks_start_timegap, range=(-2200,2200), bins=2200)
+plt.xlabel('trk3d t_start - C3 large pd peak  [ticks x 512ns]')
 plt.draw()
-plt.savefig("results/"+inname+"_largepdpeaks_C3_crossing2dtrkstart_dt.pdf")
+plt.savefig("results/"+inname+"_largepdpeaks_C3_crossing3dtrkstart_dt.pdf")
 plt.clf() # important to clear figure
 plt.close()
 
-plt.hist(C4_largepdpeaks_2dtrks_start_timegap, range=(-280,280), bins=280)
-plt.xlabel('trk2d t_start - C4 large pd peak  [ticks x 512ns]')
+plt.hist(C4_largepdpeaks_3dtrks_start_timegap, range=(-2200,2200), bins=2200)
+plt.xlabel('trk3d t_start - C4 large pd peak  [ticks x 512ns]')
 plt.draw()
-plt.savefig("results/"+inname+"_largepdpeaks_C4_crossing2dtrkstart_dt.pdf")
+plt.savefig("results/"+inname+"_largepdpeaks_C4_crossing3dtrkstart_dt.pdf")
 plt.clf() # important to clear figure
 plt.close()
 
-plt.hist(C1_largepdpeaks_2dtrks_stop_timegap, range=(-280,280), bins=280)
-plt.xlabel('trk2d t_stop - C1 large pd peak [ticks x 512ns]')
+plt.hist(C1_largepdpeaks_3dtrks_stop_timegap, range=(-2200,2200), bins=2200)
+plt.xlabel('trk3d t_stop - C1 large pd peak [ticks x 512ns]')
 plt.draw()
-plt.savefig("results/"+inname+"_largepdpeaks_C1_crossing2dtrkstop_dt.pdf")
+plt.savefig("results/"+inname+"_largepdpeaks_C1_crossing3dtrkstop_dt.pdf")
 plt.clf() # important to clear figure
 plt.close()
 
-plt.hist(C2_largepdpeaks_2dtrks_stop_timegap, range=(-280,280), bins=280)
-plt.xlabel('trk2d t_stop - C2 large pd peak [ticks x 512ns]')
+plt.hist(C2_largepdpeaks_3dtrks_stop_timegap, range=(-2200,2200), bins=2200)
+plt.xlabel('trk3d t_stop - C2 large pd peak [ticks x 512ns]')
 plt.draw()
-plt.savefig("results/"+inname+"_largepdpeaks_C2_crossing2dtrkstop_dt.pdf")
+plt.savefig("results/"+inname+"_largepdpeaks_C2_crossing3dtrkstop_dt.pdf")
 plt.clf() # important to clear figure
 plt.close()
 
-plt.hist(C3_largepdpeaks_2dtrks_stop_timegap, range=(-280,280), bins=280)
-plt.xlabel('trk2d t_stop - C3 large pd peak [ticks x 512ns]')
+plt.hist(C3_largepdpeaks_3dtrks_stop_timegap, range=(-2200,2200), bins=2200)
+plt.xlabel('trk3d t_stop - C3 large pd peak [ticks x 512ns]')
 plt.draw()
-plt.savefig("results/"+inname+"_largepdpeaks_C3_crossing2dtrkstop_dt.pdf")
+plt.savefig("results/"+inname+"_largepdpeaks_C3_crossing3dtrkstop_dt.pdf")
 plt.clf() # important to clear figure
 plt.close()
 
-plt.hist(C4_largepdpeaks_2dtrks_stop_timegap, range=(-280,280), bins=280)
-plt.xlabel('trk2d t_stop - C4 large pd peak [ticks x 512ns]')
+plt.hist(C4_largepdpeaks_3dtrks_stop_timegap, range=(-2200,2200), bins=2200)
+plt.xlabel('trk3d t_stop - C4 large pd peak [ticks x 512ns]')
 plt.draw()
-plt.savefig("results/"+inname+"_largepdpeaks_C4_crossing2dtrkstop_dt.pdf")
+plt.savefig("results/"+inname+"_largepdpeaks_C4_crossing3dtrkstop_dt.pdf")
 plt.clf() # important to clear figure
 plt.close()
 
-plt.hist(dz_2dtrks, range=(-25,25), bins=50)
-plt.xlabel('trk2d dz [cm]')
+plt.hist(dz_3dtrks, range=(-25,25), bins=50)
+plt.xlabel('trk3d dz [cm]')
 plt.draw()
-plt.savefig("results/"+inname+"_2dtrk_dz.pdf")
+plt.savefig("results/"+inname+"_3dtrk_dz.pdf")
 plt.clf() # important to clear figure
 plt.close()
 
