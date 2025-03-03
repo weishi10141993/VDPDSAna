@@ -61,7 +61,12 @@ rfile->GetObject("cpers_s",h);
    int ngoodevts=0;
    int ngoodevts_noconv=0;
    int ntotevts=0;
+   int ncapevt=0;
    int doconv=1;
+   int capC1counter=0;
+   int capC2counter=0;
+   int capC3counter=0;
+   int capC4counter=0;
    //   c2->cd();
    //   			  myfile.open("dump.dat");
 
@@ -77,70 +82,98 @@ rfile->GetObject("cpers_s",h);
 	  int nnvtx =0;
 	  int tnvtx=0;
 	  ntotevts++;
-	  int ncapevt=0;
 	  // first all plots without threshold on phe
 	  int intlar=0;   //how many in lar before  and includingcapture
 	  int intlarac=0;  //how many in active lar before and includingcaprure
 	  int intine=0;    //how many in total
 	  int i1stlar=0; //which was the first int in act LAr, capture in act
 	  int i1stlarall=0; //which was the first int in LAr, capture all
+
 	  //fill energy
 	  energy_all->Fill(Edeptot*1000.);
 	  for (int ihit=0; ihit<NCalHits; ihit++)
 		{
 		  eall2d->Fill(PosCal[ihit][1],PosCal[ihit][2],EneCal[ihit]);
 		}
-	  if (ncaptures>0){
-		ncapevt++;
-		energy_cap1->Fill(Edeptot*1000.);
-		Float_t ee=0.0;
-		for (int ihit=0; ihit<NCHitNCap; ihit++)
-		  {
-			ecap2d->Fill(PosCNCap[ihit][1],PosCNCap[ihit][2],EneCNCap[ihit]);
-			ee+=EneCNCap[ihit];
+
+    if (ncaptures>0){
+      ncapevt++;
+      energy_cap1->Fill(Edeptot*1000.);
+      Float_t ee=0.0;
+      for (int ihit=0; ihit<NCHitNCap; ihit++)
+      {
+        ecap2d->Fill(PosCNCap[ihit][1],PosCNCap[ihit][2],EneCNCap[ihit]);
+			  ee+=EneCNCap[ihit];
 		  }
-		/*			if (ee < 0.1*Edeptot) {
+		  /*			if (ee < 0.1*Edeptot) {
 					cout << RunNum << " " << EveNum << " has low e"  << ee*1000. << " hits" << NCHitNCap<<" etot " << Edeptot*1000. << endl;}*/
-		energy_cap2->Fill(ee*1000.);
-		for (int ihit=0; ihit<NIncHits; ihit++)
-		  {
-			if ((RegInc[ihit]==-4 | RegInc[ihit]==-5) && IdInc[ihit]==2112 )
-			  {
-				ene1st->Fill(log10(PInc[ihit][4]*1000.));
-				ene1stall->Fill(log10(PInc[ihit][4]*1000.));
-				break;
+		  energy_cap2->Fill(ee*1000.);
+      for (int ihit=0; ihit<NIncHits; ihit++) {
+        if ((RegInc[ihit]==-4 | RegInc[ihit]==-5) && IdInc[ihit]==2112 ) {
+          ene1st->Fill(log10(PInc[ihit][4]*1000.));
+          ene1stall->Fill(log10(PInc[ihit][4]*1000.));
+				  break;
+        }
+      }
+		  for (int ihit=NIncHits-1; ihit>-1; ihit--){
+        if ((RegInc[ihit]==-4 | RegInc[ihit]==-5) && IdInc[ihit]==2112 )
+        {
+          enelstcryo->Fill(log10(PInc[ihit][4]*1000.));
+				  break;
 			  }
 		  }
-		for (int ihit=NIncHits-1; ihit>-1; ihit--)
-		  {
-			if ((RegInc[ihit]==-4 | RegInc[ihit]==-5) && IdInc[ihit]==2112 )
-			  {
-				enelstcryo->Fill(log10(PInc[ihit][4]*1000.));
-				break;
-			  }
-		  }
-		for (int ihit=NIncHits-1; ihit>-1; ihit--)
-		  {
-			if (IdInc[ihit]==2112 )
-			  {
-				ene1stin->Fill(log10(PInc[ihit][4]*1000.));
-				nintlar->Fill(-(float)RegInc[ihit]);
-				break;
+		  for (int ihit=NIncHits-1; ihit>-1; ihit--)
+      {
+        if (IdInc[ihit]==2112 ){
+          ene1stin->Fill(log10(PInc[ihit][4]*1000.));
+          nintlar->Fill(-(float)RegInc[ihit]);
+				  break;
 			  }
 		  }
 
 	  } // end if on ncaptures>0
+
 	  // fill photons/electrons
 	  for (int ihit=0; ihit<NIneHits; ihit++)
 		{
-		  if (TypeIne[ihit]==306 && RegIne[ihit]==14)
+		  if (TypeIne[ihit]==306 && RegIne[ihit]==14) // capture at active LAr
 			{
+
+        // count captures on top of each tile
+        if (ncaptures>0){
+          // tile boundaries in yz from Paola
+          // fill drift position
+          captureDriftX->Fill(PosIne[ihit][0]);
+          // only care captures at least 5cm away from cathode
+          if ( PosIne[ihit][0] > -38.5 && PosIne[ihit][0] < -22.5 ){
+            if (PosIne[ihit][1] > -75  && PosIne[ihit][1] < -15   && PosIne[ihit][2] > 86.5   && PosIne[ihit][2] < 146.5) {
+              capC2counter++;
+              petotcapC2->Fill(TotPhe[0]*effi);
+            }
+            if (PosIne[ihit][1] >  90  && PosIne[ihit][1] < 150   && PosIne[ihit][2] > 1      && PosIne[ihit][2] < 61){
+              capC3counter++;
+              petotcapC3->Fill(TotPhe[1]*effi);
+            }
+            if (PosIne[ihit][1] > -150 && PosIne[ihit][1] < -90   && PosIne[ihit][2] > -61    && PosIne[ihit][2] < -1){
+              capC1counter++;
+              petotcapC1->Fill(TotPhe[2]*effi);
+            }
+            if (PosIne[ihit][1] > 15   && PosIne[ihit][1] < 75    && PosIne[ihit][2] > -146.5 && PosIne[ihit][2] < -86.5) {
+              capC4counter++;
+              petotcapC4->Fill(TotPhe[3]*effi);
+            }
+          }
+        }
+
 			  for (int ns=FirstSec[ihit]; ns<FirstSec[ihit]+NSecIne[ihit]; ns++)
 				{
 				  if ( IdSecIne[ns] == 22 ) gamcap->Fill(PSec[ns][4]*1000.);
 				}
-		  //	  ene1stall->Fill(log10(PIne[i1stlarall][4]*1000.),PIne[i1stlarall][4]);
-			}
+        //	  ene1stall->Fill(log10(PIne[i1stlarall][4]*1000.),PIne[i1stlarall][4]);
+
+
+
+			} // capture at active LAr
 		  else if (TypeIne[ihit]==306 && RegIne[ihit]==13)
 			{
 			  for (int ih=0; ih<NIncHits ; ih++)
@@ -194,22 +227,41 @@ rfile->GetObject("cpers_s",h);
 			  }
 		  }
 	  } //end fill photons/electrons
+
 	  // now set threshold
-	  if (TotPhe[2]*effi>thr1) {
-		ngoodevts_noconv++;
-		for (int ihit=0; ihit<NIneHits; ihit++){
-		  if(TypeIne[ihit]>299 && RegIne[ihit]==14) {nnvtx=nnvtx+1;} //active Ar
-		}
-        if (nnvtx ==0){
-		  for (int isec=0; isec<NTIneSec; isec++){
-			//			cout << isec << "num, hit" <<HitSecIne[isec] << endl;
-			//			cout << IdSecIne[isec] << " id, reg " <<RegIne[HitSecIne[isec]] << endl;
-			if (abs(IdSecIne[isec])==11 && RegIne[HitSecIne[isec]] ==14 ) {
-			  regneu->Fill(NeuRegSec[isec]);
-			  intneu->Fill(NeuOldSec[isec]);
-			}
-		  }
-		  }
+	  //if (TotPhe[2]*effi>thr1) {
+    ngoodevts_noconv++;
+
+    for (int ihit=0; ihit<NIneHits; ihit++){
+      if(TypeIne[ihit]>299 && RegIne[ihit]==14) {nnvtx=nnvtx+1;} //active Ar
+    }
+
+    if (nnvtx ==0){
+      for (int isec=0; isec<NTIneSec; isec++){
+        //			cout << isec << "num, hit" <<HitSecIne[isec] << endl;
+			  //			cout << IdSecIne[isec] << " id, reg " <<RegIne[HitSecIne[isec]] << endl;
+        if (abs(IdSecIne[isec])==11 && RegIne[HitSecIne[isec]] ==14 ) {
+          regneu->Fill(NeuRegSec[isec]);
+          intneu->Fill(NeuOldSec[isec]);
+        }
+      }
+    }
+
+    // get tot phe on each tile
+    if (ncaptures==1) {// capture signal time
+
+    } else if ( nnvtx >0 ) {// active Ar inelastic
+      petotineC4->Fill(TotPhe[3]*effi);
+      petotineC1->Fill(TotPhe[2]*effi);
+      petotineC3->Fill(TotPhe[1]*effi);
+      petotineC2->Fill(TotPhe[0]*effi);
+    } else { // bkg outside active LAr
+      petotothC4->Fill(TotPhe[3]*effi);
+      petotothC1->Fill(TotPhe[2]*effi);
+      petotothC3->Fill(TotPhe[1]*effi);
+      petotothC2->Fill(TotPhe[0]*effi);
+    }
+
 		rr2=myran->Rndm();
 		rr2=rr2*5;
 		rr2=Int_t(rr2)*80.0; //-280.0;
@@ -219,39 +271,39 @@ rfile->GetObject("cpers_s",h);
 		for (int iph=0; iph<NPheHits; iph++) {
 
       timeh2->Fill(PheTime[iph]/1000.+offset1);
-      petot->Fill(Phe[iph]);
-      if (PheTile[iph] == 2 && Phe[iph]>0.5) {
+      pehitstot->Fill(Phe[iph]);
+      if (PheTile[iph] == 3 && Phe[iph]>0.5) {
         // Most active tile is #2, above 0.5PE theshold
         timeh3->Fill(PheTime[iph]/1000.+offset2);
         // 60 microseconds bunches
         timeh1->Fill(PheTime[iph]/1000.);
-        petotC4->Fill(Phe[iph]);
+        pehitsC4->Fill(Phe[iph]);
       }
-      if (PheTile[iph] == 0 && Phe[iph]>0.5) petotC1->Fill(Phe[iph]);
-      if (PheTile[iph] == 3 && Phe[iph]>0.5) petotC3->Fill(Phe[iph]);
-      if (PheTile[iph] == 1 && Phe[iph]>0.5) petotC2->Fill(Phe[iph]);
+      if (PheTile[iph] == 2 && Phe[iph]>0.5) pehitsC1->Fill(Phe[iph]);
+      if (PheTile[iph] == 1 && Phe[iph]>0.5) pehitsC3->Fill(Phe[iph]);
+      if (PheTile[iph] == 0 && Phe[iph]>0.5) pehitsC2->Fill(Phe[iph]);
 
 			if (ncaptures==1) {// capture signal time
-        timcap->Fill(PheTime[iph]/1000.+offset1);
-        pecap->Fill(Phe[iph]);
-        if (PheTile[iph] == 2 && Phe[iph]>0.5) pecapC4->Fill(Phe[iph]);
-        if (PheTile[iph] == 0 && Phe[iph]>0.5) pecapC1->Fill(Phe[iph]);
-        if (PheTile[iph] == 3 && Phe[iph]>0.5) pecapC3->Fill(Phe[iph]);
-        if (PheTile[iph] == 1 && Phe[iph]>0.5) pecapC2->Fill(Phe[iph]);
+        timhitscap->Fill(PheTime[iph]/1000.+offset1);
+        pehitscap->Fill(Phe[iph]);
+        if (PheTile[iph] == 3 && Phe[iph]>0.5) pehitscapC4->Fill(Phe[iph]);
+        if (PheTile[iph] == 2 && Phe[iph]>0.5) pehitscapC1->Fill(Phe[iph]);
+        if (PheTile[iph] == 1 && Phe[iph]>0.5) pehitscapC3->Fill(Phe[iph]);
+        if (PheTile[iph] == 0 && Phe[iph]>0.5) pehitscapC2->Fill(Phe[iph]);
 			} else if ( nnvtx >0 ) {// active Ar inelastic
-        timine->Fill(PheTime[iph]/1000.+offset1);
-        peine->Fill(Phe[iph]);
-        if (PheTile[iph] == 2 && Phe[iph]>0.5) peineC4->Fill(Phe[iph]);
-        if (PheTile[iph] == 0 && Phe[iph]>0.5) peineC1->Fill(Phe[iph]);
-        if (PheTile[iph] == 3 && Phe[iph]>0.5) peineC3->Fill(Phe[iph]);
-        if (PheTile[iph] == 1 && Phe[iph]>0.5) peineC2->Fill(Phe[iph]);
+        timhitsine->Fill(PheTime[iph]/1000.+offset1);
+        pehitsine->Fill(Phe[iph]);
+        if (PheTile[iph] == 3 && Phe[iph]>0.5) pehitsineC4->Fill(Phe[iph]);
+        if (PheTile[iph] == 2 && Phe[iph]>0.5) pehitsineC1->Fill(Phe[iph]);
+        if (PheTile[iph] == 1 && Phe[iph]>0.5) pehitsineC3->Fill(Phe[iph]);
+        if (PheTile[iph] == 0 && Phe[iph]>0.5) pehitsineC2->Fill(Phe[iph]);
       } else { // bkg outside active LAr
-        timoth->Fill(PheTime[iph]/1000.+offset1);
-        peoth->Fill(Phe[iph]);
-        if (PheTile[iph] == 2 && Phe[iph]>0.5) peothC4->Fill(Phe[iph]);
-        if (PheTile[iph] == 0 && Phe[iph]>0.5) peothC1->Fill(Phe[iph]);
-        if (PheTile[iph] == 3 && Phe[iph]>0.5) peothC3->Fill(Phe[iph]);
-        if (PheTile[iph] == 1 && Phe[iph]>0.5) peothC2->Fill(Phe[iph]);
+        timhitsoth->Fill(PheTime[iph]/1000.+offset1);
+        pehitsoth->Fill(Phe[iph]);
+        if (PheTile[iph] == 3 && Phe[iph]>0.5) pehitsothC4->Fill(Phe[iph]);
+        if (PheTile[iph] == 2 && Phe[iph]>0.5) pehitsothC1->Fill(Phe[iph]);
+        if (PheTile[iph] == 1 && Phe[iph]>0.5) pehitsothC3->Fill(Phe[iph]);
+        if (PheTile[iph] == 0 && Phe[iph]>0.5) pehitsothC2->Fill(Phe[iph]);
 			}
 
       if (EveNum==myevent){ cout << Phe[iph] << " filling " << PheTime[iph]<<" moved to " << PheTime[iph]+offset1*1000.<< " offset1 "<< offset1<<endl;}
@@ -346,27 +398,33 @@ rfile->GetObject("cpers_s",h);
 			  else {jmin=75000;}}
 		} //end if on at least 1 bin above threshold
 			  } // end if on perform convolution
-	  } // end if on totphe
+	  //} // end if on totphe
+
 	  if (nmaxima > nnmax ) {cout <<EveNum<<endl; break;}
 	  //	  if (ngoodevts >1000) break;
    }//end loop on entries
-   cout << "number of events with signal above thr " << ngoodevts <<endl;
-   cout << "number of events with signal above thr, no convolution " << ngoodevts_noconv <<endl;
-   cout << "total events " << ntotevts <<endl;
-      // if (Cut(ientry) < 0) continue;
-   //   myfile.close();
 
-TCanvas *c2 =new TCanvas("c2","c2",1500,1500);
- c2->cd();
- timeh2->Draw();
-  c2->Print("vbox_sep24_timeh2.png");
- timeh3->Draw();
-  c2->Print("vbox_sep24_timeh3.png");
- tcompact->Draw();
-  c2->Print("vbox_sep24_tconv.png");
-TCanvas *c3 =new TCanvas("c3","c3",3000,1500);
- c3->cd();
- int nx=30;
+   //cout << "number of events with signal above thr " << ngoodevts <<endl;
+   //cout << "number of events with signal above thr, no convolution " << ngoodevts_noconv <<endl;
+   cout << "total events: " << ntotevts <<endl;
+   cout << "total cap events: " << ncapevt <<endl;
+   cout << "cap events on C1: " << capC1counter <<endl;
+   cout << "cap events on C2: " << capC2counter <<endl;
+   cout << "cap events on C3: " << capC3counter <<endl;
+   cout << "cap events on C4: " << capC4counter <<endl;
+
+
+    TCanvas *c2 =new TCanvas("c2","c2",1500,1500);
+     c2->cd();
+     timeh2->Draw();
+      c2->Print("vbox_sep24_timeh2.png");
+     timeh3->Draw();
+      c2->Print("vbox_sep24_timeh3.png");
+     tcompact->Draw();
+      c2->Print("vbox_sep24_tconv.png");
+    TCanvas *c3 =new TCanvas("c3","c3",3000,1500);
+     c3->cd();
+     int nx=30;
  const char *regnames[30] = {"BLKBODY",
 							 "VOID    ",
 							 "Cryfoam ",
@@ -399,23 +457,23 @@ for (int ix=1;ix<=nx;ix++) regneu->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
 
   timeh2->SetLineWidth(5); // time smear
   timeh2->Draw("PLC");
-  timoth->SetLineWidth(5); // non LAr interactions
-  timoth->Draw("SAME PLC");
-  timcap->SetLineWidth(5); // capture signal
-  timcap->Draw("SAME PLC");
-  timine->SetLineWidth(5); // inelastic
-  timine->Draw("SAME PLC");
+  timhitsoth->SetLineWidth(5); // non LAr interactions
+  timhitsoth->Draw("SAME PLC");
+  timhitscap->SetLineWidth(5); // capture signal
+  timhitscap->Draw("SAME PLC");
+  timhitsine->SetLineWidth(5); // inelastic
+  timhitsine->Draw("SAME PLC");
   gPad->BuildLegend();
   c3->Print("vbox_sep24_allXA_times.png"); // time distribution of signals and bkgs
 
-  petot->SetLineWidth(5); // time smear
-  petot->Draw("PLC");
-  peoth->SetLineWidth(5); // non LAr interactions
-  peoth->Draw("SAME PLC");
-  pecap->SetLineWidth(5); // capture signal
-  pecap->Draw("SAME PLC");
-  peine->SetLineWidth(5); // inelastic
-  peine->Draw("SAME PLC");
+  pehitstot->SetLineWidth(5); // time smear
+  pehitstot->Draw("PLC");
+  pehitsoth->SetLineWidth(5); // non LAr interactions
+  pehitsoth->Draw("SAME PLC");
+  pehitscap->SetLineWidth(5); // capture signal
+  pehitscap->Draw("SAME PLC");
+  pehitsine->SetLineWidth(5); // inelastic
+  pehitsine->Draw("SAME PLC");
   gPad->BuildLegend();
   c3->Print("vbox_sep24_allXA_pe.png");
 
@@ -466,62 +524,50 @@ for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
   c3->Print("vbox_sep24_nintlar.png");
 
   TFile *f = new TFile("vbox_sep24_pe.root", "RECREATE");
-  TCanvas *c01 =new TCanvas("c01","c01",3000,1500);
+  TCanvas *c01 =new TCanvas("c01", "c01", 3000, 1500);
   c01->cd();
-  petotC1->SetLineWidth(1); // time smear
-  petotC1->Draw("hist");
-  peothC1->SetLineWidth(1); // non LAr interactions
-  peothC1->Draw("SAME hist");
-  pecapC1->SetLineWidth(1); // capture signal
-  pecapC1->Draw("SAME hist");
-  peineC1->SetLineWidth(1); // inelastic
-  peineC1->Draw("SAME hist");
+  petotothC1->SetLineWidth(1); // non LAr interactions
+  petotothC1->Draw("hist");
+  petotcapC1->SetLineWidth(1); // capture signal
+  petotcapC1->Draw("SAME hist");
+  petotineC1->SetLineWidth(1); // inelastic
+  petotineC1->Draw("SAME hist");
   gPad->BuildLegend();
   c01->Write();
   TCanvas *c02 =new TCanvas("c02","c02",3000,1500);
   c02->cd();
-  petotC2->SetLineWidth(1); // time smear
-  petotC2->Draw("hist");
-  peothC2->SetLineWidth(1); // non LAr interactions
-  peothC2->Draw("SAME hist");
-  pecapC2->SetLineWidth(1); // capture signal
-  pecapC2->Draw("SAME hist");
-  peineC2->SetLineWidth(1); // inelastic
-  peineC2->Draw("SAME hist");
+  petotothC2->SetLineWidth(1); // non LAr interactions
+  petotothC2->Draw("hist");
+  petotcapC2->SetLineWidth(1); // capture signal
+  petotcapC2->Draw("SAME hist");
+  petotineC2->SetLineWidth(1); // inelastic
+  petotineC2->Draw("SAME hist");
   gPad->BuildLegend();
   c02->Write();
   TCanvas *c03 =new TCanvas("c03","c03",3000,1500);
   c03->cd();
-  petotC3->SetLineWidth(1); // time smear
-  petotC3->Draw("hist");
-  peothC3->SetLineWidth(1); // non LAr interactions
-  peothC3->Draw("SAME hist");
-  pecapC3->SetLineWidth(1); // capture signal
-  pecapC3->Draw("SAME hist");
-  peineC3->SetLineWidth(1); // inelastic
-  peineC3->Draw("SAME hist");
+  petotothC3->SetLineWidth(1); // non LAr interactions
+  petotothC3->Draw("hist");
+  petotcapC3->SetLineWidth(1); // capture signal
+  petotcapC3->Draw("SAME hist");
+  petotineC3->SetLineWidth(1); // inelastic
+  petotineC3->Draw("SAME hist");
   gPad->BuildLegend();
   c03->Write();
   TCanvas *c04 =new TCanvas("c04","c04",3000,1500);
   c04->cd();
-  petotC4->SetLineWidth(1); // time smear
-  petotC4->Draw("hist");
-  peothC4->SetLineWidth(1); // non LAr interactions
-  peothC4->Draw("SAME hist");
-  pecapC4->SetLineWidth(1); // capture signal
-  pecapC4->Draw("SAME hist");
-  peineC4->SetLineWidth(1); // inelastic
-  peineC4->Draw("SAME hist");
+  petotothC4->SetLineWidth(1); // non LAr interactions
+  petotothC4->Draw("hist");
+  petotcapC4->SetLineWidth(1); // capture signal
+  petotcapC4->Draw("SAME hist");
+  petotineC4->SetLineWidth(1); // inelastic
+  petotineC4->Draw("SAME hist");
   gPad->BuildLegend();
   c04->Write();
-  /*   getline (cin, goon);
-   nintlar->SetLineWidth(5);
-   nintlaract->SetLineWidth(5);
-   nintlar->SetLineColor(2);
-   nintlaract->SetLineColor(1);
-   nintlar->Draw("");
-   nintlaract->Draw("SAME");
-  c3->Print("vbox_sep24_nintlar.png");
-   getline (cin, goon);
-   nintine->Draw();*/
+  TCanvas *c05 =new TCanvas("c05","c05",3000,1500);
+  c05->cd();
+  captureDriftX->SetLineWidth(1);
+  captureDriftX->Draw("hist");
+  c05->Write();
+
 }
