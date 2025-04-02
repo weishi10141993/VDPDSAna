@@ -43,6 +43,7 @@ void vbox::Loop()
    //  Double_t thr2=14.5*10.;
    Double_t thr2=14.5*5.; // 5 phe
    Double_t effi=0.3; // Efficiency. Factor 0.10 already accounted in sim.
+   Double_t p2pe=1.2; // 1 Photon corresponds to p2pe * PhE  based on the over-voltage and SiPMs
    TFile* rfile= TFile::Open("sample.root");
    //            TCanvas *c2 =new TCanvas("c2","c2",1500,1500);
    //gROOT->ForceStyle(kTRUE);
@@ -148,19 +149,19 @@ rfile->GetObject("cpers_s",h);
           if ( PosIne[ihit][0] > -38.5 && PosIne[ihit][0] < -22.5 ){
             if (PosIne[ihit][1] > -75  && PosIne[ihit][1] < -15   && PosIne[ihit][2] > 86.5   && PosIne[ihit][2] < 146.5) {
               capC2counter++;
-              petotcapC2->Fill(TotPhe[0]*effi);
+              petotcapontileC2->Fill(TotPhe[0]*effi);
             }
             if (PosIne[ihit][1] >  90  && PosIne[ihit][1] < 150   && PosIne[ihit][2] > 1      && PosIne[ihit][2] < 61){
               capC3counter++;
-              petotcapC3->Fill(TotPhe[1]*effi);
+              petotcapontileC3->Fill(TotPhe[1]*effi);
             }
             if (PosIne[ihit][1] > -150 && PosIne[ihit][1] < -90   && PosIne[ihit][2] > -61    && PosIne[ihit][2] < -1){
               capC1counter++;
-              petotcapC1->Fill(TotPhe[2]*effi);
+              petotcapontileC1->Fill(TotPhe[2]*effi);
             }
             if (PosIne[ihit][1] > 15   && PosIne[ihit][1] < 75    && PosIne[ihit][2] > -146.5 && PosIne[ihit][2] < -86.5) {
               capC4counter++;
-              petotcapC4->Fill(TotPhe[3]*effi);
+              petotcapontileC4->Fill(TotPhe[3]*effi);
             }
           }
         }
@@ -249,17 +250,20 @@ rfile->GetObject("cpers_s",h);
 
     // get tot phe on each tile
     if (ncaptures==1) {// capture signal time
-
+      petotcapC4->Fill(TotPhe[3]*effi*p2pe);
+      petotcapC1->Fill(TotPhe[2]*effi*p2pe);
+      petotcapC3->Fill(TotPhe[1]*effi*p2pe);
+      petotcapC2->Fill(TotPhe[0]*effi*p2pe);
     } else if ( nnvtx >0 ) {// active Ar inelastic
-      petotineC4->Fill(TotPhe[3]*effi);
-      petotineC1->Fill(TotPhe[2]*effi);
-      petotineC3->Fill(TotPhe[1]*effi);
-      petotineC2->Fill(TotPhe[0]*effi);
+      petotineC4->Fill(TotPhe[3]*effi*p2pe);
+      petotineC1->Fill(TotPhe[2]*effi*p2pe);
+      petotineC3->Fill(TotPhe[1]*effi*p2pe);
+      petotineC2->Fill(TotPhe[0]*effi*p2pe);
     } else { // bkg outside active LAr
-      petotothC4->Fill(TotPhe[3]*effi);
-      petotothC1->Fill(TotPhe[2]*effi);
-      petotothC3->Fill(TotPhe[1]*effi);
-      petotothC2->Fill(TotPhe[0]*effi);
+      petotothC4->Fill(TotPhe[3]*effi*p2pe);
+      petotothC1->Fill(TotPhe[2]*effi*p2pe);
+      petotothC3->Fill(TotPhe[1]*effi*p2pe);
+      petotothC2->Fill(TotPhe[0]*effi*p2pe);
     }
 
 		rr2=myran->Rndm();
@@ -523,45 +527,53 @@ for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
  nintlar->Draw();
   c3->Print("vbox_sep24_nintlar.png");
 
-  TFile *f = new TFile("vbox_sep24_pe.root", "RECREATE");
+  TFile *f = new TFile("vbox_sep24_pe_minimumcut_p2pe1p2.root", "RECREATE");
   TCanvas *c01 =new TCanvas("c01", "c01", 3000, 1500);
   c01->cd();
   petotothC1->SetLineWidth(1); // non LAr interactions
   petotothC1->Draw("hist");
-  petotcapC1->SetLineWidth(1); // capture signal
-  petotcapC1->Draw("SAME hist");
   petotineC1->SetLineWidth(1); // inelastic
   petotineC1->Draw("SAME hist");
+  petotcapC1->SetLineWidth(1);
+  petotcapC1->Draw("SAME hist");
+  petotcapontileC1->SetLineWidth(1); // capture signal
+  petotcapontileC1->Draw("SAME hist");
   gPad->BuildLegend();
   c01->Write();
   TCanvas *c02 =new TCanvas("c02","c02",3000,1500);
   c02->cd();
   petotothC2->SetLineWidth(1); // non LAr interactions
   petotothC2->Draw("hist");
-  petotcapC2->SetLineWidth(1); // capture signal
-  petotcapC2->Draw("SAME hist");
   petotineC2->SetLineWidth(1); // inelastic
   petotineC2->Draw("SAME hist");
+  petotcapC2->SetLineWidth(1);
+  petotcapC2->Draw("SAME hist");
+  petotcapontileC2->SetLineWidth(1); // capture signal
+  petotcapontileC2->Draw("SAME hist");
   gPad->BuildLegend();
   c02->Write();
   TCanvas *c03 =new TCanvas("c03","c03",3000,1500);
   c03->cd();
   petotothC3->SetLineWidth(1); // non LAr interactions
   petotothC3->Draw("hist");
-  petotcapC3->SetLineWidth(1); // capture signal
-  petotcapC3->Draw("SAME hist");
   petotineC3->SetLineWidth(1); // inelastic
   petotineC3->Draw("SAME hist");
+  petotcapC3->SetLineWidth(1);
+  petotcapC3->Draw("SAME hist");
+  petotcapontileC3->SetLineWidth(1); // capture signal
+  petotcapontileC3->Draw("SAME hist");
   gPad->BuildLegend();
   c03->Write();
   TCanvas *c04 =new TCanvas("c04","c04",3000,1500);
   c04->cd();
   petotothC4->SetLineWidth(1); // non LAr interactions
   petotothC4->Draw("hist");
-  petotcapC4->SetLineWidth(1); // capture signal
-  petotcapC4->Draw("SAME hist");
   petotineC4->SetLineWidth(1); // inelastic
   petotineC4->Draw("SAME hist");
+  petotcapC4->SetLineWidth(1);
+  petotcapC4->Draw("SAME hist");
+  petotcapontileC4->SetLineWidth(1); // capture signal
+  petotcapontileC4->Draw("SAME hist");
   gPad->BuildLegend();
   c04->Write();
   TCanvas *c05 =new TCanvas("c05","c05",3000,1500);
