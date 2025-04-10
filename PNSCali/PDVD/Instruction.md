@@ -38,6 +38,8 @@ export PYTHONPATH=/exp/dune/app/users/weishi/gdmlexportlibs:$PYTHONPATH
 export PYTHONPATH=`pwd`/python/duneggd/protodunevd:$PYTHONPATH
 
 gegede-cli python/duneggd/protodunevd/protodune_vd.cfg -o protodune.gdml
+
+# to generate nowires version, set "wires_on" in the cfg to False
 ```
 
 ## check overlaps
