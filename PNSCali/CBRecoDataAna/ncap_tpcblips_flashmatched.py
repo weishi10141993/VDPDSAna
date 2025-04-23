@@ -18,9 +18,9 @@ import matplotlib.pyplot as plt
 #run_number = 25066 # cosmic run
 #run_number = 25078 # cosmic run
 #run_number = 25084 # cosmic run
-run_number = 25086 # cosmic run
+#run_number = 25086 # cosmic run
 
-#run_number = 25036 # PNS+TPC+PDS run
+run_number = 25036 # PNS+TPC+PDS run
 #run_number = 25050 # PNS+TPC+PDS run? --> do not use
 #run_number = 25068 # PNS+TPC+PDS run
 #run_number = 25071 # PNS+TPC+PDS run
@@ -71,15 +71,53 @@ C3_x = 116.8
 C3_y = 42.05
 C4_x = 51.5
 C4_y = -107.35
+
 # ADCs per PE channel by channel
-C1_ch1_adcgain = 15 # 2nd closest to PNS
-C1_ch2_adcgain = 10
-C2_ch1_adcgain = 15
-C2_ch2_adcgain = 10
-C3_ch1_adcgain = 15
-C3_ch2_adcgain = 15
-C4_ch1_adcgain = 10 # closest to PNS
-C4_ch2_adcgain = 15
+if run_number == 25004:
+    C1_ch1_adcgain = 14.1 # 2nd closest to PNS
+    C1_ch2_adcgain = 10.3
+    C2_ch1_adcgain = 12.7
+    C2_ch2_adcgain = 11.1
+    C3_ch1_adcgain = 13.5
+    C3_ch2_adcgain = 13.1
+    C4_ch1_adcgain = 12.65 # closest to PNS
+    C4_ch2_adcgain = 12.8
+if run_number == 25034 or run_number == 25035 or run_number == 25036 or run_number == 25049 or run_number == 25050 or run_number == 25066:
+    C1_ch1_adcgain = 14.1 # 2nd closest to PNS
+    C1_ch2_adcgain = 10.3
+    C2_ch1_adcgain = 12.7
+    C2_ch2_adcgain = 11.1
+    C3_ch1_adcgain = 13.5
+    C3_ch2_adcgain = 13.1
+    C4_ch1_adcgain = 9.1 # closest to PNS
+    C4_ch2_adcgain = 16.6
+if run_number == 25068:
+    C1_ch1_adcgain = 14.1 # 2nd closest to PNS
+    C1_ch2_adcgain = 10.3
+    C2_ch1_adcgain = 12.7
+    C2_ch2_adcgain = 11.1
+    C3_ch1_adcgain = 12.65
+    C3_ch2_adcgain = 12.8
+    C4_ch1_adcgain = 9.1 # closest to PNS
+    C4_ch2_adcgain = 16.6
+if run_number == 25071 or run_number == 25078 or run_number == 25080 or run_number == 25084 or run_number == 25086:
+    C1_ch1_adcgain = 14.1 # 2nd closest to PNS
+    C1_ch2_adcgain = 10.3
+    C2_ch1_adcgain = 12.7
+    C2_ch2_adcgain = 11.1
+    C3_ch1_adcgain = 12.65
+    C3_ch2_adcgain = 12.8
+    C4_ch1_adcgain = 9.1 # closest to PNS
+    C4_ch2_adcgain = 16.6
+# old adc-pe from Henrique
+#C1_ch1_adcgain = 15 # 2nd closest to PNS
+#C1_ch2_adcgain = 10
+#C2_ch1_adcgain = 15
+#C2_ch2_adcgain = 10
+#C3_ch1_adcgain = 15
+#C3_ch2_adcgain = 15
+#C4_ch1_adcgain = 10 # closest to PNS
+#C4_ch2_adcgain = 15
 
 # Matching
 # area to look for hits on top XA: cm

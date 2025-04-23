@@ -29,15 +29,15 @@ nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSCold
 nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/reco_sh_maxperview4_outlierdmax2p5/cbbot_25004/cbbot_25004_*.h5 >& output_25004.log &
 
 # LZreco:
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25036/cbbot_25036_*.h5 >& output_25036_LZ.log &
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068/cbbot_25068_*.h5 >& output_25068_LZ.log &
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25071/cbbot_25071_*.h5 >& output_25071_LZ.log &
+nohup python ncap_pds_minimumcut.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25036/cbbot_25036_*.h5 >& output_25036_LZ.log &
+nohup python ncap_pds_minimumcut.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068/cbbot_25068_*.h5 >& output_25068_LZ.log &
+nohup python ncap_pds_minimumcut.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25071/cbbot_25071_*.h5 >& output_25071_LZ.log &
 
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25004/cbbot_25004_*.h5 >& output_25004_LZ.log &
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25066/cbbot_25066_*.h5 >& output_25066_LZ.log &
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25078/cbbot_25078_*.h5 >& output_25078_LZ.log &
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25084/cbbot_25084_*.h5 >& output_25084_LZ.log &
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25086/cbbot_25086_*.h5 >& output_25086_LZ.log &
+nohup python ncap_pds_minimumcut.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25004/cbbot_25004_*.h5 >& output_25004_LZ.log &
+nohup python ncap_pds_minimumcut.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25066/cbbot_25066_*.h5 >& output_25066_LZ.log &
+nohup python ncap_pds_minimumcut.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25078/cbbot_25078_*.h5 >& output_25078_LZ.log &
+nohup python ncap_pds_minimumcut.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25084/cbbot_25084_*.h5 >& output_25084_LZ.log &
+nohup python ncap_pds_minimumcut.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25086/cbbot_25086_*.h5 >& output_25086_LZ.log &
 ```
 
 Here are PD channel maps:
@@ -221,3 +221,5 @@ edep-sim \
     -e 10000 \
     Gen_edepsim_3gamma.mac
 ```
+
+## analyze fluka sim

@@ -43,7 +43,17 @@ void vbox::Loop()
    //  Double_t thr2=14.5*10.;
    Double_t thr2=14.5*5.; // 5 phe
    Double_t effi=0.3; // Efficiency. Factor 0.10 already accounted in sim.
-   Double_t p2pe=1.2; // 1 Photon corresponds to p2pe * PhE  based on the over-voltage and SiPMs
+   // This factor scales the PE: effects such as PDE variations among 4 modules, crosstalk/correlated noise that 1 photon corresponds to x * PhE  based on the over-voltage and SiPMs
+   // Correlated noise effect is small, at 20% level, i,e, 1.2
+   // Here we only take the PDE variation calibrated based on near perpendicular cosmics passing through the center:
+   // C1: 125.5/130.8 [if combined for the two channels: 256.3]
+   // C2: 68.2/62.97 [131.2]
+   // C3: 69.14/69.4 [138.5] - use this as ref
+   // C4: 57.42/48.4 [105.8]
+   Double_t pescaleC3=1.0;
+   Double_t pescaleC1=1.85;
+   Double_t pescaleC2=0.947;
+   Double_t pescaleC4=0.764;
    TFile* rfile= TFile::Open("sample.root");
    //            TCanvas *c2 =new TCanvas("c2","c2",1500,1500);
    //gROOT->ForceStyle(kTRUE);
@@ -250,20 +260,20 @@ rfile->GetObject("cpers_s",h);
 
     // get tot phe on each tile
     if (ncaptures==1) {// capture signal time
-      petotcapC4->Fill(TotPhe[3]*effi*p2pe);
-      petotcapC1->Fill(TotPhe[2]*effi*p2pe);
-      petotcapC3->Fill(TotPhe[1]*effi*p2pe);
-      petotcapC2->Fill(TotPhe[0]*effi*p2pe);
+      petotcapC4->Fill(TotPhe[3]*effi*pescaleC4);
+      petotcapC1->Fill(TotPhe[2]*effi*pescaleC1);
+      petotcapC3->Fill(TotPhe[1]*effi*pescaleC3);
+      petotcapC2->Fill(TotPhe[0]*effi*pescaleC2);
     } else if ( nnvtx >0 ) {// active Ar inelastic
-      petotineC4->Fill(TotPhe[3]*effi*p2pe);
-      petotineC1->Fill(TotPhe[2]*effi*p2pe);
-      petotineC3->Fill(TotPhe[1]*effi*p2pe);
-      petotineC2->Fill(TotPhe[0]*effi*p2pe);
+      petotineC4->Fill(TotPhe[3]*effi*pescaleC4);
+      petotineC1->Fill(TotPhe[2]*effi*pescaleC1);
+      petotineC3->Fill(TotPhe[1]*effi*pescaleC3);
+      petotineC2->Fill(TotPhe[0]*effi*pescaleC2);
     } else { // bkg outside active LAr
-      petotothC4->Fill(TotPhe[3]*effi*p2pe);
-      petotothC1->Fill(TotPhe[2]*effi*p2pe);
-      petotothC3->Fill(TotPhe[1]*effi*p2pe);
-      petotothC2->Fill(TotPhe[0]*effi*p2pe);
+      petotothC4->Fill(TotPhe[3]*effi*pescaleC4);
+      petotothC1->Fill(TotPhe[2]*effi*pescaleC1);
+      petotothC3->Fill(TotPhe[1]*effi*pescaleC3);
+      petotothC2->Fill(TotPhe[0]*effi*pescaleC2);
     }
 
 		rr2=myran->Rndm();
@@ -527,7 +537,7 @@ for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
  nintlar->Draw();
   c3->Print("vbox_sep24_nintlar.png");
 
-  TFile *f = new TFile("vbox_sep24_pe_minimumcut_p2pe1p2.root", "RECREATE");
+  TFile *f = new TFile("vbox_sep24_pe_minimumcut_pde_cali_ajib.root", "RECREATE");
   TCanvas *c01 =new TCanvas("c01", "c01", 3000, 1500);
   c01->cd();
   petotothC1->SetLineWidth(1); // non LAr interactions

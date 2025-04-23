@@ -4,13 +4,14 @@ void Ncapture_overlay()
 {
   bool useG4 = false;
   //double FlukaMCsf = 1.3382; // normalize C1
-  double FlukaMCsf = 0.366; // normalize C2
+  //double FlukaMCsf = 0.366; // normalize C2
+  double FlukaMCsf = 0.2672; // normalize C3
+  //double FlukaMCsf = 0.544; // normalize C4
   int C1Flukacapevts = 3624;
   int C2Flukacapevts = 825;
   int C3Flukacapevts = 976;
   int C4Flukacapevts = 8300;
   double cosmicDatasf = 0.642;
-
 
   TH1 *hpnsdataC4;
   TH1 *hpnsdataC3;
@@ -24,9 +25,10 @@ void Ncapture_overlay()
   TCanvas *c1 = new TCanvas();
   c1->cd();
 
-  // pns run data after selection
+  // Data after selection
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071.root");
-  TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut.root");
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut.root");
+  TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pe_cali_ajib.root");
 
   TTree *myMatchedC4Peaks_pns = (TTree*)file0->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_pns->Draw("C4_matched_PDPeak_PE>>hpnsdataC4(50, 100, 2100)");
@@ -43,7 +45,8 @@ void Ncapture_overlay()
 
   // cosmic bkg: data driven
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086.root");
-  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut.root");
+  //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut.root");
+  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pe_cali_ajib.root");
 
   TTree *myMatchedC4Peaks_cosmic = (TTree*)file1->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_cosmic->Draw("C4_matched_PDPeak_PE>>hcosmicdataC4(50, 100, 2100)");
@@ -69,7 +72,8 @@ void Ncapture_overlay()
   // closest to PNS is 2
   // furthest to PNS is 1
   //TFile *file3 = TFile::Open("vbox_sep24_pe.root");
-  TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut.root");
+  //TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut.root");
+  TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut_pde_cali_ajib.root");
   TCanvas *c04 = (TCanvas*)file3->Get("c04");
   TH1F *hinactivebkgC4 = (TH1F*)c04->GetPrimitive("petotothC4");
   hinactivebkgC4->Scale(FlukaMCsf);
@@ -168,6 +172,9 @@ void Ncapture_overlay()
   stc4->Add(hinelasticbkgC4);
   stc4->Add(hsimsignalC4);
   stc4->Draw("hist");
+  stc4->GetXaxis()->SetTitle("PE on C4");
+  can->Modified();
+
 
   hpnsdataC4->SetLineColor(1);
   hpnsdataC4->SetMarkerStyle(20);
@@ -180,14 +187,15 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC4:    " << hsimsignalC4->Integral()    << std::endl;
   std::cout << " hpnsdataC4:      " << hpnsdataC4->Integral()      << std::endl;
 
-  TLegend *legc4 = new TLegend(0.34,0.58,0.78,0.82);
+  TLegend *legc4 = new TLegend(0.24,0.63,0.89,0.89);
   legc4->SetTextSize(0.05);
-  legc4->AddEntry(hcosmicdataC4, "cosmic bkg (data driven)", "f");
-  legc4->AddEntry(hinactivebkgC4, "n induced bkg outside active LAr (Fluka)", "f");
-  legc4->AddEntry(hinelasticbkgC4, "inelastic bkg active LAr (Fluka)", "f");
+  legc4->AddEntry(hcosmicdataC4, "Cosmics (data driven)", "f");
+  legc4->AddEntry(hinactivebkgC4, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc4->AddEntry(hinelasticbkgC4, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc4->AddEntry(hsimsignalC4, "capture signal (G4)", "f");}
-  else {legc4->AddEntry(hsimsignalC4, "n capture signal active LAr (Fluka)", "f");}
-  legc4->AddEntry(hpnsdataC4, "pns run data", "ep");
+  else {legc4->AddEntry(hsimsignalC4, "Active LAr n capture (Fluka)", "f");}
+  legc4->AddEntry(hpnsdataC4, "Data", "ep");
+  legc4->SetBorderSize(0);
   legc4->Draw();
 
   can->SaveAs("PNSAnaC4_minimumcut.root");
@@ -195,6 +203,8 @@ void Ncapture_overlay()
 
   // only plot cosmics
   hcosmicdataC4->SetStats(0);
+  hcosmicdataC4->GetXaxis()->SetTitle("PE on C4");
+  hcosmicdataC4->SetTitle("");
   hcosmicdataC4->Draw("hist");
   can->SaveAs("PNSAnaC4_minimumcut_cosmics.root");
   can->SaveAs("PNSAnaC4_minimumcut_cosmics.pdf");
@@ -206,6 +216,8 @@ void Ncapture_overlay()
   stc4nocosmic->Add(hinelasticbkgC4);
   stc4nocosmic->Add(hsimsignalC4);
   stc4nocosmic->Draw("hist");
+  stc4nocosmic->GetXaxis()->SetTitle("PE on C4");
+  can->Modified();
 
   hpnsdataC4->Add(hcosmicdataC4, -1);
   hpnsdataC4->SetLineColor(1);
@@ -213,14 +225,17 @@ void Ncapture_overlay()
   hpnsdataC4->SetMarkerSize(0.6);
   hpnsdataC4->Draw("E1 X0 SAME");
 
-  TLegend *legc4nocosmic = new TLegend(0.34,0.58,0.78,0.82);
+  TLegend *legc4nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc4nocosmic->SetTextSize(0.05);
-  legc4nocosmic->AddEntry(hinactivebkgC4, "n induced bkg outside active LAr (Fluka)", "f");
-  legc4nocosmic->AddEntry(hinelasticbkgC4, "inelastic bkg active LAr (Fluka)", "f");
+  legc4nocosmic->AddEntry(hinactivebkgC4, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc4nocosmic->AddEntry(hinelasticbkgC4, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc4nocosmic->AddEntry(hsimsignalC4, "capture signal (G4)", "f");}
-  else {legc4nocosmic->AddEntry(hsimsignalC4, "n capture signal active LAr (Fluka)", "f");}
-  legc4nocosmic->AddEntry(hpnsdataC4, "pns run data (cosmics subtracted)", "ep");
+  else {legc4nocosmic->AddEntry(hsimsignalC4, "Active LAr n capture (Fluka)", "f");}
+  legc4nocosmic->AddEntry(hpnsdataC4, "Data (cosmics subtracted)", "ep");
+  legc4nocosmic->SetBorderSize(0);
   legc4nocosmic->Draw();
+
+  gPad->SetLogy();
 
   can->SaveAs("PNSAnaC4_minimumcut_nocosmic.root");
   can->SaveAs("PNSAnaC4_minimumcut_nocosmic.pdf");
@@ -228,9 +243,9 @@ void Ncapture_overlay()
 
 
 
-
+  gPad->SetLogy(0);
   THStack *stc3 = new THStack();
-  stc3->SetMaximum(1400.);
+  stc3->SetMaximum(1800.);
   hcosmicdataC3->SetFillColor(2);
   hinactivebkgC3->SetFillColor(4);
   hinelasticbkgC3->SetFillColor(7);
@@ -240,6 +255,9 @@ void Ncapture_overlay()
   stc3->Add(hinelasticbkgC3);
   stc3->Add(hsimsignalC3);
   stc3->Draw("hist");
+  stc3->GetXaxis()->SetTitle("PE on C3");
+  can->Modified();
+
 
   hpnsdataC3->SetLineColor(1);
   hpnsdataC3->SetMarkerStyle(20);
@@ -252,15 +270,15 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC3:    " << hsimsignalC3->Integral()    << std::endl;
   std::cout << " hpnsdataC3:      " << hpnsdataC3->Integral()      << std::endl;
 
-  TLegend *legc3 = new TLegend(0.34,0.58,0.78,0.82);
+  TLegend *legc3 = new TLegend(0.24,0.63,0.89,0.89);
   legc3->SetTextSize(0.05);
-  legc3->AddEntry(hcosmicdataC3, "cosmic bkg (data driven)", "f");
-  legc3->AddEntry(hinactivebkgC3, "n induced bkg outside active LAr (Fluka)", "f");
-  legc3->AddEntry(hinelasticbkgC3, "inelastic bkg active LAr (Fluka)", "f");
+  legc3->AddEntry(hcosmicdataC3, "Cosmics (data driven)", "f");
+  legc3->AddEntry(hinactivebkgC3, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc3->AddEntry(hinelasticbkgC3, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc3->AddEntry(hsimsignalC3, "n capture signal active LAr (G4)", "f");}
-  else {legc3->AddEntry(hsimsignalC3, "n capture signal active LAr (Fluka)", "f");}
-
-  legc3->AddEntry(hpnsdataC3, "pns run data", "ep");
+  else {legc3->AddEntry(hsimsignalC3, "Active LAr n capture (Fluka)", "f");}
+  legc3->AddEntry(hpnsdataC3, "Data", "ep");
+  legc3->SetBorderSize(0);
   legc3->Draw();
 
   can->SaveAs("PNSAnaC3_minimumcut.root");
@@ -268,17 +286,21 @@ void Ncapture_overlay()
 
   // only plot cosmics
   hcosmicdataC3->SetStats(0);
+  hcosmicdataC3->GetXaxis()->SetTitle("PE on C3");
+  hcosmicdataC3->SetTitle("");
   hcosmicdataC3->Draw("hist");
   can->SaveAs("PNSAnaC3_minimumcut_cosmics.root");
   can->SaveAs("PNSAnaC3_minimumcut_cosmics.pdf");
 
   // subtract cosmics from pns data
   THStack *stc3nocosmic = new THStack();
-  stc3nocosmic->SetMaximum(800.);
+  stc3nocosmic->SetMaximum(1000.);
   stc3nocosmic->Add(hinactivebkgC3);
   stc3nocosmic->Add(hinelasticbkgC3);
   stc3nocosmic->Add(hsimsignalC3);
   stc3nocosmic->Draw("hist");
+  stc3nocosmic->GetXaxis()->SetTitle("PE on C3");
+  can->Modified();
 
   hpnsdataC3->Add(hcosmicdataC3, -1);
   hpnsdataC3->SetLineColor(1);
@@ -286,23 +308,26 @@ void Ncapture_overlay()
   hpnsdataC3->SetMarkerSize(0.6);
   hpnsdataC3->Draw("E1 X0 SAME");
 
-  TLegend *legc3nocosmic = new TLegend(0.34,0.58,0.78,0.82);
+  TLegend *legc3nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc3nocosmic->SetTextSize(0.05);
-  legc3nocosmic->AddEntry(hinactivebkgC3, "n induced bkg outside active LAr (Fluka)", "f");
-  legc3nocosmic->AddEntry(hinelasticbkgC3, "inelastic bkg active LAr (Fluka)", "f");
+  legc3nocosmic->AddEntry(hinactivebkgC3, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc3nocosmic->AddEntry(hinelasticbkgC3, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc3nocosmic->AddEntry(hsimsignalC3, "capture signal (G4)", "f");}
-  else {legc3nocosmic->AddEntry(hsimsignalC3, "n capture signal active LAr (Fluka)", "f");}
-  legc3nocosmic->AddEntry(hpnsdataC3, "pns run data (cosmics subtracted)", "ep");
+  else {legc3nocosmic->AddEntry(hsimsignalC3, "Active LAr n capture (Fluka)", "f");}
+  legc3nocosmic->AddEntry(hpnsdataC3, "Data (cosmics subtracted)", "ep");
+  legc3nocosmic->SetBorderSize(0);
   legc3nocosmic->Draw();
+
+  gPad->SetLogy();
 
   can->SaveAs("PNSAnaC3_minimumcut_nocosmic.root");
   can->SaveAs("PNSAnaC3_minimumcut_nocosmic.pdf");
 
 
 
-
+  gPad->SetLogy(0);
   THStack *stc2 = new THStack();
-  stc2->SetMaximum(1400.);
+  stc2->SetMaximum(1500.);
   hcosmicdataC2->SetFillColor(2);
   hinactivebkgC2->SetFillColor(4);
   hinelasticbkgC2->SetFillColor(7);
@@ -312,6 +337,8 @@ void Ncapture_overlay()
   stc2->Add(hinelasticbkgC2);
   stc2->Add(hsimsignalC2);
   stc2->Draw("hist");
+  stc2->GetXaxis()->SetTitle("PE on C2");
+  can->Modified();
 
   hpnsdataC2->SetLineColor(1);
   hpnsdataC2->SetMarkerStyle(20);
@@ -324,14 +351,15 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC2:    " << hsimsignalC2->Integral()    << std::endl;
   std::cout << " hpnsdataC2:      " << hpnsdataC2->Integral()      << std::endl;
 
-  TLegend *legc2 = new TLegend(0.34,0.58,0.78,0.82);
+  TLegend *legc2 = new TLegend(0.24,0.63,0.89,0.89);
   legc2->SetTextSize(0.05);
-  legc2->AddEntry(hcosmicdataC2, "cosmic bkg (data driven)", "f");
-  legc2->AddEntry(hinactivebkgC2, "n induced bkg outside active LAr (Fluka)", "f");
-  legc2->AddEntry(hinelasticbkgC2, "inelastic bkg active LAr (Fluka)", "f");
+  legc2->AddEntry(hcosmicdataC2, "Cosmics (data driven)", "f");
+  legc2->AddEntry(hinactivebkgC2, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc2->AddEntry(hinelasticbkgC2, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc2->AddEntry(hsimsignalC2, "capture signal (G4)", "f");}
-  else{legc2->AddEntry(hsimsignalC2, "n capture signal active LAr (Fluka)", "f");}
-  legc2->AddEntry(hpnsdataC2, "pns run data", "ep");
+  else{legc2->AddEntry(hsimsignalC2, "Active LAr n capture (Fluka)", "f");}
+  legc2->AddEntry(hpnsdataC2, "Data", "ep");
+  legc2->SetBorderSize(0);
   legc2->Draw();
 
   can->SaveAs("PNSAnaC2_minimumcut.root");
@@ -339,17 +367,22 @@ void Ncapture_overlay()
 
   // only plot cosmics
   hcosmicdataC2->SetStats(0);
+  hcosmicdataC2->GetXaxis()->SetTitle("PE on C2");
+  hcosmicdataC2->SetTitle("");
   hcosmicdataC2->Draw("hist");
   can->SaveAs("PNSAnaC2_minimumcut_cosmics.root");
   can->SaveAs("PNSAnaC2_minimumcut_cosmics.pdf");
 
   // subtract cosmics from pns data
   THStack *stc2nocosmic = new THStack();
-  stc2nocosmic->SetMaximum(600.);
+  stc2nocosmic->SetMaximum(700.);
   stc2nocosmic->Add(hinactivebkgC2);
   stc2nocosmic->Add(hinelasticbkgC2);
   stc2nocosmic->Add(hsimsignalC2);
   stc2nocosmic->Draw("hist");
+  stc2nocosmic->GetXaxis()->SetTitle("PE on C2");
+  can->Modified();
+
 
   hpnsdataC2->Add(hcosmicdataC2, -1);
   hpnsdataC2->SetLineColor(1);
@@ -357,21 +390,24 @@ void Ncapture_overlay()
   hpnsdataC2->SetMarkerSize(0.6);
   hpnsdataC2->Draw("E1 X0 SAME");
 
-  TLegend *legc2nocosmic = new TLegend(0.34,0.58,0.78,0.82);
+  TLegend *legc2nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc2nocosmic->SetTextSize(0.05);
-  legc2nocosmic->AddEntry(hinactivebkgC2, "n induced bkg outside active LAr (Fluka)", "f");
-  legc2nocosmic->AddEntry(hinelasticbkgC2, "inelastic bkg active LAr (Fluka)", "f");
+  legc2nocosmic->AddEntry(hinactivebkgC2, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc2nocosmic->AddEntry(hinelasticbkgC2, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc2nocosmic->AddEntry(hsimsignalC2, "capture signal (G4)", "f");}
-  else {legc2nocosmic->AddEntry(hsimsignalC2, "n capture signal active LAr (Fluka)", "f");}
-  legc2nocosmic->AddEntry(hpnsdataC2, "pns run data (cosmics subtracted)", "ep");
+  else {legc2nocosmic->AddEntry(hsimsignalC2, "Active LAr n capture (Fluka)", "f");}
+  legc2nocosmic->AddEntry(hpnsdataC2, "Data (cosmics subtracted)", "ep");
+  legc2nocosmic->SetBorderSize(0);
   legc2nocosmic->Draw();
+
+  gPad->SetLogy();
 
   can->SaveAs("PNSAnaC2_minimumcut_nocosmic.root");
   can->SaveAs("PNSAnaC2_minimumcut_nocosmic.pdf");
 
 
 
-
+  gPad->SetLogy(0);
   THStack *stc1 = new THStack();
   stc1->SetMaximum(16000.);
   hcosmicdataC1->SetFillColor(2);
@@ -383,6 +419,9 @@ void Ncapture_overlay()
   stc1->Add(hinelasticbkgC1);
   stc1->Add(hsimsignalC1);
   stc1->Draw("hist");
+  stc1->GetXaxis()->SetTitle("PE on C1");
+  can->Modified();
+
 
   hpnsdataC1->SetLineColor(1);
   hpnsdataC1->SetMarkerStyle(20);
@@ -395,14 +434,15 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC1:    " << hsimsignalC1->Integral()    << std::endl;
   std::cout << " hpnsdataC1:      " << hpnsdataC1->Integral()      << std::endl;
 
-  TLegend *legc1 = new TLegend(0.34,0.58,0.78,0.82);
+  TLegend *legc1 = new TLegend(0.24,0.63,0.89,0.89);
   legc1->SetTextSize(0.05);
-  legc1->AddEntry(hcosmicdataC1, "cosmic bkg (data driven)", "f");
-  legc1->AddEntry(hinactivebkgC1, "n induced bkg outside active LAr (Fluka)", "f");
-  legc1->AddEntry(hinelasticbkgC1, "inelastic bkg active LAr (Fluka)", "f");
+  legc1->AddEntry(hcosmicdataC1, "Cosmics (data driven)", "f");
+  legc1->AddEntry(hinactivebkgC1, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc1->AddEntry(hinelasticbkgC1, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc1->AddEntry(hsimsignalC1, "capture signal (G4)", "f");}
-  else{legc1->AddEntry(hsimsignalC1, "n capture signal active LAr (Fluka)", "f");}
-  legc1->AddEntry(hpnsdataC1, "pns run data", "ep");
+  else{legc1->AddEntry(hsimsignalC1, "Active LAr n capture (Fluka)", "f");}
+  legc1->AddEntry(hpnsdataC1, "Data", "ep");
+  legc1->SetBorderSize(0);
   legc1->Draw();
 
   can->SaveAs("PNSAnaC1_minimumcut.root");
@@ -410,6 +450,8 @@ void Ncapture_overlay()
 
   // only plot cosmics
   hcosmicdataC1->SetStats(0);
+  hcosmicdataC1->GetXaxis()->SetTitle("PE on C1");
+  hcosmicdataC1->SetTitle("");
   hcosmicdataC1->Draw("hist");
   can->SaveAs("PNSAnaC1_minimumcut_cosmics.root");
   can->SaveAs("PNSAnaC1_minimumcut_cosmics.pdf");
@@ -421,6 +463,8 @@ void Ncapture_overlay()
   stc1nocosmic->Add(hinelasticbkgC1);
   stc1nocosmic->Add(hsimsignalC1);
   stc1nocosmic->Draw("hist");
+  stc1nocosmic->GetXaxis()->SetTitle("PE on C1");
+  can->Modified();
 
   hpnsdataC1->Add(hcosmicdataC1, -1);
   hpnsdataC1->SetLineColor(1);
@@ -428,14 +472,17 @@ void Ncapture_overlay()
   hpnsdataC1->SetMarkerSize(0.6);
   hpnsdataC1->Draw("E1 X0 SAME");
 
-  TLegend *legc1nocosmic = new TLegend(0.34,0.58,0.78,0.82);
+  TLegend *legc1nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc1nocosmic->SetTextSize(0.05);
-  legc1nocosmic->AddEntry(hinactivebkgC1, "n induced bkg outside active LAr (Fluka)", "f");
-  legc1nocosmic->AddEntry(hinelasticbkgC1, "inelastic bkg active LAr (Fluka)", "f");
+  legc1nocosmic->AddEntry(hinactivebkgC1, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc1nocosmic->AddEntry(hinelasticbkgC1, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc1nocosmic->AddEntry(hsimsignalC1, "capture signal (G4)", "f");}
-  else {legc1nocosmic->AddEntry(hsimsignalC1, "n capture signal active LAr (Fluka)", "f");}
-  legc1nocosmic->AddEntry(hpnsdataC1, "pns run data (cosmics subtracted)", "ep");
+  else {legc1nocosmic->AddEntry(hsimsignalC1, "Active LAr n capture (Fluka)", "f");}
+  legc1nocosmic->AddEntry(hpnsdataC1, "Data (cosmics subtracted)", "ep");
+  legc1nocosmic->SetBorderSize(0);
   legc1nocosmic->Draw();
+
+  gPad->SetLogy();
 
   can->SaveAs("PNSAnaC1_minimumcut_nocosmic.root");
   can->SaveAs("PNSAnaC1_minimumcut_nocosmic.pdf");
