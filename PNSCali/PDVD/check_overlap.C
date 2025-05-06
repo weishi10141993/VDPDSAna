@@ -48,7 +48,7 @@ void checkGeometryOverlaps(const char* gdmlFile, bool fullCheck = false) {
 
 void check_overlap(bool fullCheck = true) {
     // Replace "geometry.gdml" with the path to your GDML file
-    const char* gdmlFile = "protodunevd_v5_ggd.gdml";
+    const char* gdmlFile = "protodunevd_v5_ggd_May6_CRT.gdml";
     //const char* gdmlFile = "./v0/protodunevd_v4_refactored_nowires.gdml";
     checkGeometryOverlaps(gdmlFile, fullCheck);
 }

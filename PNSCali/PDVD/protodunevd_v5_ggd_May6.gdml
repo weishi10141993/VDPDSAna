@@ -221,8 +221,6 @@
     <rotation unit="degree" name="rotUnitLRW_4" x="0" y="0" z="-180"/>
     <position unit="cm" name="posUnitLRN_4" x="320" y="-468.9" z="0"/>
     <rotation unit="degree" name="rotUnitLRN_4" x="0" y="0" z="-270"/>
-    <position unit="cm" name="posBWFoPa" x="233.65658250944043" y="467.4" z="-467.4"/>
-    <position unit="cm" name="posBWStPl" x="239.13239734767615" y="507.9" z="-507.9"/>
     <position unit="cm" name="posShort1" x="0.024900000000000002" y="0.0" z="0.0"/>
     <position unit="cm" name="posShort2" x="-0.47050000000000003" y="-0.268" z="0.0"/>
     <position unit="cm" name="posShort3" x="-1.4204" y="-2.1100000000000003" z="0.0"/>
@@ -4206,6 +4204,8 @@
     <position unit="cm" name="posBotTPC_6" x="-192.28" y="84.55" z="74.54999999999997"/>
     <position unit="cm" name="posTopTPC_7" x="152.28" y="252.45" z="74.54999999999997"/>
     <position unit="cm" name="posBotTPC_7" x="-192.28" y="252.45" z="74.54999999999997"/>
+    <position unit="cm" name="posBWFoPa" x="233.65658250944043" y="467.4" z="-467.4"/>
+    <position unit="cm" name="posBWStPl" x="239.13239734767615" y="507.9" z="-507.9"/>
     <position unit="cm" name="cryo_pos" x="0" y="0" z="0"/>
     <position unit="cm" name="posBeamWinFoam" x="230.72280686017208" y="445.7013273265373" z="-445.7013273265373"/>
     <position unit="cm" name="posBeamWinGlassWool" x="233.67309657693934" y="467.52214067740874" z="-467.52214067740874"/>
@@ -4650,36 +4650,6 @@
     <box name="boxCryoTop" lunit="cm" x="1016.8" y="1016.8" z="61.8"/>
     <box name="boxCryoWallSm" lunit="cm" x="1016.8" y="1075.6" z="61.8"/>
     <box name="boxCryoWallLg" lunit="cm" x="1140.4" y="1075.6" z="61.8"/>
-    <box name="FoamPadBlock" lunit="cm" x="950.0" y="1014.8" z="1014.8"/>
-    <box name="SteelPlateBlock" lunit="cm" x="952.0" y="1016.8" z="1016.8"/>
-    <box name="SteelSupportBlock" lunit="cm" x="952.0" y="1016.8" z="1016.8"/>
-    <box name="Cryostat" lunit="cm" x="790.0" y="854.8" z="854.8"/>
-    <subtraction name="FoamPaddingNoBW">
-      <first ref="FoamPadBlock"/>
-      <second ref="Cryostat"/>
-      <positionref ref="center"/>
-      <rotationref ref="identity"/>
-    </subtraction>
-    <subtraction name="SteelSupportNoBW">
-      <first ref="SteelSupportBlock"/>
-      <second ref="FoamPadBlock"/>
-      <positionref ref="center"/>
-      <rotationref ref="identity"/>
-    </subtraction>
-    <cutTube name="BeamWindowFoamRemp" lunit="cm" aunit="radian" rmin="0.0" rmax="12.5" z="113.6539587656713" startphi="0.0" deltaphi="6.283185307179586" lowX="-0.7103018548340403" lowY="0.0" lowZ="-0.7038972048668201" highX="0.7103018548340402" highY="0.0" highZ="0.7038972048668202"/>
-    <cutTube name="BeamWindowStPlatep" lunit="cm" aunit="radian" rmin="0.0" rmax="12.5" z="1.421661984570891" startphi="0.0" deltaphi="6.283185307179586" lowX="-0.7103018548340403" lowY="0.0" lowZ="-0.7038972048668201" highX="0.7103018548340402" highY="0.0" highZ="0.7038972048668202"/>
-    <subtraction name="FoamPadding">
-      <first ref="FoamPaddingNoBW"/>
-      <second ref="BeamWindowFoamRemp"/>
-      <positionref ref="posBWFoPa"/>
-      <rotationref ref="rBeamW3"/>
-    </subtraction>
-    <subtraction name="SteelSupport">
-      <first ref="SteelSupportNoBW"/>
-      <second ref="BeamWindowStPlatep"/>
-      <positionref ref="posBWStPl"/>
-      <rotationref ref="rBeamW3"/>
-    </subtraction>
     <torus name="FieldShaperCorner" lunit="cm" aunit="radian" rmin="1.758" rmax="1.858" rtor="10.0" startphi="0.0" deltaphi="1.5707963267948966"/>
     <torus name="FieldShaperSlimCorner" lunit="cm" aunit="radian" rmin="0.65" rmax="0.8" rtor="10.0" startphi="0.0" deltaphi="1.5707963267948966"/>
     <tube name="ShortFChalfcirc" lunit="cm" aunit="radian" rmin="0.0" rmax="0.31800000000000006" z="309.4" startphi="-1.5707963267948966" deltaphi="3.141592653589793"/>
@@ -7834,7 +7804,7 @@
     </union>
     <tube name="ArapucaMeshRod_vertical" lunit="cm" aunit="radian" rmin="0.0" rmax="0.1" z="73.5" startphi="0.0" deltaphi="6.283185307179586"/>
     <tube name="ArapucaMeshRod_horizontal" lunit="cm" aunit="radian" rmin="0.0" rmax="0.1" z="80.9" startphi="0.0" deltaphi="6.283185307179586"/>
-    <box name="cryostat_shape" lunit="cm" x="790.0" y="854.8" z="854.8"/>
+    <box name="Cryostat" lunit="cm" x="790.0" y="854.8" z="854.8"/>
     <box name="cryostat_argon_shape" lunit="cm" x="789.6" y="854.4" z="854.4"/>
     <box name="cryostat_gasAr_full_shape" lunit="cm" x="49.7" y="854.4" z="854.4"/>
     <subtraction name="cryostat_gasAr_sub1">
@@ -7850,10 +7820,39 @@
       <rotationref ref="identity"/>
     </subtraction>
     <subtraction name="cryostat_steel_shape">
-      <first ref="cryostat_shape"/>
+      <first ref="Cryostat"/>
       <second ref="cryostat_argon_shape"/>
       <positionref ref="center"/>
       <rotationref ref="identity"/>
+    </subtraction>
+    <box name="FoamPadBlock" lunit="cm" x="950.0" y="1014.8" z="1014.8"/>
+    <box name="SteelPlateBlock" lunit="cm" x="952.0" y="1016.8" z="1016.8"/>
+    <box name="SteelSupportBlock" lunit="cm" x="952.0" y="1016.8" z="1016.8"/>
+    <subtraction name="FoamPaddingNoBW">
+      <first ref="FoamPadBlock"/>
+      <second ref="Cryostat"/>
+      <positionref ref="center"/>
+      <rotationref ref="identity"/>
+    </subtraction>
+    <subtraction name="SteelSupportNoBW">
+      <first ref="SteelSupportBlock"/>
+      <second ref="FoamPadBlock"/>
+      <positionref ref="center"/>
+      <rotationref ref="identity"/>
+    </subtraction>
+    <cutTube name="BeamWindowFoamRemp" lunit="cm" aunit="radian" rmin="0.0" rmax="12.5" z="113.6539587656713" startphi="0.0" deltaphi="6.283185307179586" lowX="-0.7103018548340403" lowY="0.0" lowZ="-0.7038972048668201" highX="0.7103018548340402" highY="0.0" highZ="0.7038972048668202"/>
+    <cutTube name="BeamWindowStPlatep" lunit="cm" aunit="radian" rmin="0.0" rmax="12.5" z="1.421661984570891" startphi="0.0" deltaphi="6.283185307179586" lowX="-0.7103018548340403" lowY="0.0" lowZ="-0.7038972048668201" highX="0.7103018548340402" highY="0.0" highZ="0.7038972048668202"/>
+    <subtraction name="FoamPadding">
+      <first ref="FoamPaddingNoBW"/>
+      <second ref="BeamWindowFoamRemp"/>
+      <positionref ref="posBWFoPa"/>
+      <rotationref ref="rBeamW3"/>
+    </subtraction>
+    <subtraction name="SteelSupport">
+      <first ref="SteelSupportNoBW"/>
+      <second ref="BeamWindowStPlatep"/>
+      <positionref ref="posBWStPl"/>
+      <rotationref ref="rBeamW3"/>
     </subtraction>
     <box name="detenclosure_shape" lunit="cm" x="7904.0" y="5033.6" z="8033.6"/>
     <box name="world_shape" lunit="cm" x="19904.0" y="17033.6" z="20033.6"/>
@@ -35741,7 +35740,7 @@
     </volume>
     <volume name="volCryostat">
       <materialref ref="LAr"/>
-      <solidref ref="cryostat_shape"/>
+      <solidref ref="Cryostat"/>
       <physvol>
         <volumeref ref="cryostat_steel_volume"/>
         <positionref ref="steel_pos"/>

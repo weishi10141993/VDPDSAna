@@ -40,6 +40,7 @@ export PYTHONPATH=`pwd`/python/duneggd/protodunevd:$PYTHONPATH
 gegede-cli python/duneggd/protodunevd/protodune_vd.cfg -o protodune.gdml
 
 # to generate nowires version, set "wires_on" in the cfg to False
+# to include Dual Phase CRT, set "DP_CRT_switch" in the cfg to True
 ```
 
 ## check overlaps
