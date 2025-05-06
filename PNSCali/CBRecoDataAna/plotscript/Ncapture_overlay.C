@@ -5,7 +5,9 @@ void Ncapture_overlay()
   bool useG4 = false;
   //double FlukaMCsf = 1.3382; // normalize C1
   //double FlukaMCsf = 0.366; // normalize C2
-  double FlukaMCsf = 0.2672; // normalize C3
+  //double FlukaMCsf = 0.2672; // normalize C3
+  //double FlukaMCsf = 0.6687; // normalize C3
+  double FlukaMCsf = 2.3564988; // normalize C3
   //double FlukaMCsf = 0.544; // normalize C4
   int C1Flukacapevts = 3624;
   int C2Flukacapevts = 825;
@@ -28,7 +30,8 @@ void Ncapture_overlay()
   // Data after selection
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071.root");
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut.root");
-  TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pe_cali_ajib.root");
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib.root");
+  TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_min50PE.root");
 
   TTree *myMatchedC4Peaks_pns = (TTree*)file0->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_pns->Draw("C4_matched_PDPeak_PE>>hpnsdataC4(50, 100, 2100)");
@@ -46,7 +49,8 @@ void Ncapture_overlay()
   // cosmic bkg: data driven
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086.root");
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut.root");
-  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pe_cali_ajib.root");
+  //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib.root");
+  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_min50PE.root");
 
   TTree *myMatchedC4Peaks_cosmic = (TTree*)file1->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_cosmic->Draw("C4_matched_PDPeak_PE>>hcosmicdataC4(50, 100, 2100)");
@@ -72,8 +76,7 @@ void Ncapture_overlay()
   // closest to PNS is 2
   // furthest to PNS is 1
   //TFile *file3 = TFile::Open("vbox_sep24_pe.root");
-  //TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut.root");
-  TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut_pde_cali_ajib.root");
+  TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut.root");
   TCanvas *c04 = (TCanvas*)file3->Get("c04");
   TH1F *hinactivebkgC4 = (TH1F*)c04->GetPrimitive("petotothC4");
   hinactivebkgC4->Scale(FlukaMCsf);
@@ -162,7 +165,7 @@ void Ncapture_overlay()
   can->cd();
 
   THStack *stc4 = new THStack();
-  stc4->SetMaximum(14000.);
+  stc4->SetMaximum(100000.);
   hcosmicdataC4->SetFillColor(2);
   hinactivebkgC4->SetFillColor(4);
   hinelasticbkgC4->SetFillColor(7);
@@ -181,11 +184,11 @@ void Ncapture_overlay()
   hpnsdataC4->SetMarkerSize(0.6);
   hpnsdataC4->Draw("E1 X0 SAME");
 
-  std::cout << " hcosmicdataC4:   " << hcosmicdataC4->Integral()   << std::endl;
-  std::cout << " hinactivebkgC4:  " << hinactivebkgC4->Integral()  << std::endl;
-  std::cout << " hinelasticbkgC4: " << hinelasticbkgC4->Integral() << std::endl;
-  std::cout << " hsimsignalC4:    " << hsimsignalC4->Integral()    << std::endl;
-  std::cout << " hpnsdataC4:      " << hpnsdataC4->Integral()      << std::endl;
+  std::cout << " hcosmicdataC4:   " << hcosmicdataC4->Integral(1, 50)   << std::endl;
+  std::cout << " hinactivebkgC4:  " << hinactivebkgC4->Integral(1, 50)  << std::endl;
+  std::cout << " hinelasticbkgC4: " << hinelasticbkgC4->Integral(1, 50) << std::endl;
+  std::cout << " hsimsignalC4:    " << hsimsignalC4->Integral(1, 50)    << std::endl;
+  std::cout << " hpnsdataC4:      " << hpnsdataC4->Integral(1, 50)     << std::endl;
 
   TLegend *legc4 = new TLegend(0.24,0.63,0.89,0.89);
   legc4->SetTextSize(0.05);
@@ -211,7 +214,7 @@ void Ncapture_overlay()
 
   // subtract cosmics from pns data
   THStack *stc4nocosmic = new THStack();
-  stc4nocosmic->SetMaximum(14000.);
+  stc4nocosmic->SetMaximum(60000.);
   stc4nocosmic->Add(hinactivebkgC4);
   stc4nocosmic->Add(hinelasticbkgC4);
   stc4nocosmic->Add(hsimsignalC4);
@@ -245,7 +248,7 @@ void Ncapture_overlay()
 
   gPad->SetLogy(0);
   THStack *stc3 = new THStack();
-  stc3->SetMaximum(1800.);
+  stc3->SetMaximum(30000.);
   hcosmicdataC3->SetFillColor(2);
   hinactivebkgC3->SetFillColor(4);
   hinelasticbkgC3->SetFillColor(7);
@@ -264,11 +267,11 @@ void Ncapture_overlay()
   hpnsdataC3->SetMarkerSize(0.6);
   hpnsdataC3->Draw("E1 X0 SAME");
 
-  std::cout << " hcosmicdataC3:   " << hcosmicdataC3->Integral()   << std::endl;
-  std::cout << " hinactivebkgC3:  " << hinactivebkgC3->Integral()  << std::endl;
-  std::cout << " hinelasticbkgC3: " << hinelasticbkgC3->Integral() << std::endl;
-  std::cout << " hsimsignalC3:    " << hsimsignalC3->Integral()    << std::endl;
-  std::cout << " hpnsdataC3:      " << hpnsdataC3->Integral()      << std::endl;
+  std::cout << " hcosmicdataC3:   " << hcosmicdataC3->Integral(1, 50)   << std::endl;
+  std::cout << " hinactivebkgC3:  " << hinactivebkgC3->Integral(1, 50)  << std::endl;
+  std::cout << " hinelasticbkgC3: " << hinelasticbkgC3->Integral(1, 50) << std::endl;
+  std::cout << " hsimsignalC3:    " << hsimsignalC3->Integral(1, 50)    << std::endl;
+  std::cout << " hpnsdataC3:      " << hpnsdataC3->Integral(1, 50)      << std::endl;
 
   TLegend *legc3 = new TLegend(0.24,0.63,0.89,0.89);
   legc3->SetTextSize(0.05);
@@ -294,7 +297,7 @@ void Ncapture_overlay()
 
   // subtract cosmics from pns data
   THStack *stc3nocosmic = new THStack();
-  stc3nocosmic->SetMaximum(1000.);
+  stc3nocosmic->SetMaximum(10000.);
   stc3nocosmic->Add(hinactivebkgC3);
   stc3nocosmic->Add(hinelasticbkgC3);
   stc3nocosmic->Add(hsimsignalC3);
@@ -327,7 +330,7 @@ void Ncapture_overlay()
 
   gPad->SetLogy(0);
   THStack *stc2 = new THStack();
-  stc2->SetMaximum(1500.);
+  stc2->SetMaximum(30000.);
   hcosmicdataC2->SetFillColor(2);
   hinactivebkgC2->SetFillColor(4);
   hinelasticbkgC2->SetFillColor(7);
@@ -345,11 +348,11 @@ void Ncapture_overlay()
   hpnsdataC2->SetMarkerSize(0.6);
   hpnsdataC2->Draw("E1 X0 SAME");
 
-  std::cout << " hcosmicdataC2:   " << hcosmicdataC2->Integral()   << std::endl;
-  std::cout << " hinactivebkgC2:  " << hinactivebkgC2->Integral()  << std::endl;
-  std::cout << " hinelasticbkgC2: " << hinelasticbkgC2->Integral() << std::endl;
-  std::cout << " hsimsignalC2:    " << hsimsignalC2->Integral()    << std::endl;
-  std::cout << " hpnsdataC2:      " << hpnsdataC2->Integral()      << std::endl;
+  std::cout << " hcosmicdataC2:   " << hcosmicdataC2->Integral(1, 50)   << std::endl;
+  std::cout << " hinactivebkgC2:  " << hinactivebkgC2->Integral(1, 50)  << std::endl;
+  std::cout << " hinelasticbkgC2: " << hinelasticbkgC2->Integral(1, 50) << std::endl;
+  std::cout << " hsimsignalC2:    " << hsimsignalC2->Integral(1, 50)    << std::endl;
+  std::cout << " hpnsdataC2:      " << hpnsdataC2->Integral(1, 50)      << std::endl;
 
   TLegend *legc2 = new TLegend(0.24,0.63,0.89,0.89);
   legc2->SetTextSize(0.05);
@@ -375,7 +378,7 @@ void Ncapture_overlay()
 
   // subtract cosmics from pns data
   THStack *stc2nocosmic = new THStack();
-  stc2nocosmic->SetMaximum(700.);
+  stc2nocosmic->SetMaximum(10000.);
   stc2nocosmic->Add(hinactivebkgC2);
   stc2nocosmic->Add(hinelasticbkgC2);
   stc2nocosmic->Add(hsimsignalC2);
@@ -409,7 +412,7 @@ void Ncapture_overlay()
 
   gPad->SetLogy(0);
   THStack *stc1 = new THStack();
-  stc1->SetMaximum(16000.);
+  stc1->SetMaximum(50000.);
   hcosmicdataC1->SetFillColor(2);
   hinactivebkgC1->SetFillColor(4);
   hinelasticbkgC1->SetFillColor(7);
@@ -428,11 +431,11 @@ void Ncapture_overlay()
   hpnsdataC1->SetMarkerSize(0.6);
   hpnsdataC1->Draw("E1 X0 SAME");
 
-  std::cout << " hcosmicdataC1:   " << hcosmicdataC1->Integral()   << std::endl;
-  std::cout << " hinactivebkgC1:  " << hinactivebkgC1->Integral()  << std::endl;
-  std::cout << " hinelasticbkgC1: " << hinelasticbkgC1->Integral() << std::endl;
-  std::cout << " hsimsignalC1:    " << hsimsignalC1->Integral()    << std::endl;
-  std::cout << " hpnsdataC1:      " << hpnsdataC1->Integral()      << std::endl;
+  std::cout << " hcosmicdataC1:   " << hcosmicdataC1->Integral(1, 50)   << std::endl;
+  std::cout << " hinactivebkgC1:  " << hinactivebkgC1->Integral(1, 50)  << std::endl;
+  std::cout << " hinelasticbkgC1: " << hinelasticbkgC1->Integral(1, 50) << std::endl;
+  std::cout << " hsimsignalC1:    " << hsimsignalC1->Integral(1, 50)    << std::endl;
+  std::cout << " hpnsdataC1:      " << hpnsdataC1->Integral(1, 50)      << std::endl;
 
   TLegend *legc1 = new TLegend(0.24,0.63,0.89,0.89);
   legc1->SetTextSize(0.05);
@@ -458,7 +461,7 @@ void Ncapture_overlay()
 
   // subtract cosmics from pns data
   THStack *stc1nocosmic = new THStack();
-  stc1nocosmic->SetMaximum(12000.);
+  stc1nocosmic->SetMaximum(60000.);
   stc1nocosmic->Add(hinactivebkgC1);
   stc1nocosmic->Add(hinelasticbkgC1);
   stc1nocosmic->Add(hsimsignalC1);

@@ -25,9 +25,6 @@ export PYTHONPATH=/exp/dune/app/users/weishi/lardonlibs:$PYTHONPATH
 source /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh
 spack load root@6.28.12
 
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/reco_sh_maxperview4_outlierdmax2p5/cbbot_25036/cbbot_25036_*.h5 >& output_25036.log &
-nohup python ncap_pds_match_tpc.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/reco_sh_maxperview4_outlierdmax2p5/cbbot_25004/cbbot_25004_*.h5 >& output_25004.log &
-
 # LZreco:
 nohup python ncap_pds_minimumcut.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25036/cbbot_25036_*.h5 >& output_25036_LZ.log &
 nohup python ncap_pds_minimumcut.py /pnfs/dune/persistent/users/weishi/PNSPDSColdBox/LZreco/cbbot_25068/cbbot_25068_*.h5 >& output_25068_LZ.log &
