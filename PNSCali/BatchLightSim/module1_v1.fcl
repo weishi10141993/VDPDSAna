@@ -152,9 +152,8 @@ physics:
  simulate: [generator, largeant, rns ]
  analyzeIt:  [ XAresponse ]
 
-
  #define the output stream, there could be more than one if using filters---
- stream1:  [ out1 ]
+ #stream1:  [ out1 ]
 
  #trigger_paths is a keyword and contains the paths that modify the art::event---
  #ie filters and producers---
@@ -163,7 +162,8 @@ physics:
  #end_paths is a keyword and contains the paths that do not modify the art::Event---
  #ie analyzers and output streams.  these all run simultaneously---
 
- end_paths:     [analyzeIt, stream1]
+ #end_paths:     [analyzeIt, stream1]
+ end_paths:     [analyzeIt]
 # end_paths:     [stream1]
 }
 
@@ -181,9 +181,6 @@ outputs:
    dataTier: "generated"
  }
 }
-
-
-
 
 #Reset the particles used in the simulation---
 #PDG Code:
@@ -226,9 +223,9 @@ services.LArPropertiesService.ReflectiveSurfaceDiffuseFractions:[ [ 0, 0, 0, 0, 
 
 ############coordinates based on gdml file
 #Starting point of particles; in cm---
-physics.producers.generator.X0:       [ -5.42, -5.42, -5.42 ]
-physics.producers.generator.Y0:       [ 160.2, 160.2, 160.2 ]
-physics.producers.generator.Z0:       [ 186.701, 186.701, 186.701 ]
+physics.producers.generator.X0:       [ -10.7, -10.7, -10.7 ]
+physics.producers.generator.Y0:       [ 37.0, 37.0, 37.0 ]
+physics.producers.generator.Z0:       [ 37.0, 37.0, 37.0 ]
 physics.producers.generator.T0:       [ 0, 0, 0]
 #position uncertainties---
 physics.producers.generator.SigmaX:  [ 0.0, 0.0, 0.0 ]

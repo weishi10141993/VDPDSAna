@@ -1,5 +1,7 @@
-<?xml version="1.0" encoding="ASCII"?>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<gdml_simple_extension xmlns:gdml_simple_extension="http://www.example.org"
+                       xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+                       xs:noNamespaceSchemaLocation="RefactoredGDMLSchema/SimpleExtension.xsd">
   <define>
     <rotation unit="degree" name="rBeamW3" x="0" y="-45.2594803759" z="82.30000000000001"/>
     <rotation unit="degree" name="rBeamWRev3" x="-45" y="5.461141035196811" z="-84.56349837886518"/>
@@ -969,6 +971,11 @@
       <D value="1.06"/>
       <composite ref="Carbon" n="8"/>
       <composite ref="Hydrogen" n="8"/>
+    </material>
+    <material name="vm2000" formula="vm2000">
+     <D value="1.2" unit="g/cm3"/>
+     <composite n="2" ref="Carbon"/>
+     <composite n="4" ref="Hydrogen"/>
     </material>
     <material name="NiGas1atm80K" formula="">
       <D value="0.0039"/>
@@ -5575,7 +5582,7 @@
         <rotationref ref="rMinus90AboutX"/>
       </physvol>
     </volume>
-    <volume name="detenclosure">
+    <volume name="volDetEnclosure">
       <materialref ref="Air"/>
       <solidref ref="detenclosure_shape"/>
       <physvol>
@@ -5653,7 +5660,7 @@
       <materialref ref="Air"/>
       <solidref ref="world_shape"/>
       <physvol>
-        <volumeref ref="detenclosure"/>
+        <volumeref ref="volDetEnclosure"/>
         <positionref ref="pd_pos"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -5662,4 +5669,4 @@
   <setup name="Default" version="0">
     <world ref="world_volume"/>
   </setup>
-</gdml>
+</gdml_simple_extension>
