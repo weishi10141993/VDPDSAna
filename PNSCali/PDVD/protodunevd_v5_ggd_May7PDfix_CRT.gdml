@@ -7907,10 +7907,9 @@
       <materialref ref="G10"/>
       <solidref ref="XARAPUCA_double_wall_shape"/>
     </volume>
-    <volume name="volXARAPUCADoubleWindow">
+    <volume name="volOpDetSensitive_XARAPUCADoubleWindow">
       <materialref ref="LAr"/>
       <solidref ref="XARAPUCA_double_window_shape"/>
-      <auxiliary auxtype="SensDet" auxvalue="PhotonDetector"/>
     </volume>
     <volume name="cathode_mesh_vol">
       <materialref ref="G10"/>
@@ -8932,10 +8931,9 @@
       <materialref ref="G10"/>
       <solidref ref="XARAPUCA_wall_shape"/>
     </volume>
-    <volume name="volXARAPUCAWindow">
+    <volume name="volOpDetSensitive_XARAPUCAWindow">
       <materialref ref="LAr"/>
       <solidref ref="XARAPUCA_window_shape"/>
-      <auxiliary auxtype="SensDet" auxvalue="PhotonDetector"/>
     </volume>
     <volume name="volMeshunion">
       <materialref ref="STEEL_STAINLESS_Fe7Cr2Ni"/>
@@ -9070,10 +9068,9 @@
       <materialref ref="Glass"/>
       <solidref ref="solidpmt"/>
     </volume>
-    <volume name="pmtFoilVol">
+    <volume name="volOpDetSensitive_pmtFoilVol">
       <materialref ref="LAr"/>
       <solidref ref="PMT_PENPlate"/>
-      <auxiliary auxtype="SensDet" auxvalue="PhotonDetector"/>
     </volume>
     <volume name="volPMT_foil">
       <materialref ref="LAr"/>
@@ -9084,15 +9081,14 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <volumeref ref="pmtFoilVol"/>
+        <volumeref ref="volOpDetSensitive_pmtFoilVol"/>
         <positionref ref="posOpDetSensitive1"/>
         <rotationref ref="identity"/>
       </physvol>
     </volume>
-    <volume name="pmtCoatVol">
+    <volume name="volOpDetSensitive_pmtCoatVol">
       <materialref ref="LAr"/>
       <solidref ref="pmt_coating"/>
-      <auxiliary auxtype="SensDet" auxvalue="PhotonDetector"/>
     </volume>
     <volume name="volPMT_coated">
       <materialref ref="LAr"/>
@@ -9103,7 +9099,7 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <volumeref ref="pmtCoatVol"/>
+        <volumeref ref="volOpDetSensitive_pmtCoatVol"/>
         <positionref ref="posOpDetSensitive0"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -35801,7 +35797,7 @@
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCADoubleWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCADoubleWindow"/>
         <positionref ref="pos_cathode_0_0_xwindow_0"/>
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
@@ -35811,7 +35807,7 @@
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCADoubleWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCADoubleWindow"/>
         <positionref ref="pos_cathode_0_0_xwindow_1"/>
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
@@ -35821,7 +35817,7 @@
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCADoubleWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCADoubleWindow"/>
         <positionref ref="pos_cathode_0_0_xwindow_2"/>
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
@@ -35831,7 +35827,7 @@
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCADoubleWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCADoubleWindow"/>
         <positionref ref="pos_cathode_0_0_xwindow_3"/>
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
@@ -35956,7 +35952,7 @@
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCADoubleWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCADoubleWindow"/>
         <positionref ref="pos_cathode_1_0_xwindow_0"/>
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
@@ -35966,7 +35962,7 @@
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCADoubleWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCADoubleWindow"/>
         <positionref ref="pos_cathode_1_0_xwindow_1"/>
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
@@ -35976,7 +35972,7 @@
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCADoubleWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCADoubleWindow"/>
         <positionref ref="pos_cathode_1_0_xwindow_2"/>
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
@@ -35986,7 +35982,7 @@
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCADoubleWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCADoubleWindow"/>
         <positionref ref="pos_cathode_1_0_xwindow_3"/>
         <rotationref ref="rPlus90AboutXPlus90AboutZ"/>
       </physvol>
@@ -36096,7 +36092,7 @@
         <rotationref ref="rIdentity"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCAWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCAWindow"/>
         <positionref ref="posOpArapuca0-Lat-0"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -36111,7 +36107,7 @@
         <rotationref ref="rIdentity"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCAWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCAWindow"/>
         <positionref ref="posOpArapuca1-Lat-0"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -36126,7 +36122,7 @@
         <rotationref ref="rIdentity"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCAWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCAWindow"/>
         <positionref ref="posOpArapuca2-Lat-0"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -36141,7 +36137,7 @@
         <rotationref ref="rIdentity"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCAWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCAWindow"/>
         <positionref ref="posOpArapuca3-Lat-0"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -36156,7 +36152,7 @@
         <rotationref ref="rPlus180AboutX"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCAWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCAWindow"/>
         <positionref ref="posOpArapuca4-Lat-0"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -36171,7 +36167,7 @@
         <rotationref ref="rPlus180AboutX"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCAWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCAWindow"/>
         <positionref ref="posOpArapuca5-Lat-0"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -36186,7 +36182,7 @@
         <rotationref ref="rPlus180AboutX"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCAWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCAWindow"/>
         <positionref ref="posOpArapuca6-Lat-0"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -36201,7 +36197,7 @@
         <rotationref ref="rPlus180AboutX"/>
       </physvol>
       <physvol>
-        <volumeref ref="volXARAPUCAWindow"/>
+        <volumeref ref="volOpDetSensitive_XARAPUCAWindow"/>
         <positionref ref="posOpArapuca7-Lat-0"/>
         <rotationref ref="identity"/>
       </physvol>
