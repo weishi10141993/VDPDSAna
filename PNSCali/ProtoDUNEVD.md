@@ -33,6 +33,9 @@ python3 fetch_rucio_replicas.py --runs 28676 --max-files 5
 
 File looking at (most recent circa May 7, 2025)
 ```
+/pnfs/dune/persistent/users/weishi/PDVDNoiseHunt/processed_np02vd_raw_run036362_0000_df-s04-d0_dw_0_20250507T145213.hdf5.copied_structured.hdf5
+
+/pnfs/dune/persistent/users/weishi/PDVDNoiseHunt/np02vd_raw_run036362_0000_df-s04-d0_dw_0_20250507T145213.hdf5.copied
 ```
 
 # Light Simulation Analysis Setup

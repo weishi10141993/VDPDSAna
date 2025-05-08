@@ -7,7 +7,7 @@ void Ncapture_overlay()
   //double FlukaMCsf = 0.366; // normalize C2
   //double FlukaMCsf = 0.2672; // normalize C3
   //double FlukaMCsf = 0.6687; // normalize C3
-  double FlukaMCsf = 2.3564988; // normalize C3
+  double FlukaMCsf = 6.0177; // normalize C3
   //double FlukaMCsf = 0.544; // normalize C4
   int C1Flukacapevts = 3624;
   int C2Flukacapevts = 825;
@@ -76,7 +76,8 @@ void Ncapture_overlay()
   // closest to PNS is 2
   // furthest to PNS is 1
   //TFile *file3 = TFile::Open("vbox_sep24_pe.root");
-  TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut.root");
+  //TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut.root");
+  TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut_calibrated2peak.root");
   TCanvas *c04 = (TCanvas*)file3->Get("c04");
   TH1F *hinactivebkgC4 = (TH1F*)c04->GetPrimitive("petotothC4");
   hinactivebkgC4->Scale(FlukaMCsf);
