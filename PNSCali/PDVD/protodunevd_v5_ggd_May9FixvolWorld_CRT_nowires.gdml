@@ -5652,7 +5652,7 @@
         <rotationref ref="rIdentity"/>
       </physvol>
     </volume>
-    <volume name="world_volume">
+    <volume name="volWorld">
       <materialref ref="Air"/>
       <solidref ref="world_shape"/>
       <physvol>
@@ -5663,6 +5663,6 @@
     </volume>
   </structure>
   <setup name="Default" version="0">
-    <world ref="world_volume"/>
+    <world ref="volWorld"/>
   </setup>
 </gdml_simple_extension>
