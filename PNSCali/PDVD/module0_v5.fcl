@@ -32,9 +32,9 @@ services:
   @table::protodunevd_refactored_simulation_services
 }
 
-services.Geometry.GDML: "protodunevd_v5_ggd_May7_CRT.gdml"
-services.Geometry.Name: "protodunevd_v5_ggd_May7_CRT"
-services.Geometry.ROOT: "protodunevd_v5_ggd_May7_CRT.gdml"
+services.Geometry.GDML: "protodunevd_v5_ggd_May19FixCathodeMesh_CRT.gdml"
+services.Geometry.Name: "protodunevd_v5_ggd_May19FixCathodeMesh_CRT"
+services.Geometry.ROOT: "protodunevd_v5_ggd_May19FixCathodeMesh_CRT.gdml"
 
 #services.Geometry.GDML: "protodunevd_v4_refactored.gdml"
 #services.Geometry.Name: "protodunevd_v4_refactored"
@@ -187,7 +187,7 @@ physics.producers.generator.PosDist:   0 # uniform
 physics.producers.generator.AngleDist: 0 # uniform
 services.LArPropertiesService.ScintPreScale: 0.05
 services.OpDetResponseInterface.QuantumEfficiency: 0.03
-services.LArG4Detector.gdmlFileName_: "protodunevd_v5_ggd_May7_CRT.gdml"
+services.LArG4Detector.gdmlFileName_: "protodunevd_v5_ggd_May19FixCathodeMesh_CRT.gdml"
 services.LArPropertiesService.LoadExtraMatProperties: true
 services.DetectorPropertiesService.SimpleBoundaryProcess: false
 

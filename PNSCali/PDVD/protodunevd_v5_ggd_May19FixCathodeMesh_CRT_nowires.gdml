@@ -517,26 +517,38 @@
     <position unit="cm" name="pos_cathode_0_0_xwindow_2" x="-20.0" y="-213.15" z="108.87499999999997"/>
     <position unit="cm" name="pos_cathode_0_0_xarapuca_3" x="-20.0" y="-46.650000000000006" z="37.62499999999997"/>
     <position unit="cm" name="pos_cathode_0_0_xwindow_3" x="-20.0" y="-46.650000000000006" z="37.62499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_0" x="-20.0" y="-328.5" z="-108.87500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_1" x="-20.0" y="-328.5" z="-37.62500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_2" x="-20.0" y="-328.5" z="37.62499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_3" x="-20.0" y="-328.5" z="108.87499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_4" x="-20.0" y="-247.25" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_0" x="-17.1" y="-328.5" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_0" x="-22.9" y="-328.5" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_1" x="-17.1" y="-328.5" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_1" x="-22.9" y="-328.5" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_2" x="-17.1" y="-328.5" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_2" x="-22.9" y="-328.5" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_3" x="-17.1" y="-328.5" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_3" x="-22.9" y="-328.5" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_4" x="-17.1" y="-247.25" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_4" x="-22.9" y="-247.25" z="-108.87500000000003"/>
     <position unit="cm" name="cathode_mesh_top_0_0_0" x="-17.063" y="-211.125" z="-37.62500000000003"/>
     <position unit="cm" name="cathode_mesh_bottom_0_0_0" x="-22.937" y="-211.125" z="-37.62500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_6" x="-20.0" y="-247.25" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_6" x="-17.1" y="-247.25" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_6" x="-22.9" y="-247.25" z="37.62499999999997"/>
     <position unit="cm" name="cathode_mesh_top_0_0_2" x="-17.063" y="-211.125" z="108.87499999999997"/>
     <position unit="cm" name="cathode_mesh_bottom_0_0_2" x="-22.937" y="-211.125" z="108.87499999999997"/>
     <position unit="cm" name="cathode_mesh_top_0_0_1" x="-17.063" y="-125.875" z="-108.87500000000003"/>
     <position unit="cm" name="cathode_mesh_bottom_0_0_1" x="-22.937" y="-125.875" z="-108.87500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_9" x="-20.0" y="-162.0" z="-37.62500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_10" x="-20.0" y="-162.0" z="37.62499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_11" x="-20.0" y="-162.0" z="108.87499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_12" x="-20.0" y="-80.75" z="-108.87500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_13" x="-20.0" y="-80.75" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_9" x="-17.1" y="-162.0" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_9" x="-22.9" y="-162.0" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_10" x="-17.1" y="-162.0" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_10" x="-22.9" y="-162.0" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_11" x="-17.1" y="-162.0" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_11" x="-22.9" y="-162.0" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_12" x="-17.1" y="-80.75" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_12" x="-22.9" y="-80.75" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_13" x="-17.1" y="-80.75" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_13" x="-22.9" y="-80.75" z="-37.62500000000003"/>
     <position unit="cm" name="cathode_mesh_top_0_0_3" x="-17.063" y="-44.625" z="37.62499999999997"/>
     <position unit="cm" name="cathode_mesh_bottom_0_0_3" x="-22.937" y="-44.625" z="37.62499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_0_0_15" x="-20.0" y="-80.75" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_0_0_15" x="-17.1" y="-80.75" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_0_0_15" x="-22.9" y="-80.75" z="108.87499999999997"/>
     <position unit="cm" name="cathode_pos_1_0" x="-20.0" y="168.5" z="-2.842170943040401e-14"/>
     <position unit="cm" name="posAnodePlateTop_1_0" x="321.565" y="168.5" z="-2.842170943040401e-14"/>
     <position unit="cm" name="posAnodePlateBot_1_0" x="-361.565" y="168.5" z="-2.842170943040401e-14"/>
@@ -548,26 +560,38 @@
     <position unit="cm" name="pos_cathode_1_0_xwindow_2" x="-20.0" y="123.85" z="108.87499999999997"/>
     <position unit="cm" name="pos_cathode_1_0_xarapuca_3" x="-20.0" y="290.35" z="37.62499999999997"/>
     <position unit="cm" name="pos_cathode_1_0_xwindow_3" x="-20.0" y="290.35" z="37.62499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_0" x="-20.0" y="8.5" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_0" x="-17.1" y="8.5" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_0" x="-22.9" y="8.5" z="-108.87500000000003"/>
     <position unit="cm" name="cathode_mesh_top_1_0_0" x="-17.063" y="44.625" z="-37.62500000000003"/>
     <position unit="cm" name="cathode_mesh_bottom_1_0_0" x="-22.937" y="44.625" z="-37.62500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_2" x="-20.0" y="8.5" z="37.62499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_3" x="-20.0" y="8.5" z="108.87499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_4" x="-20.0" y="89.75" z="-108.87500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_5" x="-20.0" y="89.75" z="-37.62500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_6" x="-20.0" y="89.75" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_2" x="-17.1" y="8.5" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_2" x="-22.9" y="8.5" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_3" x="-17.1" y="8.5" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_3" x="-22.9" y="8.5" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_4" x="-17.1" y="89.75" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_4" x="-22.9" y="89.75" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_5" x="-17.1" y="89.75" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_5" x="-22.9" y="89.75" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_6" x="-17.1" y="89.75" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_6" x="-22.9" y="89.75" z="37.62499999999997"/>
     <position unit="cm" name="cathode_mesh_top_1_0_2" x="-17.063" y="125.875" z="108.87499999999997"/>
     <position unit="cm" name="cathode_mesh_bottom_1_0_2" x="-22.937" y="125.875" z="108.87499999999997"/>
     <position unit="cm" name="cathode_mesh_top_1_0_1" x="-17.063" y="211.125" z="-108.87500000000003"/>
     <position unit="cm" name="cathode_mesh_bottom_1_0_1" x="-22.937" y="211.125" z="-108.87500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_9" x="-20.0" y="175.0" z="-37.62500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_10" x="-20.0" y="175.0" z="37.62499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_11" x="-20.0" y="175.0" z="108.87499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_12" x="-20.0" y="256.25" z="-108.87500000000003"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_13" x="-20.0" y="256.25" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_9" x="-17.1" y="175.0" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_9" x="-22.9" y="175.0" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_10" x="-17.1" y="175.0" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_10" x="-22.9" y="175.0" z="37.62499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_11" x="-17.1" y="175.0" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_11" x="-22.9" y="175.0" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_12" x="-17.1" y="256.25" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_12" x="-22.9" y="256.25" z="-108.87500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_13" x="-17.1" y="256.25" z="-37.62500000000003"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_13" x="-22.9" y="256.25" z="-37.62500000000003"/>
     <position unit="cm" name="cathode_mesh_top_1_0_3" x="-17.063" y="292.375" z="37.62499999999997"/>
     <position unit="cm" name="cathode_mesh_bottom_1_0_3" x="-22.937" y="292.375" z="37.62499999999997"/>
-    <position unit="cm" name="cathode_mesh_pos_1_0_15" x="-20.0" y="256.25" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_top_pos_1_0_15" x="-17.1" y="256.25" z="108.87499999999997"/>
+    <position unit="cm" name="cathode_resistive_mesh_bottom_pos_1_0_15" x="-22.9" y="256.25" z="108.87499999999997"/>
     <position unit="cm" name="posArapuca0-Lat-0" x="285.6" y="-418.35" z="-2.842170943040401e-14"/>
     <position unit="cm" name="posOpArapuca0-Lat-0" x="285.6" y="-417.61" z="-2.842170943040401e-14"/>
     <position unit="cm" name="lateral_arapuca_mesh_pos_0" x="285.6" y="-415.95000000000005" z="-2.842170943040401e-14"/>
@@ -972,10 +996,10 @@
       <composite ref="Carbon" n="8"/>
       <composite ref="Hydrogen" n="8"/>
     </material>
-    <material name="vm2000" formula="vm2000">
-     <D value="1.2" unit="g/cm3"/>
-     <composite n="2" ref="Carbon"/>
-     <composite n="4" ref="Hydrogen"/>
+    <material name="vm2000" formula="">
+      <D value="1.2"/>
+      <composite ref="Carbon" n="2"/>
+      <composite ref="Hydrogen" n="4"/>
     </material>
     <material name="NiGas1atm80K" formula="">
       <D value="0.0039"/>
@@ -2127,7 +2151,7 @@
     <box name="scintBox_Bottom" lunit="cm" x="11.600000000000001" y="144.0" z="2.0"/>
     <box name="ModulescintBox_Top" lunit="cm" x="112.60000000000001" y="2.1" z="144.0"/>
     <box name="ModulescintBox_Bottom" lunit="cm" x="111.0" y="2.1" z="144.0"/>
-    <box name="detenclosure_shape" lunit="cm" x="7904.0" y="5033.6" z="8033.6"/>
+    <box name="volDetEnclosure_shape" lunit="cm" x="7904.0" y="5033.6" z="8033.6"/>
     <box name="world_shape" lunit="cm" x="19904.0" y="17033.6" z="20033.6"/>
   </solids>
   <structure>
@@ -3593,27 +3617,52 @@
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_0"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_0"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_1"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_0"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_2"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_1"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_3"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_1"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_4"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_2"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_2"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_3"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_3"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_4"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_4"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
@@ -3628,7 +3677,12 @@
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_6"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_6"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_6"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
@@ -3653,27 +3707,52 @@
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_9"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_9"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_10"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_9"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_11"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_10"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_12"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_10"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_13"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_11"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_11"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_12"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_12"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_13"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_13"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
@@ -3688,7 +3767,12 @@
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_0_0_15"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_0_0_15"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_0_0_15"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
@@ -3748,7 +3832,12 @@
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_0"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_0"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_0"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
@@ -3763,27 +3852,52 @@
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_2"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_2"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_3"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_2"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_4"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_3"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_5"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_3"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_6"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_4"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_4"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_5"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_5"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_6"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_6"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
@@ -3808,27 +3922,52 @@
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_9"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_9"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_10"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_9"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_11"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_10"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_12"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_10"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_13"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_11"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_11"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_12"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_12"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_13"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_13"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
@@ -3843,7 +3982,12 @@
       </physvol>
       <physvol>
         <volumeref ref="cathode_mesh_vol"/>
-        <positionref ref="cathode_mesh_pos_1_0_15"/>
+        <positionref ref="cathode_resistive_mesh_top_pos_1_0_15"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="cathode_mesh_vol"/>
+        <positionref ref="cathode_resistive_mesh_bottom_pos_1_0_15"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
@@ -5580,7 +5724,7 @@
     </volume>
     <volume name="volDetEnclosure">
       <materialref ref="Air"/>
-      <solidref ref="detenclosure_shape"/>
+      <solidref ref="volDetEnclosure_shape"/>
       <physvol>
         <volumeref ref="volCryostat"/>
         <positionref ref="cryo_pos"/>
