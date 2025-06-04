@@ -539,8 +539,8 @@ for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
   petotineC1->Draw("SAME hist");
   petotcapC1->SetLineWidth(1);
   petotcapC1->Draw("SAME hist");
-  petotcapontileC1->SetLineWidth(1); // capture signal
-  petotcapontileC1->Draw("SAME hist");
+  //petotcapontileC1->SetLineWidth(1); // capture signal
+  //petotcapontileC1->Draw("SAME hist");
   gPad->BuildLegend();
   c01->Write();
   TCanvas *c02 =new TCanvas("c02","c02",3000,1500);
@@ -551,8 +551,8 @@ for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
   petotineC2->Draw("SAME hist");
   petotcapC2->SetLineWidth(1);
   petotcapC2->Draw("SAME hist");
-  petotcapontileC2->SetLineWidth(1); // capture signal
-  petotcapontileC2->Draw("SAME hist");
+  //petotcapontileC2->SetLineWidth(1); // capture signal
+  //petotcapontileC2->Draw("SAME hist");
   gPad->BuildLegend();
   c02->Write();
   TCanvas *c03 =new TCanvas("c03","c03",3000,1500);
@@ -563,8 +563,8 @@ for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
   petotineC3->Draw("SAME hist");
   petotcapC3->SetLineWidth(1);
   petotcapC3->Draw("SAME hist");
-  petotcapontileC3->SetLineWidth(1); // capture signal
-  petotcapontileC3->Draw("SAME hist");
+  //petotcapontileC3->SetLineWidth(1); // capture signal
+  //petotcapontileC3->Draw("SAME hist");
   gPad->BuildLegend();
   c03->Write();
   TCanvas *c04 =new TCanvas("c04","c04",3000,1500);
@@ -575,8 +575,8 @@ for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
   petotineC4->Draw("SAME hist");
   petotcapC4->SetLineWidth(1);
   petotcapC4->Draw("SAME hist");
-  petotcapontileC4->SetLineWidth(1); // capture signal
-  petotcapontileC4->Draw("SAME hist");
+  //petotcapontileC4->SetLineWidth(1); // capture signal
+  //petotcapontileC4->Draw("SAME hist");
   gPad->BuildLegend();
   c04->Write();
   TCanvas *c05 =new TCanvas("c05","c05",3000,1500);
