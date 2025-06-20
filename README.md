@@ -41,12 +41,7 @@ mrb newDev
 source /exp/dune/app/users/weishi/LQMatch/localProducts_larsoft_v09_91_04_01_e26_prof/setup
 cd srcs
 
-# git clone XXX
-#cd duneana
-#git checkout v09_91_04patch1
-#cd srcs
-
-Rsync QLMatvching
+git clone https://github.com/weishi10141993/QLMatching.git
 
 # Build the code:
 mrb uc # if you have src code need to add to CMake
@@ -58,7 +53,7 @@ mrb b
 
 analyze with default analyzer:
 ```
-lar -c  QLMatchAna.fcl -n 1 /pnfs/dune/persistent/staging/fardet-vd/f9/c1/prodmarley_nue_cc_flat_radiological_decay0_dunevd10kt_1x8x14_3view_30deg_20250130T063235Z_gen_001305_supernova_g4stage1_g4stage2_detsim_reco.root
+lar -c  QLMatchAna.fcl -n 10 /pnfs/dune/persistent/staging/fardet-vd/f9/c1/prodmarley_nue_cc_flat_radiological_decay0_dunevd10kt_1x8x14_3view_30deg_20250130T063235Z_gen_001305_supernova_g4stage1_g4stage2_detsim_reco.root
 ```
 
 check data products in the file:
@@ -79,22 +74,6 @@ source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 setup dunesw v09_91_04d01 -q e26:prof
 source /exp/dune/app/users/weishi/LQMatch/localProducts_larsoft_v09_91_04_01_e26_prof/setup
 mrbsetenv
-```
-
-## Analyze VD low E sample under dunesw v10_07_00d00
-```
-/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash \
--B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid \
-/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
-
-export UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
-
-cd /exp/dune/app/users/weishi/pDUNEVDsim
-
-source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
-setup dunesw v10_07_00d00 -q e26:prof
-
-lar -c OpFlashFinder.fcl -n 10 /pnfs/dune/persistent/staging/fardet-vd/f9/c1/prodmarley_nue_cc_flat_radiological_decay0_dunevd10kt_1x8x14_3view_30deg_20250130T063235Z_gen_001305_supernova_g4stage1_g4stage2_detsim_reco.root
 ```
 
 ## Generate and sim Ar39 in protodunne-VD under dunesw v10_07_00d00
@@ -130,6 +109,22 @@ Get raw op det waveforms from detsim:
 ```
 .L PlotOpDetWfSimple.C
 PlotOpDetWf()
+```
+
+## Analyze VD low E sample under dunesw v10_07_00d00
+```
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash \
+-B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid \
+/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+export UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
+
+cd /exp/dune/app/users/weishi/pDUNEVDsim
+
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+setup dunesw v10_07_00d00 -q e26:prof
+
+lar -c OpFlashFinder.fcl -n 10 /pnfs/dune/persistent/staging/fardet-vd/f9/c1/prodmarley_nue_cc_flat_radiological_decay0_dunevd10kt_1x8x14_3view_30deg_20250130T063235Z_gen_001305_supernova_g4stage1_g4stage2_detsim_reco.root
 ```
 
 ## v10_05_00d00 (obselete)
