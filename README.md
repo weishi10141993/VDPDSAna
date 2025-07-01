@@ -111,6 +111,43 @@ Get raw op det waveforms from detsim:
 PlotOpDetWf()
 ```
 
+## Analyze protodunne-VD data under dunesw v10_07_00d00
+
+Setup rucio and justin to locate file:
+```
+# Setup rucio to locate file
+source /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh
+spack load r-m-dd-config experiment=dune
+spack load kx509
+spack load justin@01.03.00
+kx509
+export RUCIO_ACCOUNT="${username}"
+voms-proxy-init -noregen -rfc -voms dune:/dune/Role=Analysis --hours 168
+
+justin show-files --mql "files where core.runs=36467 and core.run_type=vd-protodune and core.data_tier=full-reconstructed"
+
+rucio replica list file vd-protodune-det-reco:np02vd_raw_run036467_0000_df-s04-d0_dw_0_20250514T130202_reco_stage1_20250514T140238_keepup.root
+
+root [2] Events->GetListOfBranches()->ls()
+```
+
+To run to run the decoder on hdf5 files:
+```
+# under v10_06_00d01 or later
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash \
+-B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid \
+/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+export UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
+
+cd /exp/dune/app/users/weishi/pDUNEVDdata
+
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+setup dunesw v10_07_00d00 -q e26:prof
+
+LD_PRELOAD=$XROOTD_LIB/libXrdPosixPreload.so lar -c standard_reco_stage1_protodunevd_keepup.fcl <your_file.hdf5>
+```
+
 ## Analyze VD low E sample under dunesw v10_07_00d00
 ```
 /cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash \
