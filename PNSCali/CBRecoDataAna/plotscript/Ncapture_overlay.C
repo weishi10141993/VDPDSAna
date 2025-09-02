@@ -7,13 +7,14 @@ void Ncapture_overlay()
   //double FlukaMCsf = 0.366; // normalize C2
   //double FlukaMCsf = 0.2672; // normalize C3
   //double FlukaMCsf = 0.6687; // normalize C3
-  double FlukaMCsf = 6.0177; // normalize C3
+  //double FlukaMCsf = 6.0177; // normalize C3
+  double FlukaMCsf = 5.0511; // normalize C3
   //double FlukaMCsf = 0.544; // normalize C4
   int C1Flukacapevts = 3624;
   int C2Flukacapevts = 825;
   int C3Flukacapevts = 976;
   int C4Flukacapevts = 8300;
-  double cosmicDatasf = 0.642;
+  double cosmicDatasf = 0.642; // data-driven, sf is fixed
 
   TH1 *hpnsdataC4;
   TH1 *hpnsdataC3;
@@ -77,7 +78,8 @@ void Ncapture_overlay()
   // furthest to PNS is 1
   //TFile *file3 = TFile::Open("vbox_sep24_pe.root");
   //TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut.root");
-  TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut_calibrated2peak.root");
+  //TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut_calibrated2peak.root");
+  TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut_calibrated2peak_Aug2025AdjustLY.root");
   TCanvas *c04 = (TCanvas*)file3->Get("c04");
   TH1F *hinactivebkgC4 = (TH1F*)c04->GetPrimitive("petotothC4");
   hinactivebkgC4->Scale(FlukaMCsf);
