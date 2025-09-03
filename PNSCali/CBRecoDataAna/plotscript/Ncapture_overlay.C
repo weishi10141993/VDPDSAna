@@ -3,13 +3,10 @@
 void Ncapture_overlay()
 {
   bool useG4 = false;
-  //double FlukaMCsf = 1.3382; // normalize C1
-  //double FlukaMCsf = 0.366; // normalize C2
-  //double FlukaMCsf = 0.2672; // normalize C3
-  //double FlukaMCsf = 0.6687; // normalize C3
-  //double FlukaMCsf = 6.0177; // normalize C3
-  double FlukaMCsf = 5.0511; // normalize C3
-  //double FlukaMCsf = 0.544; // normalize C4
+  //double FlukaMCsf = 6.0177; // normalize C3, Feb 2025 MC prod
+  //double FlukaMCsf = 5.0511; // normalize C3, Aug 2025 MC prod
+  //double FlukaMCsf = 4.8558; // normalize C3, Aug 2025 MC prod, adc+1 all chan
+  double FlukaMCsf = 5.319; // normalize C3, Aug 2025 MC prod, adc-1 all chan
   int C1Flukacapevts = 3624;
   int C2Flukacapevts = 825;
   int C3Flukacapevts = 976;
@@ -32,7 +29,9 @@ void Ncapture_overlay()
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071.root");
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut.root");
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib.root");
-  TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_min50PE.root");
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_min50PE.root");
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcplus1.root");
+  TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcminus1.root");
 
   TTree *myMatchedC4Peaks_pns = (TTree*)file0->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_pns->Draw("C4_matched_PDPeak_PE>>hpnsdataC4(50, 100, 2100)");
@@ -51,7 +50,9 @@ void Ncapture_overlay()
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086.root");
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut.root");
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib.root");
-  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_min50PE.root");
+  //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_min50PE.root");
+  //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcplus1.root");
+  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcminus1.root");
 
   TTree *myMatchedC4Peaks_cosmic = (TTree*)file1->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_cosmic->Draw("C4_matched_PDPeak_PE>>hcosmicdataC4(50, 100, 2100)");
