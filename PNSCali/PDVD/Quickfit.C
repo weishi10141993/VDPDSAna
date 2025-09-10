@@ -15,19 +15,27 @@
 
 void Quickfit() {
 
-  int nKEe  = 4; // electron
+  int nKEe  = 12; // electron
   int nKEpi = 4; // pion
   int nKEp  = 3; // proton
   //int nKEk = 4; // kaon
-  double KEe[4] = {0.9995, 1.4995, 2.4995, 4.9995};
-  double PEe[4] = {37191.5, 68592.5, 126610.0, 246124.7};
-  double KEerre[4] = {0, 0, 0, 0};
-  double PEerre[4] = {39357.3, 52381.3, 62560.4, 62083.4};
+  double KEe[12] = {0.1995, 0.2995, 0.4995, 0.6995, 0.9995, 1.4995, 1.9995, 2.4995, 2.9995, 3.9995, 4.9995, 7.9995};
+  // histogram mean and std
+  //double PEe[12] = {11156.2, 11541.7, 15850.8, 24511.1, 37191.5, 68592.5, 100927.6, 126610.0, 153666.8, 204283.3, 246124.7, 300488.4};
+  double KEerre[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  //double PEerre[12] = {27900.5, 27416.9, 29705.5, 31926.8, 39357.3, 52381.3, 57187.3, 62560.4, 56642.1, 55903.4, 62083.4, 133110.6};
+  // Gaussian fitted mean and std at high KE >=2.5GeV/c
+  double PEe[12] =    {11156.2, 11541.7, 15850.8, 24511.1, 37191.5, 68592.5, 100927.6, 146714.4, 167583.1, 211412.3, 253392.6, 355893.6};
+  double PEerre[12] = {27900.5, 27416.9, 29705.5, 31926.8, 39357.3, 52381.3, 57187.3, 36266.6, 29406.1, 32608.9, 33036.5, 47306.1};
+
 
   double KEpi[4] = {1.3669, 1.8653, 2.8637, 5.8621};
-  double PEpi[4] = {78107.6, 101917.7, 155856.7, 256333.3};
+  // histogram mean and std
+  //double PEpi[4] = {78107.6, 101917.7, 155856.7, 256333.3};
   double KEerrpi[4] = {0, 0, 0, 0};
-  double PEerrpi[4] = {66631.8, 76289.1, 97969.5, 143325.1};
+  //double PEerrpi[4] = {66631.8, 76289.1, 97969.5, 143325.1};
+  double PEpi[4] =    {78107.6, 101917.7, 155856.7, 358062.5};
+  double PEerrpi[4] = {66631.8, 76289.1, 97969.5, 59422.7};
 
   double KEp[3] = {0.8311, 1.2710, 2.2052};
   double PEp[3] = {28075.5, 49252.2, 107986.7};
@@ -69,9 +77,10 @@ void Quickfit() {
   // Create a canvas and draw the TMultiGraph
   TCanvas *c1 = new TCanvas("c1", "c1", 800, 600);
   mg->Draw("AP"); // "A" draws axes, "P" draws markers with errors
-  mg->GetXaxis()->SetLimits(0, 7);
+  mg->GetXaxis()->SetLimits(0, 9);
+  mg->GetYaxis()->SetLimits(-40000, 450000);
 
-  TF1 *lineare = new TF1("lineare",   "[0]+[1]*x", 0, 5.5);
+  TF1 *lineare = new TF1("lineare",   "[0]+[1]*x", 0, 8.5);
   TF1 *linearpi = new TF1("linearpi", "[0]+[1]*x", 0, 6.5);
   TF1 *linearp = new TF1("linearp",   "[0]+[1]*x", 0, 3.0);
   //TF1 *lineark = new TF1("lineark","[0]+[1]*x", 0, 4.5);
