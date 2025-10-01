@@ -18,7 +18,7 @@ rucio replica list file vd-protodune-det-reco:np02vd_raw_run036467_0000_df-s04-d
 root [2] Events->GetListOfBranches()->ls()
 ```
 
-To run to run the decoder on hdf5 files:
+To run the decoder on hdf5 files:
 ```
 # under v10_06_00d01 or later
 /cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash \

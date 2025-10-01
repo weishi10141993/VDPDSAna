@@ -29,10 +29,11 @@ void Ncapture_overlay()
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071.root");
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut.root");
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib.root");
-  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_min50PE.root"); // OLD DO NOT USE
+
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcplus1.root");
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcminus1.root");
-  TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE.root");
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE.root"); // DO NOT USE
+  TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin50PE.root"); // have to use min50PE becaue C4 SF is 0.7
 
   TTree *myMatchedC4Peaks_pns = (TTree*)file0->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_pns->Draw("C4_matched_PDPeak_PE>>hpnsdataC4(50, 100, 2100)");
@@ -51,10 +52,10 @@ void Ncapture_overlay()
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086.root");
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut.root");
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib.root");
-  //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_min50PE.root"); // OLD DO NOT USE
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcplus1.root");
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcminus1.root");
-  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE.root");
+  //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE.root"); // DO NOT USE
+  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin50PE.root"); // have to use min50PE becaue C4 SF is 0.7
 
   TTree *myMatchedC4Peaks_cosmic = (TTree*)file1->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_cosmic->Draw("C4_matched_PDPeak_PE>>hcosmicdataC4(50, 100, 2100)");
@@ -207,6 +208,10 @@ void Ncapture_overlay()
   legc4->SetBorderSize(0);
   legc4->Draw();
 
+  gPad->SetLogy();
+  can->SaveAs("PNSAnaC4_minimumcut_logY.root");
+  can->SaveAs("PNSAnaC4_minimumcut_logY.pdf");
+  gPad->SetLogy(0);
   can->SaveAs("PNSAnaC4_minimumcut.root");
   can->SaveAs("PNSAnaC4_minimumcut.pdf");
 
@@ -290,6 +295,10 @@ void Ncapture_overlay()
   legc3->SetBorderSize(0);
   legc3->Draw();
 
+  gPad->SetLogy();
+  can->SaveAs("PNSAnaC3_minimumcut_logY.root");
+  can->SaveAs("PNSAnaC3_minimumcut_logY.pdf");
+  gPad->SetLogy(0);
   can->SaveAs("PNSAnaC3_minimumcut.root");
   can->SaveAs("PNSAnaC3_minimumcut.pdf");
 
@@ -371,6 +380,10 @@ void Ncapture_overlay()
   legc2->SetBorderSize(0);
   legc2->Draw();
 
+  gPad->SetLogy();
+  can->SaveAs("PNSAnaC2_minimumcut_logY.root");
+  can->SaveAs("PNSAnaC2_minimumcut_logY.pdf");
+  gPad->SetLogy(0);
   can->SaveAs("PNSAnaC2_minimumcut.root");
   can->SaveAs("PNSAnaC2_minimumcut.pdf");
 
@@ -454,6 +467,10 @@ void Ncapture_overlay()
   legc1->SetBorderSize(0);
   legc1->Draw();
 
+  gPad->SetLogy();
+  can->SaveAs("PNSAnaC1_minimumcut_logY.root");
+  can->SaveAs("PNSAnaC1_minimumcut_logY.pdf");
+  gPad->SetLogy(0);
   can->SaveAs("PNSAnaC1_minimumcut.root");
   can->SaveAs("PNSAnaC1_minimumcut.pdf");
 
