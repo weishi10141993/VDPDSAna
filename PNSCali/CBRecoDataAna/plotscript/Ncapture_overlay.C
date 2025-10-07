@@ -239,6 +239,8 @@ void Ncapture_overlay()
   hpnsdataC4->SetMarkerSize(0.6);
   hpnsdataC4->Draw("E1 X0 SAME");
 
+  std::cout << " C4 data-cosmic mean PE:   " << hpnsdataC4->GetMean() << std::endl;
+
   TLegend *legc4nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc4nocosmic->SetTextSize(0.05);
   legc4nocosmic->AddEntry(hinactivebkgC4, "Inactive LAr neutron bkg (Fluka)", "f");
@@ -326,6 +328,8 @@ void Ncapture_overlay()
   hpnsdataC3->SetMarkerSize(0.6);
   hpnsdataC3->Draw("E1 X0 SAME");
 
+  std::cout << " C3 data-cosmic mean PE:   " << hpnsdataC3->GetMean() << std::endl;
+
   TLegend *legc3nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc3nocosmic->SetTextSize(0.05);
   legc3nocosmic->AddEntry(hinactivebkgC3, "Inactive LAr neutron bkg (Fluka)", "f");
@@ -412,6 +416,8 @@ void Ncapture_overlay()
   hpnsdataC2->SetMarkerSize(0.6);
   hpnsdataC2->Draw("E1 X0 SAME");
 
+  std::cout << " C2 data-cosmic mean PE:   " << hpnsdataC2->GetMean() << std::endl;
+
   TLegend *legc2nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc2nocosmic->SetTextSize(0.05);
   legc2nocosmic->AddEntry(hinactivebkgC2, "Inactive LAr neutron bkg (Fluka)", "f");
@@ -497,6 +503,8 @@ void Ncapture_overlay()
   hpnsdataC1->SetMarkerStyle(20);
   hpnsdataC1->SetMarkerSize(0.6);
   hpnsdataC1->Draw("E1 X0 SAME");
+
+  std::cout << " C1 data-cosmic mean PE:   " << hpnsdataC1->GetMean() << std::endl;
 
   TLegend *legc1nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc1nocosmic->SetTextSize(0.05);
