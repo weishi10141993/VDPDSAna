@@ -200,7 +200,7 @@ void Ncapture_overlay()
   TLegend *legc4 = new TLegend(0.24,0.63,0.89,0.89);
   legc4->SetTextSize(0.05);
   legc4->AddEntry(hcosmicdataC4, "Cosmics (data driven)", "f");
-  legc4->AddEntry(hinactivebkgC4, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc4->AddEntry(hinactivebkgC4, "All inactive materials neutron bkg (Fluka)", "f");
   legc4->AddEntry(hinelasticbkgC4, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc4->AddEntry(hsimsignalC4, "capture signal (G4)", "f");}
   else {legc4->AddEntry(hsimsignalC4, "Active LAr n capture (Fluka)", "f");}
@@ -243,7 +243,7 @@ void Ncapture_overlay()
 
   TLegend *legc4nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc4nocosmic->SetTextSize(0.05);
-  legc4nocosmic->AddEntry(hinactivebkgC4, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc4nocosmic->AddEntry(hinactivebkgC4, "All inactive materials neutron bkg (Fluka)", "f");
   legc4nocosmic->AddEntry(hinelasticbkgC4, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc4nocosmic->AddEntry(hsimsignalC4, "capture signal (G4)", "f");}
   else {legc4nocosmic->AddEntry(hsimsignalC4, "Active LAr n capture (Fluka)", "f");}
@@ -289,7 +289,7 @@ void Ncapture_overlay()
   TLegend *legc3 = new TLegend(0.24,0.63,0.89,0.89);
   legc3->SetTextSize(0.05);
   legc3->AddEntry(hcosmicdataC3, "Cosmics (data driven)", "f");
-  legc3->AddEntry(hinactivebkgC3, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc3->AddEntry(hinactivebkgC3, "All inactive materials neutron bkg (Fluka)", "f");
   legc3->AddEntry(hinelasticbkgC3, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc3->AddEntry(hsimsignalC3, "n capture signal active LAr (G4)", "f");}
   else {legc3->AddEntry(hsimsignalC3, "Active LAr n capture (Fluka)", "f");}
@@ -332,7 +332,7 @@ void Ncapture_overlay()
 
   TLegend *legc3nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc3nocosmic->SetTextSize(0.05);
-  legc3nocosmic->AddEntry(hinactivebkgC3, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc3nocosmic->AddEntry(hinactivebkgC3, "All inactive materials neutron bkg (Fluka)", "f");
   legc3nocosmic->AddEntry(hinelasticbkgC3, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc3nocosmic->AddEntry(hsimsignalC3, "capture signal (G4)", "f");}
   else {legc3nocosmic->AddEntry(hsimsignalC3, "Active LAr n capture (Fluka)", "f");}
@@ -376,7 +376,7 @@ void Ncapture_overlay()
   TLegend *legc2 = new TLegend(0.24,0.63,0.89,0.89);
   legc2->SetTextSize(0.05);
   legc2->AddEntry(hcosmicdataC2, "Cosmics (data driven)", "f");
-  legc2->AddEntry(hinactivebkgC2, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc2->AddEntry(hinactivebkgC2, "All inactive materials neutron bkg (Fluka)", "f");
   legc2->AddEntry(hinelasticbkgC2, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc2->AddEntry(hsimsignalC2, "capture signal (G4)", "f");}
   else{legc2->AddEntry(hsimsignalC2, "Active LAr n capture (Fluka)", "f");}
@@ -420,7 +420,7 @@ void Ncapture_overlay()
 
   TLegend *legc2nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc2nocosmic->SetTextSize(0.05);
-  legc2nocosmic->AddEntry(hinactivebkgC2, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc2nocosmic->AddEntry(hinactivebkgC2, "All inactive materials neutron bkg (Fluka)", "f");
   legc2nocosmic->AddEntry(hinelasticbkgC2, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc2nocosmic->AddEntry(hsimsignalC2, "capture signal (G4)", "f");}
   else {legc2nocosmic->AddEntry(hsimsignalC2, "Active LAr n capture (Fluka)", "f");}
@@ -465,7 +465,7 @@ void Ncapture_overlay()
   TLegend *legc1 = new TLegend(0.24,0.63,0.89,0.89);
   legc1->SetTextSize(0.05);
   legc1->AddEntry(hcosmicdataC1, "Cosmics (data driven)", "f");
-  legc1->AddEntry(hinactivebkgC1, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc1->AddEntry(hinactivebkgC1, "All inactive materials neutron bkg (Fluka)", "f");
   legc1->AddEntry(hinelasticbkgC1, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc1->AddEntry(hsimsignalC1, "capture signal (G4)", "f");}
   else{legc1->AddEntry(hsimsignalC1, "Active LAr n capture (Fluka)", "f");}
@@ -508,7 +508,7 @@ void Ncapture_overlay()
 
   TLegend *legc1nocosmic = new TLegend(0.24,0.63,0.89,0.89);
   legc1nocosmic->SetTextSize(0.05);
-  legc1nocosmic->AddEntry(hinactivebkgC1, "Inactive LAr neutron bkg (Fluka)", "f");
+  legc1nocosmic->AddEntry(hinactivebkgC1, "All inactive materials neutron bkg (Fluka)", "f");
   legc1nocosmic->AddEntry(hinelasticbkgC1, "Active LAr n inelastic (Fluka)", "f");
   if (useG4) {legc1nocosmic->AddEntry(hsimsignalC1, "capture signal (G4)", "f");}
   else {legc1nocosmic->AddEntry(hsimsignalC1, "Active LAr n capture (Fluka)", "f");}
