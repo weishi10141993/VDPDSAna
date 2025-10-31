@@ -14,13 +14,44 @@ void Ncapture_overlay()
   double cosmicDatasf = 0.642; // data-driven, sf is fixed
 
   TH1 *hpnsdataC4;
+  TH1 *hpnsdataC4time;
+  TH1 *hpnsdataC4timelowPE;
+  TH1 *hpnsdataC4timehighPE;
+
   TH1 *hpnsdataC3;
+  TH1 *hpnsdataC3time;
+  TH1 *hpnsdataC3timelowPE;
+  TH1 *hpnsdataC3timehighPE;
+
   TH1 *hpnsdataC2;
+  TH1 *hpnsdataC2time;
+  TH1 *hpnsdataC2timelowPE;
+  TH1 *hpnsdataC2timehighPE;
+
   TH1 *hpnsdataC1;
+  TH1 *hpnsdataC1time;
+  TH1 *hpnsdataC1timelowPE;
+  TH1 *hpnsdataC1timehighPE;
+
   TH1 *hcosmicdataC4;
+  TH1 *hcosmicdataC4time;
+  TH1 *hcosmicdataC4timelowPE;
+  TH1 *hcosmicdataC4timehighPE;
+
   TH1 *hcosmicdataC3;
+  TH1 *hcosmicdataC3time;
+  TH1 *hcosmicdataC3timelowPE;
+  TH1 *hcosmicdataC3timehighPE;
+
   TH1 *hcosmicdataC2;
+  TH1 *hcosmicdataC2time;
+  TH1 *hcosmicdataC2timelowPE;
+  TH1 *hcosmicdataC2timehighPE;
+
   TH1 *hcosmicdataC1;
+  TH1 *hcosmicdataC1time;
+  TH1 *hcosmicdataC1timelowPE;
+  TH1 *hcosmicdataC1timehighPE;
 
   TCanvas *c1 = new TCanvas();
   c1->cd();
@@ -33,20 +64,50 @@ void Ncapture_overlay()
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcplus1.root");
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcminus1.root");
   //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE.root"); // DO NOT USE
-  TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin50PE.root"); // have to use min50PE becaue C4 SF is 0.7
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin50PE.root"); // have to use min50PE becaue C4 SF is 0.7
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_min100PE_1200PEsplit_timing.root"); // Oct 29
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_min50PE_max2100PE_1200PEsplit_timing.root"); // Oct 30
+  TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_min50PEprescale_min100PEpostscale_max2100PE_1200PEsplit_timing.root"); // Oct 30
 
   TTree *myMatchedC4Peaks_pns = (TTree*)file0->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_pns->Draw("C4_matched_PDPeak_PE>>hpnsdataC4(50, 100, 2100)");
   hpnsdataC4 = (TH1*)gPad->GetPrimitive("hpnsdataC4");
+  myMatchedC4Peaks_pns->Draw("C4_matched_PDPeak_Time>>hpnsdataC4time(100, 0, 70000)");
+  hpnsdataC4time = (TH1*)gPad->GetPrimitive("hpnsdataC4time");
+  myMatchedC4Peaks_pns->Draw("C4_matched_PDPeak_Time_100_1200PE>>hpnsdataC4timelowPE(100, 0, 70000)");
+  hpnsdataC4timelowPE = (TH1*)gPad->GetPrimitive("hpnsdataC4timelowPE");
+  myMatchedC4Peaks_pns->Draw("C4_matched_PDPeak_Time_above_1200PE>>hpnsdataC4timehighPE(100, 0, 70000)");
+  hpnsdataC4timehighPE = (TH1*)gPad->GetPrimitive("hpnsdataC4timehighPE");
+
   TTree *myMatchedC3Peaks_pns = (TTree*)file0->Get("myMatchedC3Peaks");
   myMatchedC3Peaks_pns->Draw("C3_matched_PDPeak_PE>>hpnsdataC3(50, 100, 2100)");
   hpnsdataC3 = (TH1*)gPad->GetPrimitive("hpnsdataC3");
+  myMatchedC3Peaks_pns->Draw("C3_matched_PDPeak_Time>>hpnsdataC3time(100, 0, 70000)");
+  hpnsdataC3time = (TH1*)gPad->GetPrimitive("hpnsdataC3time");
+  myMatchedC3Peaks_pns->Draw("C3_matched_PDPeak_Time_100_1200PE>>hpnsdataC3timelowPE(100, 0, 70000)");
+  hpnsdataC3timelowPE = (TH1*)gPad->GetPrimitive("hpnsdataC3timelowPE");
+  myMatchedC3Peaks_pns->Draw("C3_matched_PDPeak_Time_above_1200PE>>hpnsdataC3timehighPE(100, 0, 70000)");
+  hpnsdataC3timehighPE = (TH1*)gPad->GetPrimitive("hpnsdataC3timehighPE");
+
   TTree *myMatchedC2Peaks_pns = (TTree*)file0->Get("myMatchedC2Peaks");
   myMatchedC2Peaks_pns->Draw("C2_matched_PDPeak_PE>>hpnsdataC2(50, 100, 2100)");
   hpnsdataC2 = (TH1*)gPad->GetPrimitive("hpnsdataC2");
+  myMatchedC2Peaks_pns->Draw("C2_matched_PDPeak_Time>>hpnsdataC2time(100, 0, 70000)");
+  hpnsdataC2time = (TH1*)gPad->GetPrimitive("hpnsdataC2time");
+  myMatchedC2Peaks_pns->Draw("C2_matched_PDPeak_Time_100_1200PE>>hpnsdataC2timelowPE(100, 0, 70000)");
+  hpnsdataC2timelowPE = (TH1*)gPad->GetPrimitive("hpnsdataC2timelowPE");
+  myMatchedC2Peaks_pns->Draw("C2_matched_PDPeak_Time_above_1200PE>>hpnsdataC2timehighPE(100, 0, 70000)");
+  hpnsdataC2timehighPE = (TH1*)gPad->GetPrimitive("hpnsdataC2timehighPE");
+
   TTree *myMatchedC1Peaks_pns = (TTree*)file0->Get("myMatchedC1Peaks");
   myMatchedC1Peaks_pns->Draw("C1_matched_PDPeak_PE>>hpnsdataC1(50, 100, 2100)");
   hpnsdataC1 = (TH1*)gPad->GetPrimitive("hpnsdataC1");
+  myMatchedC1Peaks_pns->Draw("C1_matched_PDPeak_Time>>hpnsdataC1time(100, 0, 70000)");
+  hpnsdataC1time = (TH1*)gPad->GetPrimitive("hpnsdataC1time");
+  myMatchedC1Peaks_pns->Draw("C1_matched_PDPeak_Time_100_1200PE>>hpnsdataC1timelowPE(100, 0, 70000)");
+  hpnsdataC1timelowPE = (TH1*)gPad->GetPrimitive("hpnsdataC1timelowPE");
+  myMatchedC1Peaks_pns->Draw("C1_matched_PDPeak_Time_above_1200PE>>hpnsdataC1timehighPE(100, 0, 70000)");
+  hpnsdataC1timehighPE = (TH1*)gPad->GetPrimitive("hpnsdataC1timehighPE");
 
   // cosmic bkg: data driven
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086.root");
@@ -55,24 +116,65 @@ void Ncapture_overlay()
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcplus1.root");
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcminus1.root");
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE.root"); // DO NOT USE
-  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin50PE.root"); // have to use min50PE becaue C4 SF is 0.7
+  //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin50PE.root"); // have to use min50PE becaue C4 SF is 0.7
+  //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_min100PE_1200PEsplit_timing.root");
+  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_min50PEprescale_min100PEpostscale_max2100PE_1200PEsplit_timing.root");
 
   TTree *myMatchedC4Peaks_cosmic = (TTree*)file1->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_cosmic->Draw("C4_matched_PDPeak_PE>>hcosmicdataC4(50, 100, 2100)");
   hcosmicdataC4 = (TH1*)gPad->GetPrimitive("hcosmicdataC4");
   hcosmicdataC4->Scale(cosmicDatasf);
+  myMatchedC4Peaks_cosmic->Draw("C4_matched_PDPeak_Time>>hcosmicdataC4time(100, 0, 70000)");
+  hcosmicdataC4time = (TH1*)gPad->GetPrimitive("hcosmicdataC4time");
+  hcosmicdataC4time->Scale(cosmicDatasf);
+  myMatchedC4Peaks_cosmic->Draw("C4_matched_PDPeak_Time_100_1200PE>>hcosmicdataC4timelowPE(100, 0, 70000)");
+  hcosmicdataC4timelowPE = (TH1*)gPad->GetPrimitive("hcosmicdataC4timelowPE");
+  hcosmicdataC4timelowPE->Scale(cosmicDatasf);
+  myMatchedC4Peaks_cosmic->Draw("C4_matched_PDPeak_Time_above_1200PE>>hcosmicdataC4timehighPE(100, 0, 70000)");
+  hcosmicdataC4timehighPE = (TH1*)gPad->GetPrimitive("hcosmicdataC4timehighPE");
+  hcosmicdataC4timehighPE->Scale(cosmicDatasf);
+
   TTree *myMatchedC3Peaks_cosmic = (TTree*)file1->Get("myMatchedC3Peaks");
   myMatchedC3Peaks_cosmic->Draw("C3_matched_PDPeak_PE>>hcosmicdataC3(50, 100, 2100)");
   hcosmicdataC3 = (TH1*)gPad->GetPrimitive("hcosmicdataC3");
   hcosmicdataC3->Scale(cosmicDatasf);
+  myMatchedC3Peaks_cosmic->Draw("C3_matched_PDPeak_Time>>hcosmicdataC3time(100, 0, 70000)");
+  hcosmicdataC3time = (TH1*)gPad->GetPrimitive("hcosmicdataC3time");
+  hcosmicdataC3time->Scale(cosmicDatasf);
+  myMatchedC3Peaks_cosmic->Draw("C3_matched_PDPeak_Time_100_1200PE>>hcosmicdataC3timelowPE(100, 0, 70000)");
+  hcosmicdataC3timelowPE = (TH1*)gPad->GetPrimitive("hcosmicdataC3timelowPE");
+  hcosmicdataC3timelowPE->Scale(cosmicDatasf);
+  myMatchedC3Peaks_cosmic->Draw("C3_matched_PDPeak_Time_above_1200PE>>hcosmicdataC3timehighPE(100, 0, 70000)");
+  hcosmicdataC3timehighPE = (TH1*)gPad->GetPrimitive("hcosmicdataC3timehighPE");
+  hcosmicdataC3timehighPE->Scale(cosmicDatasf);
+
   TTree *myMatchedC2Peaks_cosmic = (TTree*)file1->Get("myMatchedC2Peaks");
   myMatchedC2Peaks_cosmic->Draw("C2_matched_PDPeak_PE>>hcosmicdataC2(50, 100, 2100)");
   hcosmicdataC2 = (TH1*)gPad->GetPrimitive("hcosmicdataC2");
   hcosmicdataC2->Scale(cosmicDatasf);
+  myMatchedC2Peaks_cosmic->Draw("C2_matched_PDPeak_Time>>hcosmicdataC2time(100, 0, 70000)");
+  hcosmicdataC2time = (TH1*)gPad->GetPrimitive("hcosmicdataC2time");
+  hcosmicdataC2time->Scale(cosmicDatasf);
+  myMatchedC2Peaks_cosmic->Draw("C2_matched_PDPeak_Time_100_1200PE>>hcosmicdataC2timelowPE(100, 0, 70000)");
+  hcosmicdataC2timelowPE = (TH1*)gPad->GetPrimitive("hcosmicdataC2timelowPE");
+  hcosmicdataC2timelowPE->Scale(cosmicDatasf);
+  myMatchedC2Peaks_cosmic->Draw("C2_matched_PDPeak_Time_above_1200PE>>hcosmicdataC2timehighPE(100, 0, 70000)");
+  hcosmicdataC2timehighPE = (TH1*)gPad->GetPrimitive("hcosmicdataC2timehighPE");
+  hcosmicdataC2timehighPE->Scale(cosmicDatasf);
+
   TTree *myMatchedC1Peaks_cosmic = (TTree*)file1->Get("myMatchedC1Peaks");
   myMatchedC1Peaks_cosmic->Draw("C1_matched_PDPeak_PE>>hcosmicdataC1(50, 100, 2100)");
   hcosmicdataC1 = (TH1*)gPad->GetPrimitive("hcosmicdataC1");
   hcosmicdataC1->Scale(cosmicDatasf);
+  myMatchedC1Peaks_cosmic->Draw("C1_matched_PDPeak_Time>>hcosmicdataC1time(100, 0, 70000)");
+  hcosmicdataC1time = (TH1*)gPad->GetPrimitive("hcosmicdataC1time");
+  hcosmicdataC1time->Scale(cosmicDatasf);
+  myMatchedC1Peaks_cosmic->Draw("C1_matched_PDPeak_Time_100_1200PE>>hcosmicdataC1timelowPE(100, 0, 70000)");
+  hcosmicdataC1timelowPE = (TH1*)gPad->GetPrimitive("hcosmicdataC1timelowPE");
+  hcosmicdataC1timelowPE->Scale(cosmicDatasf);
+  myMatchedC1Peaks_cosmic->Draw("C1_matched_PDPeak_Time_above_1200PE>>hcosmicdataC1timehighPE(100, 0, 70000)");
+  hcosmicdataC1timehighPE = (TH1*)gPad->GetPrimitive("hcosmicdataC1timehighPE");
+  hcosmicdataC1timehighPE->Scale(cosmicDatasf);
 
 
   // Fluka simulated inactive region bkg
@@ -256,8 +358,84 @@ void Ncapture_overlay()
   can->SaveAs("PNSAnaC4_minimumcut_nocosmic.root");
   can->SaveAs("PNSAnaC4_minimumcut_nocosmic.pdf");
 
+  // plot cosmic only timing
+  gPad->SetLogy(0);
+  gStyle->SetOptStat(0);
+  hcosmicdataC4time->SetLineColor(1);
+  hcosmicdataC4time->SetMarkerStyle(20);
+  hcosmicdataC4time->SetMarkerSize(0.6);
+  hcosmicdataC4time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC4_minimumcut_cosmiconly_timing.root");
+  can->SaveAs("PNSAnaC4_minimumcut_cosmiconly_timing.pdf");
 
+  hcosmicdataC4timelowPE->SetLineColor(1);
+  hcosmicdataC4timelowPE->SetMarkerStyle(20);
+  hcosmicdataC4timelowPE->SetMarkerSize(0.6);
+  hcosmicdataC4timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC4_minimumcut_cosmiconly_timing_lowPE.root");
+  can->SaveAs("PNSAnaC4_minimumcut_cosmiconly_timing_lowPE.pdf");
 
+  hcosmicdataC4timehighPE->SetLineColor(1);
+  hcosmicdataC4timehighPE->SetMarkerStyle(20);
+  hcosmicdataC4timehighPE->SetMarkerSize(0.6);
+  hcosmicdataC4timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC4_minimumcut_cosmiconly_timing_highPE.root");
+  can->SaveAs("PNSAnaC4_minimumcut_cosmiconly_timing_highPE.pdf");
+  std::cout << " C4 time cosmic only tot:   "             << hcosmicdataC4time->Integral(1, 100)         << std::endl;
+  std::cout << " C4 time cosmic only PE<1200 tot:   "     << hcosmicdataC4timelowPE->Integral(1, 100)    << std::endl;
+  std::cout << " C4 time cosmic only PE>1200 tot:   "     << hcosmicdataC4timehighPE->Integral(1, 100)   << std::endl;
+
+  // plot pns run timing only
+  hpnsdataC4time->SetLineColor(1);
+  hpnsdataC4time->SetMarkerStyle(20);
+  hpnsdataC4time->SetMarkerSize(0.6);
+  hpnsdataC4time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC4_minimumcut_pnsrun_timing.root");
+  can->SaveAs("PNSAnaC4_minimumcut_pnsrun_timing.pdf");
+
+  hpnsdataC4timelowPE->SetLineColor(1);
+  hpnsdataC4timelowPE->SetMarkerStyle(20);
+  hpnsdataC4timelowPE->SetMarkerSize(0.6);
+  hpnsdataC4timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC4_minimumcut_pnsrun_timing_lowPE.root");
+  can->SaveAs("PNSAnaC4_minimumcut_pnsrun_timing_lowPE.pdf");
+
+  hpnsdataC4timehighPE->SetLineColor(1);
+  hpnsdataC4timehighPE->SetMarkerStyle(20);
+  hpnsdataC4timehighPE->SetMarkerSize(0.6);
+  hpnsdataC4timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC4_minimumcut_pnsrun_timing_highPE.root");
+  can->SaveAs("PNSAnaC4_minimumcut_pnsrun_timing_highPE.pdf");
+  std::cout << " C4 time pns run tot:   "         << hpnsdataC4time->Integral(1, 100)        << std::endl;
+  std::cout << " C4 time pns run PE<1200 tot:   " << hpnsdataC4timelowPE->Integral(1, 100)   << std::endl;
+  std::cout << " C4 time pns run PE>1200 tot:   " << hpnsdataC4timehighPE->Integral(1, 100)  << std::endl;
+
+  hpnsdataC4time->Add(hcosmicdataC4time, -1);
+  hpnsdataC4time->SetLineColor(1);
+  hpnsdataC4time->SetMarkerStyle(20);
+  hpnsdataC4time->SetMarkerSize(0.6);
+  hpnsdataC4time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC4_minimumcut_nocosmic_timing.root");
+  can->SaveAs("PNSAnaC4_minimumcut_nocosmic_timing.pdf");
+
+  hpnsdataC4timelowPE->Add(hcosmicdataC4timelowPE, -1);
+  hpnsdataC4timelowPE->SetLineColor(1);
+  hpnsdataC4timelowPE->SetMarkerStyle(20);
+  hpnsdataC4timelowPE->SetMarkerSize(0.6);
+  hpnsdataC4timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC4_minimumcut_nocosmic_timing_lowPE.root");
+  can->SaveAs("PNSAnaC4_minimumcut_nocosmic_timing_lowPE.pdf");
+
+  hpnsdataC4timehighPE->Add(hcosmicdataC4timehighPE, -1);
+  hpnsdataC4timehighPE->SetLineColor(1);
+  hpnsdataC4timehighPE->SetMarkerStyle(20);
+  hpnsdataC4timehighPE->SetMarkerSize(0.6);
+  hpnsdataC4timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC4_minimumcut_nocosmic_timing_highPE.root");
+  can->SaveAs("PNSAnaC4_minimumcut_nocosmic_timing_highPE.pdf");
+  std::cout << " C4 time (pns - cosmic) tot:   "         << hpnsdataC4time->Integral(1, 100)        << std::endl;
+  std::cout << " C4 time (pns - cosmic) PE<1200 tot:   " << hpnsdataC4timelowPE->Integral(1, 100)   << std::endl;
+  std::cout << " C4 time (pns - cosmic) PE>1200 tot:   " << hpnsdataC4timehighPE->Integral(1, 100)  << std::endl;
 
   gPad->SetLogy(0);
   THStack *stc3 = new THStack();
@@ -345,6 +523,83 @@ void Ncapture_overlay()
   can->SaveAs("PNSAnaC3_minimumcut_nocosmic.root");
   can->SaveAs("PNSAnaC3_minimumcut_nocosmic.pdf");
 
+  gPad->SetLogy(0);
+  gStyle->SetOptStat(0);
+  hcosmicdataC3time->SetLineColor(1);
+  hcosmicdataC3time->SetMarkerStyle(20);
+  hcosmicdataC3time->SetMarkerSize(0.6);
+  hcosmicdataC3time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC3_minimumcut_cosmiconly_timing.root");
+  can->SaveAs("PNSAnaC3_minimumcut_cosmiconly_timing.pdf");
+
+  hcosmicdataC3timelowPE->SetLineColor(1);
+  hcosmicdataC3timelowPE->SetMarkerStyle(20);
+  hcosmicdataC3timelowPE->SetMarkerSize(0.6);
+  hcosmicdataC3timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC3_minimumcut_cosmiconly_timing_lowPE.root");
+  can->SaveAs("PNSAnaC3_minimumcut_cosmiconly_timing_lowPE.pdf");
+
+  hcosmicdataC3timehighPE->SetLineColor(1);
+  hcosmicdataC3timehighPE->SetMarkerStyle(20);
+  hcosmicdataC3timehighPE->SetMarkerSize(0.6);
+  hcosmicdataC3timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC3_minimumcut_cosmiconly_timing_highPE.root");
+  can->SaveAs("PNSAnaC3_minimumcut_cosmiconly_timing_highPE.pdf");
+  std::cout << " C3 time cosmic only tot:   "             << hcosmicdataC3time->Integral(1, 100)         << std::endl;
+  std::cout << " C3 time cosmic only PE<1200 tot:   "     << hcosmicdataC3timelowPE->Integral(1, 100)    << std::endl;
+  std::cout << " C3 time cosmic only PE>1200 tot:   "     << hcosmicdataC3timehighPE->Integral(1, 100)   << std::endl;
+
+  // plot pns run timing only
+  hpnsdataC3time->SetLineColor(1);
+  hpnsdataC3time->SetMarkerStyle(20);
+  hpnsdataC3time->SetMarkerSize(0.6);
+  hpnsdataC3time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC3_minimumcut_pnsrun_timing.root");
+  can->SaveAs("PNSAnaC3_minimumcut_pnsrun_timing.pdf");
+
+  hpnsdataC3timelowPE->SetLineColor(1);
+  hpnsdataC3timelowPE->SetMarkerStyle(20);
+  hpnsdataC3timelowPE->SetMarkerSize(0.6);
+  hpnsdataC3timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC3_minimumcut_pnsrun_timing_lowPE.root");
+  can->SaveAs("PNSAnaC3_minimumcut_pnsrun_timing_lowPE.pdf");
+
+  hpnsdataC3timehighPE->SetLineColor(1);
+  hpnsdataC3timehighPE->SetMarkerStyle(20);
+  hpnsdataC3timehighPE->SetMarkerSize(0.6);
+  hpnsdataC3timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC3_minimumcut_pnsrun_timing_highPE.root");
+  can->SaveAs("PNSAnaC3_minimumcut_pnsrun_timing_highPE.pdf");
+  std::cout << " C3 time pns run tot:   "         << hpnsdataC3time->Integral(1, 100)        << std::endl;
+  std::cout << " C3 time pns run PE<1200 tot:   " << hpnsdataC3timelowPE->Integral(1, 100)   << std::endl;
+  std::cout << " C3 time pns run PE>1200 tot:   " << hpnsdataC3timehighPE->Integral(1, 100)  << std::endl;
+
+  hpnsdataC3time->Add(hcosmicdataC3time, -1);
+  hpnsdataC3time->SetLineColor(1);
+  hpnsdataC3time->SetMarkerStyle(20);
+  hpnsdataC3time->SetMarkerSize(0.6);
+  hpnsdataC3time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC3_minimumcut_nocosmic_timing.root");
+  can->SaveAs("PNSAnaC3_minimumcut_nocosmic_timing.pdf");
+
+  hpnsdataC3timelowPE->Add(hcosmicdataC3timelowPE, -1);
+  hpnsdataC3timelowPE->SetLineColor(1);
+  hpnsdataC3timelowPE->SetMarkerStyle(20);
+  hpnsdataC3timelowPE->SetMarkerSize(0.6);
+  hpnsdataC3timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC3_minimumcut_nocosmic_timing_lowPE.root");
+  can->SaveAs("PNSAnaC3_minimumcut_nocosmic_timing_lowPE.pdf");
+
+  hpnsdataC3timehighPE->Add(hcosmicdataC3timehighPE, -1);
+  hpnsdataC3timehighPE->SetLineColor(1);
+  hpnsdataC3timehighPE->SetMarkerStyle(20);
+  hpnsdataC3timehighPE->SetMarkerSize(0.6);
+  hpnsdataC3timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC3_minimumcut_nocosmic_timing_highPE.root");
+  can->SaveAs("PNSAnaC3_minimumcut_nocosmic_timing_highPE.pdf");
+  std::cout << " C3 time (pns - cosmic) tot:   "         << hpnsdataC3time->Integral(1, 100)        << std::endl;
+  std::cout << " C3 time (pns - cosmic) PE<1200 tot:   " << hpnsdataC3timelowPE->Integral(1, 100)   << std::endl;
+  std::cout << " C3 time (pns - cosmic) PE>1200 tot:   " << hpnsdataC3timehighPE->Integral(1, 100)  << std::endl;
 
 
   gPad->SetLogy(0);
@@ -433,6 +688,83 @@ void Ncapture_overlay()
   can->SaveAs("PNSAnaC2_minimumcut_nocosmic.root");
   can->SaveAs("PNSAnaC2_minimumcut_nocosmic.pdf");
 
+  gPad->SetLogy(0);
+  gStyle->SetOptStat(0);
+  hcosmicdataC2time->SetLineColor(1);
+  hcosmicdataC2time->SetMarkerStyle(20);
+  hcosmicdataC2time->SetMarkerSize(0.6);
+  hcosmicdataC2time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC2_minimumcut_cosmiconly_timing.root");
+  can->SaveAs("PNSAnaC2_minimumcut_cosmiconly_timing.pdf");
+
+  hcosmicdataC2timelowPE->SetLineColor(1);
+  hcosmicdataC2timelowPE->SetMarkerStyle(20);
+  hcosmicdataC2timelowPE->SetMarkerSize(0.6);
+  hcosmicdataC2timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC2_minimumcut_cosmiconly_timing_lowPE.root");
+  can->SaveAs("PNSAnaC2_minimumcut_cosmiconly_timing_lowPE.pdf");
+
+  hcosmicdataC2timehighPE->SetLineColor(1);
+  hcosmicdataC2timehighPE->SetMarkerStyle(20);
+  hcosmicdataC2timehighPE->SetMarkerSize(0.6);
+  hcosmicdataC2timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC2_minimumcut_cosmiconly_timing_highPE.root");
+  can->SaveAs("PNSAnaC2_minimumcut_cosmiconly_timing_highPE.pdf");
+  std::cout << " C2 time cosmic only tot:   "             << hcosmicdataC2time->Integral(1, 100)         << std::endl;
+  std::cout << " C2 time cosmic only PE<1200 tot:   "     << hcosmicdataC2timelowPE->Integral(1, 100)    << std::endl;
+  std::cout << " C2 time cosmic only PE>1200 tot:   "     << hcosmicdataC2timehighPE->Integral(1, 100)   << std::endl;
+
+  // plot pns run timing only
+  hpnsdataC2time->SetLineColor(1);
+  hpnsdataC2time->SetMarkerStyle(20);
+  hpnsdataC2time->SetMarkerSize(0.6);
+  hpnsdataC2time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC2_minimumcut_pnsrun_timing.root");
+  can->SaveAs("PNSAnaC2_minimumcut_pnsrun_timing.pdf");
+
+  hpnsdataC2timelowPE->SetLineColor(1);
+  hpnsdataC2timelowPE->SetMarkerStyle(20);
+  hpnsdataC2timelowPE->SetMarkerSize(0.6);
+  hpnsdataC2timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC2_minimumcut_pnsrun_timing_lowPE.root");
+  can->SaveAs("PNSAnaC2_minimumcut_pnsrun_timing_lowPE.pdf");
+
+  hpnsdataC2timehighPE->SetLineColor(1);
+  hpnsdataC2timehighPE->SetMarkerStyle(20);
+  hpnsdataC2timehighPE->SetMarkerSize(0.6);
+  hpnsdataC2timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC2_minimumcut_pnsrun_timing_highPE.root");
+  can->SaveAs("PNSAnaC2_minimumcut_pnsrun_timing_highPE.pdf");
+  std::cout << " C2 time pns run tot:   "         << hpnsdataC2time->Integral(1, 100)        << std::endl;
+  std::cout << " C2 time pns run PE<1200 tot:   " << hpnsdataC2timelowPE->Integral(1, 100)   << std::endl;
+  std::cout << " C2 time pns run PE>1200 tot:   " << hpnsdataC2timehighPE->Integral(1, 100)  << std::endl;
+
+  hpnsdataC2time->Add(hcosmicdataC2time, -1);
+  hpnsdataC2time->SetLineColor(1);
+  hpnsdataC2time->SetMarkerStyle(20);
+  hpnsdataC2time->SetMarkerSize(0.6);
+  hpnsdataC2time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC2_minimumcut_nocosmic_timing.root");
+  can->SaveAs("PNSAnaC2_minimumcut_nocosmic_timing.pdf");
+
+  hpnsdataC2timelowPE->Add(hcosmicdataC2timelowPE, -1);
+  hpnsdataC2timelowPE->SetLineColor(1);
+  hpnsdataC2timelowPE->SetMarkerStyle(20);
+  hpnsdataC2timelowPE->SetMarkerSize(0.6);
+  hpnsdataC2timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC2_minimumcut_nocosmic_timing_lowPE.root");
+  can->SaveAs("PNSAnaC2_minimumcut_nocosmic_timing_lowPE.pdf");
+
+  hpnsdataC2timehighPE->Add(hcosmicdataC2timehighPE, -1);
+  hpnsdataC2timehighPE->SetLineColor(1);
+  hpnsdataC2timehighPE->SetMarkerStyle(20);
+  hpnsdataC2timehighPE->SetMarkerSize(0.6);
+  hpnsdataC2timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC2_minimumcut_nocosmic_timing_highPE.root");
+  can->SaveAs("PNSAnaC2_minimumcut_nocosmic_timing_highPE.pdf");
+  std::cout << " C2 time (pns - cosmic) tot:   "         << hpnsdataC2time->Integral(1, 100)        << std::endl;
+  std::cout << " C2 time (pns - cosmic) PE<1200 tot:   " << hpnsdataC2timelowPE->Integral(1, 100)   << std::endl;
+  std::cout << " C2 time (pns - cosmic) PE>1200 tot:   " << hpnsdataC2timehighPE->Integral(1, 100)  << std::endl;
 
 
   gPad->SetLogy(0);
@@ -520,5 +852,83 @@ void Ncapture_overlay()
 
   can->SaveAs("PNSAnaC1_minimumcut_nocosmic.root");
   can->SaveAs("PNSAnaC1_minimumcut_nocosmic.pdf");
+
+  gPad->SetLogy(0);
+  gStyle->SetOptStat(0);
+  hcosmicdataC1time->SetLineColor(1);
+  hcosmicdataC1time->SetMarkerStyle(20);
+  hcosmicdataC1time->SetMarkerSize(0.6);
+  hcosmicdataC1time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC1_minimumcut_cosmiconly_timing.root");
+  can->SaveAs("PNSAnaC1_minimumcut_cosmiconly_timing.pdf");
+
+  hcosmicdataC1timelowPE->SetLineColor(1);
+  hcosmicdataC1timelowPE->SetMarkerStyle(20);
+  hcosmicdataC1timelowPE->SetMarkerSize(0.6);
+  hcosmicdataC1timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC1_minimumcut_cosmiconly_timing_lowPE.root");
+  can->SaveAs("PNSAnaC1_minimumcut_cosmiconly_timing_lowPE.pdf");
+
+  hcosmicdataC1timehighPE->SetLineColor(1);
+  hcosmicdataC1timehighPE->SetMarkerStyle(20);
+  hcosmicdataC1timehighPE->SetMarkerSize(0.6);
+  hcosmicdataC1timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC1_minimumcut_cosmiconly_timing_highPE.root");
+  can->SaveAs("PNSAnaC1_minimumcut_cosmiconly_timing_highPE.pdf");
+  std::cout << " C1 time cosmic only tot:   "             << hcosmicdataC1time->Integral(1, 100)         << std::endl;
+  std::cout << " C1 time cosmic only PE<1200 tot:   "     << hcosmicdataC1timelowPE->Integral(1, 100)    << std::endl;
+  std::cout << " C1 time cosmic only PE>1200 tot:   "     << hcosmicdataC1timehighPE->Integral(1, 100)   << std::endl;
+
+  // plot pns run timing only
+  hpnsdataC1time->SetLineColor(1);
+  hpnsdataC1time->SetMarkerStyle(20);
+  hpnsdataC1time->SetMarkerSize(0.6);
+  hpnsdataC1time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC1_minimumcut_pnsrun_timing.root");
+  can->SaveAs("PNSAnaC1_minimumcut_pnsrun_timing.pdf");
+
+  hpnsdataC1timelowPE->SetLineColor(1);
+  hpnsdataC1timelowPE->SetMarkerStyle(20);
+  hpnsdataC1timelowPE->SetMarkerSize(0.6);
+  hpnsdataC1timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC1_minimumcut_pnsrun_timing_lowPE.root");
+  can->SaveAs("PNSAnaC1_minimumcut_pnsrun_timing_lowPE.pdf");
+
+  hpnsdataC1timehighPE->SetLineColor(1);
+  hpnsdataC1timehighPE->SetMarkerStyle(20);
+  hpnsdataC1timehighPE->SetMarkerSize(0.6);
+  hpnsdataC1timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC1_minimumcut_pnsrun_timing_highPE.root");
+  can->SaveAs("PNSAnaC1_minimumcut_pnsrun_timing_highPE.pdf");
+  std::cout << " C1 time pns run tot:   "         << hpnsdataC1time->Integral(1, 100)        << std::endl;
+  std::cout << " C1 time pns run PE<1200 tot:   " << hpnsdataC1timelowPE->Integral(1, 100)   << std::endl;
+  std::cout << " C1 time pns run PE>1200 tot:   " << hpnsdataC1timehighPE->Integral(1, 100)  << std::endl;
+
+  hpnsdataC1time->Add(hcosmicdataC1time, -1);
+  hpnsdataC1time->SetLineColor(1);
+  hpnsdataC1time->SetMarkerStyle(20);
+  hpnsdataC1time->SetMarkerSize(0.6);
+  hpnsdataC1time->Draw("E1 X0");
+  can->SaveAs("PNSAnaC1_minimumcut_nocosmic_timing.root");
+  can->SaveAs("PNSAnaC1_minimumcut_nocosmic_timing.pdf");
+
+  hpnsdataC1timelowPE->Add(hcosmicdataC1timelowPE, -1);
+  hpnsdataC1timelowPE->SetLineColor(1);
+  hpnsdataC1timelowPE->SetMarkerStyle(20);
+  hpnsdataC1timelowPE->SetMarkerSize(0.6);
+  hpnsdataC1timelowPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC1_minimumcut_nocosmic_timing_lowPE.root");
+  can->SaveAs("PNSAnaC1_minimumcut_nocosmic_timing_lowPE.pdf");
+
+  hpnsdataC1timehighPE->Add(hcosmicdataC1timehighPE, -1);
+  hpnsdataC1timehighPE->SetLineColor(1);
+  hpnsdataC1timehighPE->SetMarkerStyle(20);
+  hpnsdataC1timehighPE->SetMarkerSize(0.6);
+  hpnsdataC1timehighPE->Draw("E1 X0");
+  can->SaveAs("PNSAnaC1_minimumcut_nocosmic_timing_highPE.root");
+  can->SaveAs("PNSAnaC1_minimumcut_nocosmic_timing_highPE.pdf");
+  std::cout << " C1 time (pns - cosmic) tot:   "         << hpnsdataC1time->Integral(1, 100)        << std::endl;
+  std::cout << " C1 time (pns - cosmic) PE<1200 tot:   " << hpnsdataC1timelowPE->Integral(1, 100)   << std::endl;
+  std::cout << " C1 time (pns - cosmic) PE>1200 tot:   " << hpnsdataC1timehighPE->Integral(1, 100)  << std::endl;
 
 }
