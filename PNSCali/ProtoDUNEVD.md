@@ -1,4 +1,25 @@
-## Analyze protodunne-VD data under dunesw v10_07_00d00
+## Fast np02 data analysis with lardon
+```
+[First time only]
+git clone https://github.com/weishi10141993/lardon.git
+
+# install pixi:
+curl -fsSL https://pixi.sh/install.sh | PIXI_HOME=/exp/dune/app/users/weishi/lardonnp02libs bash
+
+cd lardon
+source ~/.bashrc
+pixi install -a
+
+source set_lardon.sh
+# at lxplus
+# pixi run lardon -file /eos/experiment/neutplatform/protodune/dune/vd-protodune/9e/39/np02vd_raw_run042164_0000_df-s04-d0_dw_0_20260116T222256.hdf5 -gallery <your_choice>
+# at fnal
+pixi run lardon -file /pnfs/dune/persistent/users/weishi/examplenp02data/np02vd_raw_run042164_0000_df-s04-d0_dw_0_20260116T222256.hdf5 -gallery bottom
+```
+
+where ```your_choice``` could be ```top``` : to see CRP2+CRP3, ```bottom``` to see CRP4+CRP5, ```both``` = bottom and then top separately
+
+## Analyze np02 data under dunesw v10_07_00d00 LArSoft
 
 Setup rucio and justin to locate file:
 ```
@@ -35,7 +56,7 @@ setup dunesw v10_07_00d00 -q e26:prof
 LD_PRELOAD=$XROOTD_LIB/libXrdPosixPreload.so lar -c standard_reco_stage1_protodunevd_keepup.fcl <your_file.hdf5>
 ```
 
-## Generate and sim Ar39 in protodunne-VD under dunesw v10_07_00d00
+## Generate and sim Ar39 in np02 under dunesw v10_07_00d00 LArSoft
 ```
 /cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash \
 -B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid \
