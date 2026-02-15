@@ -54,6 +54,7 @@ void Plot()
   // signal only
   //TFile *file0 = TFile::Open("/pnfs/dune/persistent/users/weishi/VDMarleyCCBkgAna/SignalOnly/100ns3mcluster_min1hits_minophit1PE/MarleyOnly_fullstream_opcluster100ns3m_min1hit_1PE_nomemb_newbtmaxEfrac_2026-1-14_QLMatch_reco22ana.root");
 
+  gInterpreter->GenerateDictionary("vector<vector<int>>", "vector");
   TH1D *h_signalflashes_avg_dyz = new TH1D("h_signalflashes_avg_dyz",  "h_signalflashes_avg_dyz; mean dyz [cm]", 500, 0, 1000);
   TH1D *h_signalflashes_min_dyz = new TH1D("h_signalflashes_min_dyz",  "h_signalflashes_min_dyz; min  dyz [cm]", 500, 0, 1000);
   TH1D *h_signalflashes_max_dyz = new TH1D("h_signalflashes_max_dyz",  "h_signalflashes_max_dyz; max  dyz [cm]", 500, 500, 1500);
@@ -79,6 +80,64 @@ void Plot()
   TH1D *h_signalflashes_mindyz_flash_ophits    = new TH1D("h_signalflashes_mindyz_flash_ophits",    "h_signalflashes_mindyz_flash_ophits;    min dyz flash ophits",    10, 0, 10);
   TH1D *h_signalflashes_mindt_flash_ophits     = new TH1D("h_signalflashes_mindt_flash_ophits",     "h_signalflashes_mindt_flash_ophits;     min dt flash ophits",     10, 0, 10);
   TH1D *h_signalflashes_maxpurity_flash_ophits = new TH1D("h_signalflashes_maxpurity_flash_ophits", "h_signalflashes_maxpurity_flash_ophits; max purity flash ophits", 10, 0, 10);
+
+  // var comp
+  TH1D *h_flash_totophits_marley = new TH1D("h_flash_totophits_marley",      "h_flash_totophits_marley;   flash tot ophits",  25, 0, 25);
+  TH1D *h_flash_totophits_bkg    = new TH1D("h_flash_totophits_bkg",         "h_flash_totophits_bkg;      flash tot ophits",  25, 0, 25);
+
+  TH1D *h_flash_pe_marley        = new TH1D("h_flash_pe_marley",             "h_flash_pe_marley;          flash tot PE",      100, 0, 2000);
+  TH1D *h_flash_pe_bkg           = new TH1D("h_flash_pe_bkg",                "h_flash_pe_bkg;             flash tot PE",      100, 0, 2000);
+
+  TH1D *h_flash_y_marley         = new TH1D("h_flash_y_marley",             "h_flash_y_marley;          flash y [cm]",      160, -800, 800);
+  TH1D *h_flash_y_bkg            = new TH1D("h_flash_y_bkg",                "h_flash_y_bkg;             flash y [cm]",      160, -800, 800);
+
+  TH1D *h_flash_z_marley         = new TH1D("h_flash_z_marley",             "h_flash_z_marley;          flash z [cm]",      250, -200, 2300);
+  TH1D *h_flash_z_bkg            = new TH1D("h_flash_z_bkg",                "h_flash_z_bkg;             flash z [cm]",      250, -200, 2300);
+
+  TH1D *h_flash_stdpe_marley     = new TH1D("h_flash_stdpe_marley",          "h_flash_stdpe_marley;       flash std PE",      100, 0, 2000);
+  TH1D *h_flash_stdpe_bkg        = new TH1D("h_flash_stdpe_bkg",             "h_flash_stdpe_bkg;          flash std PE",      100, 0, 2000);
+
+  TH1D *h_flash_avgpe_marley     = new TH1D("h_flash_avgpe_marley",          "h_flash_avgpe_marley;       flash avg PE",      100, 0, 2000);
+  TH1D *h_flash_avgpe_bkg        = new TH1D("h_flash_avgpe_bkg",             "h_flash_avgpe_bkg;          flash avg PE",      100, 0, 2000);
+
+  TH1D *h_flash_avgtimediff_hits_bkg = new TH1D("h_flash_avgtimediff_hits_bkg",      "h_flash_avgtimediff_hits_bkg;   avg dt ophits ",  20, 0, 0.2);
+  TH1D *h_flash_avgtimediff_hits_marley = new TH1D("h_flash_avgtimediff_hits_marley",      "h_flash_avgtimediff_hits_marley;   avg dt ophits",  20, 0, 0.2);
+
+  TH1D *h_flash_avgyzdiff_hits_bkg = new TH1D("h_flash_avgyzdiff_hits_bkg",      "h_flash_avgyzdiff_hits_bkg;   avg dyz ophits",  40, 0, 400);
+  TH1D *h_flash_avgyzdiff_hits_marley = new TH1D("h_flash_avgyzdiff_hits_marley",      "h_flash_avgyzdiff_hits_marley;   avg dyz ophits",  40, 0, 400);
+
+  TH1D *h_flash_yzStd_hits_bkg = new TH1D("h_flash_yzStd_hits_bkg",      "h_flash_yzStd_hits_bkg;   Std dyz ophits",  40, 0, 400);
+  TH1D *h_flash_yzStd_hits_marley = new TH1D("h_flash_yzStd_hits_marley",      "h_flash_yzStd_hits_marley;   Std dyz ophits",  40, 0, 400);
+
+  TH1D *h_flash_n_neighbors_bkg     = new TH1D("h_flash_n_neighbors_bkg",       "h_flash_n_neighbors_bkg;      N neighbor flashes",  50, 0, 50);
+  TH1D *h_flash_n_neighbors_marley  = new TH1D("h_flash_n_neighbors_marley",    "h_flash_n_neighbors_marley;   N neighbor flashes",  50, 0, 50);
+
+  TH1D *h_flash_neighbors_totPE_bkg    = new TH1D("h_flash_neighbors_totPE_bkg",      "h_flash_neighbors_totPE_bkg;     neighbor flashes tot PE",      100, 0, 2000);
+  TH1D *h_flash_neighbors_totPE_marley = new TH1D("h_flash_neighbors_totPE_marley",   "h_flash_neighbors_totPE_marley;  neighbor flashes tot PE",      100, 0, 2000);
+
+  TH1D *h_flash_neighbors_avgophits_bkg = new TH1D("h_flash_neighbors_avgophits_bkg",      "h_flash_neighbors_avgophits_bkg;   neighbor flashes avg ophits",  25, 0, 25);
+  TH1D *h_flash_neighbors_avgophits_marley = new TH1D("h_flash_neighbors_avgophits_marley",      "h_flash_neighbors_avgophits_marley;   neighbor flashes avg ophits",  25, 0, 25);
+
+  TH1D *h_flash_avgtdiff_neighbors_bkg = new TH1D("h_flash_avgtdiff_neighbors_bkg",      "h_flash_avgtdiff_neighbors_bkg;   avg time diff to neighbors",  60, 0, 6);
+  TH1D *h_flash_avgtdiff_neighbors_marley = new TH1D("h_flash_avgtdiff_neighbors_marley",      "h_flash_avgtdiff_neighbors_marley;   avg time diff to neighbors",  60, 0, 6);
+
+  TH1D *h_flash_avgyzdiff_neighbors_bkg = new TH1D("h_flash_avgyzdiff_neighbors_bkg",      "h_flash_avgyzdiff_neighbors_bkg;   avg yz diff to neighbors",  60, 0, 600);
+  TH1D *h_flash_avgyzdiff_neighbors_marley = new TH1D("h_flash_avgyzdiff_neighbors_marley",      "h_flash_avgyzdiff_neighbors_marley;   avg yz diff to neighbors",  60, 0, 600);
+
+  TH1D *h_flash_stdyzdiff_neighbors_bkg = new TH1D("h_flash_stdyzdiff_neighbors_bkg",      "h_flash_stdyzdiff_neighbors_bkg;   std yz diff to neighbors",  60, 0, 600);
+  TH1D *h_flash_stdyzdiff_neighbors_marley = new TH1D("h_flash_stdyzdiff_neighbors_marley",      "h_flash_stdyzdiff_neighbors_marley;   std yz diff to neighbors",  60, 0, 600);
+
+  TH1D *h_mindt_neighbor_flash_dt_marley = new TH1D("h_mindt_neighbor_flash_dt_marley",      "h_mindt_neighbor_flash_dt_marley;   mindt neighbor flash dt ",  100, 0, 5);
+  TH1D *h_mindt_neighbor_flash_dt_bkg = new TH1D("h_mindt_neighbor_flash_dt_bkg",      "h_mindt_neighbor_flash_dt_bkg;   mindt neighbor flash dt ",  100, 0, 5);
+
+  TH1D *h_mindt_neighbor_flash_dyz_marley = new TH1D("h_mindt_neighbor_flash_dyz_marley",      "h_mindt_neighbor_flash_dyz_marley;   mindt neighbor flash dyz ",  40, 0, 400);
+  TH1D *h_mindt_neighbor_flash_dyz_bkg = new TH1D("h_mindt_neighbor_flash_dyz_bkg",      "h_mindt_neighbor_flash_dyz_bkg;   mindt neighbor flash dyz ",  40, 0, 400);
+
+  TH1D *h_mindt_neighbor_flash_totPE_marley = new TH1D("h_mindt_neighbor_flash_totPE_marley",      "h_mindt_neighbor_flash_totPE_marley;   mindt neighbor flash PE ",  100, 0, 2000);
+  TH1D *h_mindt_neighbor_flash_totPE_bkg = new TH1D("h_mindt_neighbor_flash_totPE_bkg",      "h_mindt_neighbor_flash_totPE_bkg;   mindt neighbor flash PE ",  100, 0, 2000);
+
+  TH1D *h_mindt_neighbor_flash_totophits_marley = new TH1D("h_mindt_neighbor_flash_totophits_marley",      "h_mindt_neighbor_flash_totophits_marley;   mindt neighbor flash ophits ",  25, 0, 25);
+  TH1D *h_mindt_neighbor_flash_totophits_bkg = new TH1D("h_mindt_neighbor_flash_totophits_bkg",      "h_mindt_neighbor_flash_totophits_bkg;   mindt neighbor flash ophits ",  25, 0, 25);
 
   TString title1=""; title1 = title1 + "max PE flash: T0+/-"+Form("%.0f", timesliceT0)+"ns; d (flash - true nue) [cm]";
   TString title2=""; title2 = title2 + "max PE flash: T0+/-"+Form("%.0f", timesliceT0)+"ns; t (flash - true nue) [ns]";
@@ -133,6 +192,10 @@ void Plot()
 
   // these are branches you want to read from the above root file
   Double_t marleynueX, marleynueY, marleynueZ, marleynueTime, marleynueE;
+  std::vector<double> *OpHitsPE = 0;
+  std::vector<double> *OpHitsTime = 0;
+  std::vector<double> *OpHitsY = 0;
+  std::vector<double> *OpHitsZ = 0;
   int FlashesNum;
   std::vector<int> *FlashesTotOphits = 0;
   std::vector<double> *FlashesTotPE = 0; // Initialize to 0 for safety
@@ -142,6 +205,8 @@ void Plot()
   std::vector<double> *FlashesZ = 0;
   std::vector<double> *FlashesTime = 0; // us, inherit from ophit
   std::vector<int> *Flashesbt = 0;
+  std::vector<std::vector<int>> *FlashesOphitIndex=0;
+  //std::vector<std::vector<int>> *FlashesOphitIndex = nullptr;
   std::vector<double> *bkgProcess = 0;
   std::vector<double> *bkgK = 0;
 
@@ -153,6 +218,10 @@ void Plot()
   AnaTree->SetBranchAddress("marleynueZ",       &marleynueZ);
   AnaTree->SetBranchAddress("marleynueTime",    &marleynueTime); //ns
   AnaTree->SetBranchAddress("marleynueE",       &marleynueE);
+  AnaTree->SetBranchAddress("OpHitsPE",         &OpHitsPE);
+  AnaTree->SetBranchAddress("OpHitsTime",       &OpHitsTime);
+  AnaTree->SetBranchAddress("OpHitsY",          &OpHitsY);
+  AnaTree->SetBranchAddress("OpHitsZ",          &OpHitsZ);
   AnaTree->SetBranchAddress("FlashesNum",       &FlashesNum);
   AnaTree->SetBranchAddress("FlashesTotPE",     &FlashesTotPE);
   AnaTree->SetBranchAddress("FlashesPuritySignal",  &FlashesPuritySignal);
@@ -162,6 +231,7 @@ void Plot()
   AnaTree->SetBranchAddress("FlashesTime",      &FlashesTime);
   AnaTree->SetBranchAddress("FlashesTotOphits", &FlashesTotOphits);
   AnaTree->SetBranchAddress("Flashesbt",        &Flashesbt);
+  AnaTree->SetBranchAddress("FlashesOphitIndex",&FlashesOphitIndex);
   AnaTree->SetBranchAddress("bkgProcess",       &bkgProcess);
   AnaTree->SetBranchAddress("bkgK",             &bkgK);
 
@@ -185,9 +255,11 @@ void Plot()
   int count_maxpe_T0slice_minophits_wrongdist_debug = 0;
   int count_maxpe_T0slice_minophits_wrongtimeanddist_debug = 0;
 
-  for ( int ientry = 0; ientry < nentries; ientry++ )
+  for ( int ientry = 0; ientry < 100; ientry++ )
   {
     AnaTree->GetEntry(ientry);
+
+    if (ientry % 100 ==0) cout<< "@ evt " << ientry<<endl;
 
     double max_flash_pe_T0slice = -999;
     int max_pe_T0slice_flash_index = -1;
@@ -292,8 +364,181 @@ void Plot()
 
     } // marley sel selection
 
+    double flashpestd = 0;
+    double flashavghittimediff = 0;
+    double flashavghityzdiff = 0;
+    double flashhityzStd = 0;
+
+    double neighbor_time = 5; //us
+    double neighbor_dist = 500; //cm
+    int count_neighbor_flashes = 0;
+    double count_neighbor_flashes_totPE = 0;
+    double count_neighbor_flashes_totophits = 0;
+    double neighbor_flashes_avgophits = 0;
+    double tottdiff_neighbor_flashes = 0;
+    double avgtdiff_neighbor_flashes = 0;
+    double avgyzdiff_neighbor_flashes = 0;
+    double totyzdiff_neighbor_flashes = 0;
+    double stdyzdiff_neighbor_flashes = 0;
+    double neighborflash_mindt = 9999;
+    double mindt_neighbor_flash_dt = 0;
+    double mindt_neighbor_flash_dyz = 0;
+    double mindt_neighbor_flash_totpe = 0;
+    double mindt_neighbor_flash_totophits = 0;
+
     for (int iFlash = 0; iFlash < FlashesNum; iFlash++){
 
+      //=================================
+      // Calculate single flash property
+      //=================================
+      //std::vector<int> iFlashophitsindex      = FlashesOphitIndex->at(iFlash);
+      const std::vector<int>& iFlashophitsindex = FlashesOphitIndex->at(iFlash);
+
+      flashpestd = 0;
+      flashavghittimediff = 0;
+      flashavghityzdiff = 0;
+      flashhityzStd = 0;
+
+      for (int iophitindex = 0; iophitindex < iFlashophitsindex.size(); iophitindex++){
+        flashpestd += pow((*OpHitsPE)[iFlashophitsindex.at(iophitindex)] - (*FlashesTotPE)[iFlash]/(*FlashesTotOphits)[iFlash], 2); // each - mean
+        flashavghittimediff += abs( (*OpHitsTime)[iFlashophitsindex.at(iophitindex)] -  (*OpHitsTime)[iFlashophitsindex.at(0)] ); // time diff to primarty ophit
+        flashavghityzdiff += sqrt(pow((*OpHitsY)[iFlashophitsindex.at(iophitindex)] - (*OpHitsY)[iFlashophitsindex.at(0)], 2) + pow((*OpHitsZ)[iFlashophitsindex.at(iophitindex)] - (*OpHitsZ)[iFlashophitsindex.at(0)], 2));
+      }
+      flashpestd = sqrt(flashpestd/(*FlashesTotOphits)[iFlash]); // here use N instead of N-1
+      flashavghittimediff =  flashavghittimediff/(*FlashesTotOphits)[iFlash];
+      flashavghityzdiff = flashavghityzdiff/(*FlashesTotOphits)[iFlash];
+
+      // now you have avg info
+      // calculate std
+      for (int iophitindex = 0; iophitindex < iFlashophitsindex.size(); iophitindex++){
+        flashhityzStd += pow(sqrt(pow((*OpHitsY)[iFlashophitsindex.at(iophitindex)] - (*OpHitsY)[iFlashophitsindex.at(0)], 2) + pow((*OpHitsZ)[iFlashophitsindex.at(iophitindex)] - (*OpHitsZ)[iFlashophitsindex.at(0)], 2)) - flashavghityzdiff, 2);
+      }
+      flashhityzStd = sqrt(flashhityzStd/(*FlashesTotOphits)[iFlash]);
+
+
+      //======================================
+      // Calculate neighbor flash(es) property
+      // within certain space time
+      //======================================
+      count_neighbor_flashes = 0;
+      count_neighbor_flashes_totPE = 0;
+      count_neighbor_flashes_totophits = 0;
+      neighbor_flashes_avgophits = 0;
+      tottdiff_neighbor_flashes = 0;
+      avgtdiff_neighbor_flashes = 0;
+      avgyzdiff_neighbor_flashes = 0;
+      totyzdiff_neighbor_flashes = 0;
+
+      neighborflash_mindt = neighbor_time;
+      mindt_neighbor_flash_dt = 0;
+      mindt_neighbor_flash_dyz = 0;
+      mindt_neighbor_flash_totpe = 0;
+      mindt_neighbor_flash_totophits = 0;
+      double flashesyzdist = 0;
+      for (int jFlash = 0; jFlash < FlashesNum; jFlash++){
+        if (jFlash == iFlash) continue;
+        flashesyzdist = sqrt(pow((*FlashesY)[iFlash] - (*FlashesY)[jFlash], 2) + pow((*FlashesZ)[iFlash] - (*FlashesZ)[jFlash], 2));
+
+        //within certain space time
+        if ( flashesyzdist < neighbor_dist && abs((*FlashesTime)[iFlash] - (*FlashesTime)[jFlash]) < neighbor_time ) {
+          count_neighbor_flashes ++;
+          count_neighbor_flashes_totPE += (*FlashesTotPE)[jFlash];
+          count_neighbor_flashes_totophits += (*FlashesTotOphits)[jFlash];
+          tottdiff_neighbor_flashes += abs((*FlashesTime)[jFlash] - (*FlashesTime)[iFlash]);
+          totyzdiff_neighbor_flashes += flashesyzdist;
+
+          // note min dt flash
+          if ( abs((*FlashesTime)[iFlash] - (*FlashesTime)[jFlash]) <= neighborflash_mindt ) {
+            neighborflash_mindt = abs((*FlashesTime)[iFlash] - (*FlashesTime)[jFlash]);
+            mindt_neighbor_flash_dt = neighborflash_mindt;
+            mindt_neighbor_flash_dyz = flashesyzdist;
+            mindt_neighbor_flash_totpe = (*FlashesTotPE)[jFlash];
+            mindt_neighbor_flash_totophits = (*FlashesTotOphits)[jFlash];
+          }
+
+        } // end within certain space time
+
+      } // end loop over neighbouring flash
+
+      // avg properties
+      if (count_neighbor_flashes > 0) {
+        neighbor_flashes_avgophits = count_neighbor_flashes_totophits*1.0/count_neighbor_flashes;
+        avgtdiff_neighbor_flashes  = tottdiff_neighbor_flashes/count_neighbor_flashes;
+        avgyzdiff_neighbor_flashes = totyzdiff_neighbor_flashes/count_neighbor_flashes;
+      }
+
+      // Now you have avg yz distance
+      // loop again to calculate std distance of neighbors
+      stdyzdiff_neighbor_flashes = 0;
+      for (int jFlash = 0; jFlash < FlashesNum; jFlash++){
+        if (jFlash == iFlash) continue;
+        flashesyzdist = sqrt(pow((*FlashesY)[iFlash] - (*FlashesY)[jFlash], 2) + pow((*FlashesZ)[iFlash] - (*FlashesZ)[jFlash], 2));
+
+        //within certain space time
+        if ( flashesyzdist < neighbor_dist && abs((*FlashesTime)[iFlash] - (*FlashesTime)[jFlash]) < neighbor_time ) {
+
+          stdyzdiff_neighbor_flashes += pow(flashesyzdist - avgyzdiff_neighbor_flashes, 2); // each - mean
+
+        } // end within certain space time
+
+      } // end loop over neighbouring flash
+      stdyzdiff_neighbor_flashes = sqrt(stdyzdiff_neighbor_flashes/count_neighbor_flashes); // here use N instead of N-1
+
+      // ================================================================
+      // Fill flash related vars:
+      //      Understand separation power for signal/bkg
+      // ================================================================
+      // bkg flash
+      if ( (*Flashesbt)[iFlash] > -1 ) {
+        h_flash_totophits_bkg->Fill((*FlashesTotOphits)[iFlash]);
+        h_flash_pe_bkg->Fill((*FlashesTotPE)[iFlash]);
+        h_flash_y_bkg->Fill((*FlashesY)[iFlash]);
+        h_flash_z_bkg->Fill((*FlashesZ)[iFlash]);
+        h_flash_stdpe_bkg->Fill(flashpestd);
+        h_flash_avgpe_bkg->Fill((*FlashesTotPE)[iFlash]/(*FlashesTotOphits)[iFlash]);
+        h_flash_avgtimediff_hits_bkg->Fill(flashavghittimediff);
+        h_flash_avgyzdiff_hits_bkg->Fill(flashavghityzdiff);
+        h_flash_yzStd_hits_bkg->Fill(flashhityzStd);
+
+        h_flash_n_neighbors_bkg->Fill(count_neighbor_flashes);
+        h_flash_neighbors_totPE_bkg->Fill(count_neighbor_flashes_totPE);
+        h_flash_neighbors_avgophits_bkg->Fill(neighbor_flashes_avgophits);
+        h_flash_avgtdiff_neighbors_bkg->Fill(avgtdiff_neighbor_flashes);
+        h_flash_avgyzdiff_neighbors_bkg->Fill(avgyzdiff_neighbor_flashes);
+        h_flash_stdyzdiff_neighbors_bkg->Fill(stdyzdiff_neighbor_flashes);
+
+        h_mindt_neighbor_flash_dt_bkg->Fill(mindt_neighbor_flash_dt);
+        h_mindt_neighbor_flash_dyz_bkg->Fill(mindt_neighbor_flash_dyz);
+        h_mindt_neighbor_flash_totPE_bkg->Fill(mindt_neighbor_flash_totpe);
+        h_mindt_neighbor_flash_totophits_bkg->Fill(mindt_neighbor_flash_totophits);
+
+      }
+      else if ( (*Flashesbt)[iFlash] == -1 ) {
+        // signal flash
+        h_flash_totophits_marley->Fill((*FlashesTotOphits)[iFlash]);
+        h_flash_pe_marley->Fill((*FlashesTotPE)[iFlash]);
+        h_flash_y_marley->Fill((*FlashesY)[iFlash]);
+        h_flash_z_marley->Fill((*FlashesZ)[iFlash]);
+        h_flash_stdpe_marley->Fill(flashpestd);
+        h_flash_avgpe_marley->Fill((*FlashesTotPE)[iFlash]/(*FlashesTotOphits)[iFlash]);
+        h_flash_avgtimediff_hits_marley->Fill(flashavghittimediff);
+        h_flash_avgyzdiff_hits_marley->Fill(flashavghityzdiff);
+        h_flash_yzStd_hits_marley->Fill(flashhityzStd);
+
+        h_flash_n_neighbors_marley->Fill(count_neighbor_flashes);
+        h_flash_neighbors_totPE_marley->Fill(count_neighbor_flashes_totPE);
+        h_flash_neighbors_avgophits_marley->Fill(neighbor_flashes_avgophits);
+        h_flash_avgtdiff_neighbors_marley->Fill(avgtdiff_neighbor_flashes);
+        h_flash_avgyzdiff_neighbors_marley->Fill(avgyzdiff_neighbor_flashes);
+        h_flash_stdyzdiff_neighbors_marley->Fill(stdyzdiff_neighbor_flashes);
+
+        h_mindt_neighbor_flash_dt_marley->Fill(mindt_neighbor_flash_dt);
+        h_mindt_neighbor_flash_dyz_marley->Fill(mindt_neighbor_flash_dyz);
+        h_mindt_neighbor_flash_totPE_marley->Fill(mindt_neighbor_flash_totpe);
+        h_mindt_neighbor_flash_totophits_marley->Fill(mindt_neighbor_flash_totophits);
+      }
+
+      /*
       // ================================================================
       // Performance eval plots:
       //      Use biggest PE flash with cuts on ophits and time
@@ -336,11 +581,12 @@ void Plot()
         min_flash_dt_debug_sign = idt;
         min_dt_flash_index = iFlash;
       }
+      */
     } // end loop flash
 
     // record max pe flash info and fill
     // only look at yz since no resolution on x
-
+/*
     max_pe_T0slice_flash_ddist = sqrt(pow((*FlashesY)[max_pe_T0slice_flash_index] - marleynueY, 2) + pow((*FlashesZ)[max_pe_T0slice_flash_index] - marleynueZ, 2));
     max_pe_T0slice_flash_dt    = (*FlashesTime)[max_pe_T0slice_flash_index]*1000 - marleynueTime; //ns
     hmaxpe_T0slice_flash_d_res->Fill(max_pe_T0slice_flash_ddist);
@@ -373,6 +619,7 @@ void Plot()
     if (min_dist_flash_index == max_pe_minophits_T0slice_flash_index && max_pe_minophits_T0slice_flash_index != min_dt_flash_index) count_maxpe_T0slice_minophits_wrongtime_debug++;
     if (min_dist_flash_index != max_pe_minophits_T0slice_flash_index && max_pe_minophits_T0slice_flash_index == min_dt_flash_index) count_maxpe_T0slice_minophits_wrongdist_debug++;
     if (min_dist_flash_index != max_pe_minophits_T0slice_flash_index && max_pe_minophits_T0slice_flash_index != min_dt_flash_index) count_maxpe_T0slice_minophits_wrongtimeanddist_debug++;
+    */
 
     if (ientry < nentries ){ // all evts accumulate
 
@@ -503,7 +750,128 @@ void Plot()
   h_signalflashes_mindt_flash_ophits->Write();
   h_signalflashes_maxpurity_flash_ophits->Write();
 
+  // normalize var hists of signal and bkg
+  auto flashvarcomp = new TCanvas("flashvarcomp", "flashvarcomp", 700, 500);
+  flashvarcomp->cd();
+  flashvarcomp->SetLogy();
+  h_flash_totophits_marley->Scale(1.0/h_flash_totophits_marley->GetEntries());
+  h_flash_totophits_bkg->Scale(1.0/h_flash_totophits_bkg->GetEntries());
+  h_flash_totophits_marley->SetLineColor(4); h_flash_totophits_marley->Draw();
+  h_flash_totophits_bkg->SetLineColor(2); h_flash_totophits_bkg->Draw("SAME");
+  flashvarcomp->Write("flashtotophits");
 
+  h_flash_pe_marley->Scale(1.0/h_flash_pe_marley->GetEntries());
+  h_flash_pe_bkg->Scale(1.0/h_flash_pe_bkg->GetEntries());
+  h_flash_pe_marley->SetLineColor(4); h_flash_pe_marley->Draw();
+  h_flash_pe_bkg->SetLineColor(2); h_flash_pe_bkg->Draw("SAME");
+  flashvarcomp->Write("flashtotpe");
+
+  h_flash_y_marley->Scale(1.0/h_flash_y_marley->GetEntries());
+  h_flash_y_bkg->Scale(1.0/h_flash_y_bkg->GetEntries());
+  h_flash_y_marley->SetLineColor(4); h_flash_y_marley->Draw();
+  h_flash_y_bkg->SetLineColor(2); h_flash_y_bkg->Draw("SAME");
+  flashvarcomp->Write("flashy");
+
+  h_flash_z_marley->Scale(1.0/h_flash_z_marley->GetEntries());
+  h_flash_z_bkg->Scale(1.0/h_flash_z_bkg->GetEntries());
+  h_flash_z_marley->SetLineColor(4); h_flash_z_marley->Draw();
+  h_flash_z_bkg->SetLineColor(2); h_flash_z_bkg->Draw("SAME");
+  flashvarcomp->Write("flashz");
+
+  h_flash_stdpe_marley->Scale(1.0/h_flash_stdpe_marley->GetEntries());
+  h_flash_stdpe_bkg->Scale(1.0/h_flash_stdpe_bkg->GetEntries());
+  h_flash_stdpe_marley->SetLineColor(4); h_flash_stdpe_marley->Draw();
+  h_flash_stdpe_bkg->SetLineColor(2); h_flash_stdpe_bkg->Draw("SAME");
+  flashvarcomp->Write("flashstdpe");
+
+  h_flash_avgpe_marley->Scale(1.0/h_flash_avgpe_marley->GetEntries());
+  h_flash_avgpe_bkg->Scale(1.0/h_flash_avgpe_bkg->GetEntries());
+  h_flash_avgpe_marley->SetLineColor(4); h_flash_avgpe_marley->Draw();
+  h_flash_avgpe_bkg->SetLineColor(2); h_flash_avgpe_bkg->Draw("SAME");
+  flashvarcomp->Write("flashavgpe");
+
+  h_flash_avgtimediff_hits_marley->Scale(1.0/h_flash_avgtimediff_hits_marley->GetEntries());
+  h_flash_avgtimediff_hits_bkg->Scale(1.0/h_flash_avgtimediff_hits_bkg->GetEntries());
+  h_flash_avgtimediff_hits_marley->SetLineColor(4); h_flash_avgtimediff_hits_marley->Draw();
+  h_flash_avgtimediff_hits_bkg->SetLineColor(2); h_flash_avgtimediff_hits_bkg->Draw("SAME");
+  flashvarcomp->Write("flashhitavgdifftime");
+
+  h_flash_avgyzdiff_hits_marley->Scale(1.0/h_flash_avgyzdiff_hits_marley->GetEntries());
+  h_flash_avgyzdiff_hits_bkg->Scale(1.0/h_flash_avgyzdiff_hits_bkg->GetEntries());
+  h_flash_avgyzdiff_hits_marley->SetLineColor(4); h_flash_avgyzdiff_hits_marley->Draw();
+  h_flash_avgyzdiff_hits_bkg->SetLineColor(2); h_flash_avgyzdiff_hits_bkg->Draw("SAME");
+  flashvarcomp->Write("flashAvghitdyz");
+
+  h_flash_yzStd_hits_marley->Scale(1.0/h_flash_yzStd_hits_marley->GetEntries());
+  h_flash_yzStd_hits_bkg->Scale(1.0/h_flash_yzStd_hits_bkg->GetEntries());
+  h_flash_yzStd_hits_marley->SetLineColor(4); h_flash_yzStd_hits_marley->Draw();
+  h_flash_yzStd_hits_bkg->SetLineColor(2); h_flash_yzStd_hits_bkg->Draw("SAME");
+  flashvarcomp->Write("flashStdhitdyz");
+
+
+
+  h_flash_n_neighbors_marley->Scale(1.0/h_flash_n_neighbors_marley->GetEntries());
+  h_flash_n_neighbors_bkg->Scale(1.0/h_flash_n_neighbors_bkg->GetEntries());
+  h_flash_n_neighbors_bkg->SetLineColor(2); h_flash_n_neighbors_bkg->Draw();
+  h_flash_n_neighbors_marley->SetLineColor(4); h_flash_n_neighbors_marley->Draw("SAME");
+  flashvarcomp->Write("nNeighborflashes");
+
+  h_flash_neighbors_totPE_marley->Scale(1.0/h_flash_neighbors_totPE_marley->GetEntries());
+  h_flash_neighbors_totPE_bkg->Scale(1.0/h_flash_neighbors_totPE_bkg->GetEntries());
+  h_flash_neighbors_totPE_bkg->SetLineColor(2); h_flash_neighbors_totPE_bkg->Draw();
+  h_flash_neighbors_totPE_marley->SetLineColor(4); h_flash_neighbors_totPE_marley->Draw("SAME");
+  flashvarcomp->Write("neighborflashesTotPE");
+
+  h_flash_neighbors_avgophits_marley->Scale(1.0/h_flash_neighbors_avgophits_marley->GetEntries());
+  h_flash_neighbors_avgophits_bkg->Scale(1.0/h_flash_neighbors_avgophits_bkg->GetEntries());
+  h_flash_neighbors_avgophits_marley->SetLineColor(4); h_flash_neighbors_avgophits_marley->Draw();
+  h_flash_neighbors_avgophits_bkg->SetLineColor(2); h_flash_neighbors_avgophits_bkg->Draw("SAME");
+  flashvarcomp->Write("neighborflashesAvgOphits");
+
+  h_flash_avgtdiff_neighbors_marley->Scale(1.0/h_flash_avgtdiff_neighbors_marley->GetEntries());
+  h_flash_avgtdiff_neighbors_bkg->Scale(1.0/h_flash_avgtdiff_neighbors_bkg->GetEntries());
+  h_flash_avgtdiff_neighbors_marley->SetLineColor(4); h_flash_avgtdiff_neighbors_marley->Draw();
+  h_flash_avgtdiff_neighbors_bkg->SetLineColor(2); h_flash_avgtdiff_neighbors_bkg->Draw("SAME");
+  flashvarcomp->Write("tdiff2Neighbors");
+
+  h_flash_avgyzdiff_neighbors_marley->Scale(1.0/h_flash_avgyzdiff_neighbors_marley->GetEntries());
+  h_flash_avgyzdiff_neighbors_bkg->Scale(1.0/h_flash_avgyzdiff_neighbors_bkg->GetEntries());
+  h_flash_avgyzdiff_neighbors_marley->SetLineColor(4); h_flash_avgyzdiff_neighbors_marley->Draw();
+  h_flash_avgyzdiff_neighbors_bkg->SetLineColor(2); h_flash_avgyzdiff_neighbors_bkg->Draw("SAME");
+  flashvarcomp->Write("yzdist2NeighborsAvg");
+
+  h_flash_stdyzdiff_neighbors_marley->Scale(1.0/h_flash_stdyzdiff_neighbors_marley->GetEntries());
+  h_flash_stdyzdiff_neighbors_bkg->Scale(1.0/h_flash_stdyzdiff_neighbors_bkg->GetEntries());
+  h_flash_stdyzdiff_neighbors_marley->SetLineColor(4); h_flash_stdyzdiff_neighbors_marley->Draw();
+  h_flash_stdyzdiff_neighbors_bkg->SetLineColor(2); h_flash_stdyzdiff_neighbors_bkg->Draw("SAME");
+  flashvarcomp->Write("yzdist2NeighborsStd");
+
+  h_mindt_neighbor_flash_dt_marley->Scale(1.0/h_mindt_neighbor_flash_dt_marley->GetEntries());
+  h_mindt_neighbor_flash_dt_bkg->Scale(1.0/h_mindt_neighbor_flash_dt_bkg->GetEntries());
+  h_mindt_neighbor_flash_dt_marley->SetLineColor(4); h_mindt_neighbor_flash_dt_marley->Draw();
+  h_mindt_neighbor_flash_dt_bkg->SetLineColor(2); h_mindt_neighbor_flash_dt_bkg->Draw("SAME");
+  flashvarcomp->Write("mindtNeighbordt");
+
+  h_mindt_neighbor_flash_dyz_marley->Scale(1.0/h_mindt_neighbor_flash_dyz_marley->GetEntries());
+  h_mindt_neighbor_flash_dyz_bkg->Scale(1.0/h_mindt_neighbor_flash_dyz_bkg->GetEntries());
+  h_mindt_neighbor_flash_dyz_marley->SetLineColor(4); h_mindt_neighbor_flash_dyz_marley->Draw();
+  h_mindt_neighbor_flash_dyz_bkg->SetLineColor(2); h_mindt_neighbor_flash_dyz_bkg->Draw("SAME");
+  flashvarcomp->Write("mindtNeighbordyz");
+
+  h_mindt_neighbor_flash_totPE_marley->Scale(1.0/h_mindt_neighbor_flash_totPE_marley->GetEntries());
+  h_mindt_neighbor_flash_totPE_bkg->Scale(1.0/h_mindt_neighbor_flash_totPE_bkg->GetEntries());
+  h_mindt_neighbor_flash_totPE_marley->SetLineColor(4); h_mindt_neighbor_flash_totPE_marley->Draw();
+  h_mindt_neighbor_flash_totPE_bkg->SetLineColor(2); h_mindt_neighbor_flash_totPE_bkg->Draw("SAME");
+  flashvarcomp->Write("mindtNeighborTotPE");
+
+  h_mindt_neighbor_flash_totophits_marley->Scale(1.0/h_mindt_neighbor_flash_totophits_marley->GetEntries());
+  h_mindt_neighbor_flash_totophits_bkg->Scale(1.0/h_mindt_neighbor_flash_totophits_bkg->GetEntries());
+  h_mindt_neighbor_flash_totophits_marley->SetLineColor(4); h_mindt_neighbor_flash_totophits_marley->Draw();
+  h_mindt_neighbor_flash_totophits_bkg->SetLineColor(2); h_mindt_neighbor_flash_totophits_bkg->Draw("SAME");
+  flashvarcomp->Write("mindtNeighborTotophits");
+
+  /*
+  // performance eval
   hmaxpe_T0slice_flash_d_res->Write();
   hmaxpe_T0slice_flash_t_res->Write();
 
@@ -533,6 +901,7 @@ void Plot()
   cout<< "wrongtime_debug:" << count_maxpe_T0slice_minophits_wrongtime_debug <<endl;
   cout<< "wrongdist_debug:" << count_maxpe_T0slice_minophits_wrongdist_debug <<endl;
   cout<< "wrongtimeanddist_debug:" << count_maxpe_T0slice_minophits_wrongtimeanddist_debug <<endl;
+  */
 
   auto cs = new TCanvas("cs", "cs", 700, 500);
   cs->cd();

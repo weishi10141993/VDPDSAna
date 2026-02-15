@@ -6,15 +6,19 @@ git clone https://github.com/weishi10141993/lardon.git
 # install pixi:
 curl -fsSL https://pixi.sh/install.sh | PIXI_HOME=/exp/dune/app/users/weishi/lardonnp02libs bash
 
+[Every time]
 cd lardon
 source ~/.bashrc
 pixi install -a
 
 source set_lardon.sh
+
 # at lxplus
 # pixi run lardon -file /eos/experiment/neutplatform/protodune/dune/vd-protodune/9e/39/np02vd_raw_run042164_0000_df-s04-d0_dw_0_20260116T222256.hdf5 -gallery <your_choice>
+
 # at fnal
 pixi run lardon -file /pnfs/dune/persistent/users/weishi/examplenp02data/np02vd_raw_run042164_0000_df-s04-d0_dw_0_20260116T222256.hdf5 -gallery bottom
+pixi run lardon -file /pnfs/dune/persistent/users/weishi/examplenp02data/pns/np02vd_raw_run042375_0003_df-s05-d0_dw_0_20260130T165435.hdf5 -gallery top # first pns run
 ```
 
 where ```your_choice``` could be ```top``` : to see CRP2+CRP3, ```bottom``` to see CRP4+CRP5, ```both``` = bottom and then top separately

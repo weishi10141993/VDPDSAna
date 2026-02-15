@@ -31,8 +31,7 @@ void vbox::Loop()
 //by  b_branchname->GetEntry(ientry); //read only this branch
    if (fheader == 0) return;
    TRandom *myran       = new TRandom();
-   Double_t rr=0.0, rr2=0.0, offset=0.0, timeoff=0.0;
-   Double_t earliestPheHittimeTile0 = 2000, earliestPheHittimeTile1 = 2000, earliestPheHittimeTile2 = 2000, earliestPheHittimeTile3 = 2000;
+   Double_t rr=0.0, rr2=0.0, offset1=0.0, offset2=0.0;
    Long64_t nentries = fheader->GetEntriesFast();
    int nmaxima=0;
    ofstream myfile;
@@ -145,7 +144,7 @@ rfile->GetObject("cpers_s",h);
 			{
 
         // count captures on top of each tile
-        /*if (ncaptures>0){
+        if (ncaptures>0){
           // tile boundaries in yz from Paola
           // fill drift position
           captureDriftX->Fill(PosIne[ihit][0]);
@@ -168,7 +167,7 @@ rfile->GetObject("cpers_s",h);
               petotcapontileC4->Fill(TotPhe[3]*effi);
             }
           }
-        }*/
+        }
 
 			  for (int ns=FirstSec[ihit]; ns<FirstSec[ihit]+NSecIne[ihit]; ns++)
 				{
@@ -252,118 +251,24 @@ rfile->GetObject("cpers_s",h);
       }
     }
 
-    // reproduce DAQ window neutron bunch structure
-    // choose 1 out of 5 bunches
-    earliestPheHittimeTile3 = 2000;
-    earliestPheHittimeTile2 = 2000;
-    earliestPheHittimeTile1 = 2000;
-    earliestPheHittimeTile0 = 2000;
-	  rr2=Int_t(myran->Rndm() *5.0);
-	  // start time of the choosen bunch. each one 80 musec (60+20)
-	  // 5th one starts at 320
-    // varies run by run
-    // -- check agreement overlay run by run
-	  // -280  is to get exactly 1 and 1/2 bunch as in data
-    // pns run 25036: time offset -305
-    // pns run 25068: time offset -225
-    // pns run 25071: time offset -305
-	  rr2 = rr2*80. -225.;
-	  //now choose a time within the bunch
-	  rr=myran->Rndm() * 60. ;
-	  offset = rr +rr2 ;
-	  // then calculate time as
-	  for (int iph=0; iph<NPheHits; iph++){
-      timeoff = PheTime[iph]/1000. +offset; // mus
-      // find earliest time >=0 and associated tile PheTile
-      if (timeoff < earliestPheHittimeTile3 && timeoff >=0 && PheTile[iph] == 3) earliestPheHittimeTile3 = timeoff;
-      if (timeoff < earliestPheHittimeTile2 && timeoff >=0 && PheTile[iph] == 2) earliestPheHittimeTile2 = timeoff;
-      if (timeoff < earliestPheHittimeTile1 && timeoff >=0 && PheTile[iph] == 1) earliestPheHittimeTile1 = timeoff;
-      if (timeoff < earliestPheHittimeTile0 && timeoff >=0 && PheTile[iph] == 0) earliestPheHittimeTile0 = timeoff;
-
-    }// end loop
-
     // get tot phe on each tile
     if (ncaptures==1) {// capture signal time
       petotcapC4->Fill(TotPhe[3]*effi*peakscalefactor);
       petotcapC1->Fill(TotPhe[2]*effi*peakscalefactor);
       petotcapC3->Fill(TotPhe[1]*effi*peakscalefactor);
       petotcapC2->Fill(TotPhe[0]*effi*peakscalefactor);
-      //time sliced PE
-      if (earliestPheHittimeTile3>=0 && earliestPheHittimeTile3<160) petotcapC4_t0_160us->Fill(TotPhe[3]*effi*peakscalefactor);
-      if (earliestPheHittimeTile3>=160 && earliestPheHittimeTile3<480) petotcapC4_t160_480us->Fill(TotPhe[3]*effi*peakscalefactor);
-      if (earliestPheHittimeTile3>=480 && earliestPheHittimeTile3<1050) petotcapC4_t480_1050us->Fill(TotPhe[3]*effi*peakscalefactor);
-
-      if (earliestPheHittimeTile2>=0 && earliestPheHittimeTile2<160) petotcapC1_t0_160us->Fill(TotPhe[2]*effi*peakscalefactor);
-      if (earliestPheHittimeTile2>=160 && earliestPheHittimeTile2<480) petotcapC1_t160_480us->Fill(TotPhe[2]*effi*peakscalefactor);
-      if (earliestPheHittimeTile2>=480 && earliestPheHittimeTile2<1050) petotcapC1_t480_1050us->Fill(TotPhe[2]*effi*peakscalefactor);
-
-      if (earliestPheHittimeTile1>=0 && earliestPheHittimeTile1<160) petotcapC3_t0_160us->Fill(TotPhe[1]*effi*peakscalefactor);
-      if (earliestPheHittimeTile1>=160 && earliestPheHittimeTile1<480) petotcapC3_t160_480us->Fill(TotPhe[1]*effi*peakscalefactor);
-      if (earliestPheHittimeTile1>=480 && earliestPheHittimeTile1<1050) petotcapC3_t480_1050us->Fill(TotPhe[1]*effi*peakscalefactor);
-
-      if (earliestPheHittimeTile0>=0 && earliestPheHittimeTile0<160) petotcapC2_t0_160us->Fill(TotPhe[0]*effi*peakscalefactor);
-      if (earliestPheHittimeTile0>=160 && earliestPheHittimeTile0<480) petotcapC2_t160_480us->Fill(TotPhe[0]*effi*peakscalefactor);
-      if (earliestPheHittimeTile0>=480 && earliestPheHittimeTile0<1050) petotcapC2_t480_1050us->Fill(TotPhe[0]*effi*peakscalefactor);
-
-      offlinetimecapC4->Fill(earliestPheHittimeTile3); // us
-      offlinetimecapC1->Fill(earliestPheHittimeTile2);
-      offlinetimecapC3->Fill(earliestPheHittimeTile1);
-      offlinetimecapC2->Fill(earliestPheHittimeTile0);
     } else if ( nnvtx >0 ) {// active Ar inelastic
       petotineC4->Fill(TotPhe[3]*effi*peakscalefactor);
       petotineC1->Fill(TotPhe[2]*effi*peakscalefactor);
       petotineC3->Fill(TotPhe[1]*effi*peakscalefactor);
       petotineC2->Fill(TotPhe[0]*effi*peakscalefactor);
-      //time sliced PE
-      if (earliestPheHittimeTile3>=0 && earliestPheHittimeTile3<160) petotineC4_t0_160us->Fill(TotPhe[3]*effi*peakscalefactor);
-      if (earliestPheHittimeTile3>=160 && earliestPheHittimeTile3<480) petotineC4_t160_480us->Fill(TotPhe[3]*effi*peakscalefactor);
-      if (earliestPheHittimeTile3>=480 && earliestPheHittimeTile3<1050) petotineC4_t480_1050us->Fill(TotPhe[3]*effi*peakscalefactor);
-
-      if (earliestPheHittimeTile2>=0 && earliestPheHittimeTile2<160) petotineC1_t0_160us->Fill(TotPhe[2]*effi*peakscalefactor);
-      if (earliestPheHittimeTile2>=160 && earliestPheHittimeTile2<480) petotineC1_t160_480us->Fill(TotPhe[2]*effi*peakscalefactor);
-      if (earliestPheHittimeTile2>=480 && earliestPheHittimeTile2<1050) petotineC1_t480_1050us->Fill(TotPhe[2]*effi*peakscalefactor);
-
-      if (earliestPheHittimeTile1>=0 && earliestPheHittimeTile1<160) petotineC3_t0_160us->Fill(TotPhe[1]*effi*peakscalefactor);
-      if (earliestPheHittimeTile1>=160 && earliestPheHittimeTile1<480) petotineC3_t160_480us->Fill(TotPhe[1]*effi*peakscalefactor);
-      if (earliestPheHittimeTile1>=480 && earliestPheHittimeTile1<1050) petotineC3_t480_1050us->Fill(TotPhe[1]*effi*peakscalefactor);
-
-      if (earliestPheHittimeTile0>=0 && earliestPheHittimeTile0<160) petotineC2_t0_160us->Fill(TotPhe[0]*effi*peakscalefactor);
-      if (earliestPheHittimeTile0>=160 && earliestPheHittimeTile0<480) petotineC2_t160_480us->Fill(TotPhe[0]*effi*peakscalefactor);
-      if (earliestPheHittimeTile0>=480 && earliestPheHittimeTile0<1050) petotineC2_t480_1050us->Fill(TotPhe[0]*effi*peakscalefactor);
-
-      offlinetimeineC4->Fill(earliestPheHittimeTile3); // us
-      offlinetimeineC1->Fill(earliestPheHittimeTile2);
-      offlinetimeineC3->Fill(earliestPheHittimeTile1);
-      offlinetimeineC2->Fill(earliestPheHittimeTile0);
     } else { // bkg outside active LAr
       petotothC4->Fill(TotPhe[3]*effi*peakscalefactor);
       petotothC1->Fill(TotPhe[2]*effi*peakscalefactor);
       petotothC3->Fill(TotPhe[1]*effi*peakscalefactor);
       petotothC2->Fill(TotPhe[0]*effi*peakscalefactor);
-      //time sliced PE
-      if (earliestPheHittimeTile3>=0 && earliestPheHittimeTile3<160) petotothC4_t0_160us->Fill(TotPhe[3]*effi*peakscalefactor);
-      if (earliestPheHittimeTile3>=160 && earliestPheHittimeTile3<480) petotothC4_t160_480us->Fill(TotPhe[3]*effi*peakscalefactor);
-      if (earliestPheHittimeTile3>=480 && earliestPheHittimeTile3<1050) petotothC4_t480_1050us->Fill(TotPhe[3]*effi*peakscalefactor);
-
-      if (earliestPheHittimeTile2>=0 && earliestPheHittimeTile2<160) petotothC1_t0_160us->Fill(TotPhe[2]*effi*peakscalefactor);
-      if (earliestPheHittimeTile2>=160 && earliestPheHittimeTile2<480) petotothC1_t160_480us->Fill(TotPhe[2]*effi*peakscalefactor);
-      if (earliestPheHittimeTile2>=480 && earliestPheHittimeTile2<1050) petotothC1_t480_1050us->Fill(TotPhe[2]*effi*peakscalefactor);
-
-      if (earliestPheHittimeTile1>=0 && earliestPheHittimeTile1<160) petotothC3_t0_160us->Fill(TotPhe[1]*effi*peakscalefactor);
-      if (earliestPheHittimeTile1>=160 && earliestPheHittimeTile1<480) petotothC3_t160_480us->Fill(TotPhe[1]*effi*peakscalefactor);
-      if (earliestPheHittimeTile1>=480 && earliestPheHittimeTile1<1050) petotothC3_t480_1050us->Fill(TotPhe[1]*effi*peakscalefactor);
-
-      if (earliestPheHittimeTile0>=0 && earliestPheHittimeTile0<160) petotothC2_t0_160us->Fill(TotPhe[0]*effi*peakscalefactor);
-      if (earliestPheHittimeTile0>=160 && earliestPheHittimeTile0<480) petotothC2_t160_480us->Fill(TotPhe[0]*effi*peakscalefactor);
-      if (earliestPheHittimeTile0>=480 && earliestPheHittimeTile0<1050) petotothC2_t480_1050us->Fill(TotPhe[0]*effi*peakscalefactor);
-
-      offlinetimeothC4->Fill(earliestPheHittimeTile3); // us
-      offlinetimeothC1->Fill(earliestPheHittimeTile2);
-      offlinetimeothC3->Fill(earliestPheHittimeTile1);
-      offlinetimeothC2->Fill(earliestPheHittimeTile0);
     }
 
-    /*
 		rr2=myran->Rndm();
 		rr2=rr2*5;
 		rr2=Int_t(rr2)*80.0; //-280.0;
@@ -419,9 +324,7 @@ rfile->GetObject("cpers_s",h);
         if (EveNum==myevent){ cout << i << " newtime " << newtime <<" content" << cont << endl;}
 			}
 		} //end loop on phe hits to generate  non-convoluted analisys
-    */
-
-		// and convoluted waveform. now find peaks
+		  // and convoluted waveform. now find peaks
 		if ( doconv ==1 ){
   		nmaxima=0;
 		int dum=tc->GetMaximumBin();
@@ -512,10 +415,10 @@ rfile->GetObject("cpers_s",h);
    //cout << "number of events with signal above thr, no convolution " << ngoodevts_noconv <<endl;
    cout << "total events: " << ntotevts <<endl;
    cout << "total cap events: " << ncapevt <<endl;
-   //cout << "cap events on C1: " << capC1counter <<endl;
-   //cout << "cap events on C2: " << capC2counter <<endl;
-   //cout << "cap events on C3: " << capC3counter <<endl;
-   //cout << "cap events on C4: " << capC4counter <<endl;
+   cout << "cap events on C1: " << capC1counter <<endl;
+   cout << "cap events on C2: " << capC2counter <<endl;
+   cout << "cap events on C3: " << capC3counter <<endl;
+   cout << "cap events on C4: " << capC4counter <<endl;
 
 
     TCanvas *c2 =new TCanvas("c2","c2",1500,1500);
@@ -559,16 +462,16 @@ for (int ix=1;ix<=nx;ix++) regneu->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
  regneu->Draw();
   c3->Print("vbox_sep24_regneu.png");
 
-  /*timeh2->SetLineWidth(5); // time smear
-  //timeh2->Draw("PLC");
-  //timhitsoth->SetLineWidth(5); // non LAr interactions
-  //timhitsoth->Draw("SAME PLC");
-  //timhitscap->SetLineWidth(5); // capture signal
-  //timhitscap->Draw("SAME PLC");
-  //timhitsine->SetLineWidth(5); // inelastic
-  //timhitsine->Draw("SAME PLC");
-  //gPad->BuildLegend();
-  //c3->Print("vbox_sep24_allXA_times.png"); // time distribution of signals and bkgs
+  timeh2->SetLineWidth(5); // time smear
+  timeh2->Draw("PLC");
+  timhitsoth->SetLineWidth(5); // non LAr interactions
+  timhitsoth->Draw("SAME PLC");
+  timhitscap->SetLineWidth(5); // capture signal
+  timhitscap->Draw("SAME PLC");
+  timhitsine->SetLineWidth(5); // inelastic
+  timhitsine->Draw("SAME PLC");
+  gPad->BuildLegend();
+  c3->Print("vbox_sep24_allXA_times.png"); // time distribution of signals and bkgs
 
   pehitstot->SetLineWidth(5); // time smear
   pehitstot->Draw("PLC");
@@ -579,7 +482,7 @@ for (int ix=1;ix<=nx;ix++) regneu->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
   pehitsine->SetLineWidth(5); // inelastic
   pehitsine->Draw("SAME PLC");
   gPad->BuildLegend();
-  c3->Print("vbox_sep24_allXA_pe.png");*/
+  c3->Print("vbox_sep24_allXA_pe.png");
 
   c3->SetLogy();
   energy_all->GetXaxis()->SetTitle("MeV");
@@ -628,216 +531,59 @@ for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
   c3->Print("vbox_sep24_nintlar.png");
 
   //TFile *f = new TFile("vbox_sep24_pe_minimumcut_calibrated2peak.root", "RECREATE");
-  //TFile *f = new TFile("vbox_sep24_pe_minimumcut_calibrated2peak_Aug2025AdjustLY.root", "RECREATE");
-  TFile *f = new TFile("vbox_sep24_sim_JINSTreview_timeoffset225us.root", "RECREATE");
-  TCanvas *c01_pe =new TCanvas("c01_pe", "c01_pe", 3000, 1500);
-  c01_pe->cd();
+  TFile *f = new TFile("vbox_sep24_pe_minimumcut_calibrated2peak_Aug2025AdjustLY.root", "RECREATE");
+  TCanvas *c01 =new TCanvas("c01", "c01", 3000, 1500);
+  c01->cd();
   petotothC1->SetLineWidth(1); // non LAr interactions
   petotothC1->Draw("hist");
   petotineC1->SetLineWidth(1); // inelastic
   petotineC1->Draw("SAME hist");
   petotcapC1->SetLineWidth(1);
   petotcapC1->Draw("SAME hist");
+  //petotcapontileC1->SetLineWidth(1); // capture signal
+  //petotcapontileC1->Draw("SAME hist");
   gPad->BuildLegend();
-  c01_pe->Write();
-  TCanvas *c01_pe_tslice0 =new TCanvas("c01_pe_tslice0", "c01_pe_tslice0_160us", 3000, 1500);
-  c01_pe_tslice0->cd();
-  petotothC1_t0_160us->SetLineWidth(1); // non LAr interactions
-  petotothC1_t0_160us->Draw("hist");
-  petotineC1_t0_160us->SetLineWidth(1); // inelastic
-  petotineC1_t0_160us->Draw("SAME hist");
-  petotcapC1_t0_160us->SetLineWidth(1);
-  petotcapC1_t0_160us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c01_pe_tslice0->Write();
-  TCanvas *c01_pe_tslice1 =new TCanvas("c01_pe_tslice1", "c01_pe_tslice160_480us", 3000, 1500);
-  c01_pe_tslice1->cd();
-  petotothC1_t160_480us->SetLineWidth(1); // non LAr interactions
-  petotothC1_t160_480us->Draw("hist");
-  petotineC1_t160_480us->SetLineWidth(1); // inelastic
-  petotineC1_t160_480us->Draw("SAME hist");
-  petotcapC1_t160_480us->SetLineWidth(1);
-  petotcapC1_t160_480us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c01_pe_tslice1->Write();
-  TCanvas *c01_pe_tslice2 =new TCanvas("c01_pe_tslice2", "c01_pe_tslice480_1050us", 3000, 1500);
-  c01_pe_tslice2->cd();
-  petotothC1_t480_1050us->SetLineWidth(1); // non LAr interactions
-  petotothC1_t480_1050us->Draw("hist");
-  petotineC1_t480_1050us->SetLineWidth(1); // inelastic
-  petotineC1_t480_1050us->Draw("SAME hist");
-  petotcapC1_t480_1050us->SetLineWidth(1);
-  petotcapC1_t480_1050us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c01_pe_tslice2->Write();
-  TCanvas *c01_timing =new TCanvas("c01_timing", "c01_timing", 3000, 1500);
-  c01_timing->cd();
-  offlinetimeothC1->SetLineWidth(1); // non LAr interactions
-  offlinetimeothC1->Draw("hist");
-  offlinetimeineC1->SetLineWidth(1); // inelastic
-  offlinetimeineC1->Draw("SAME hist");
-  offlinetimecapC1->SetLineWidth(1);
-  offlinetimecapC1->Draw("SAME hist");
-  gPad->BuildLegend();
-  c01_timing->Write();
-
-  TCanvas *c02_pe =new TCanvas("c02_pe","c02_pe",3000,1500);
-  c02_pe->cd();
+  c01->Write();
+  TCanvas *c02 =new TCanvas("c02","c02",3000,1500);
+  c02->cd();
   petotothC2->SetLineWidth(1); // non LAr interactions
   petotothC2->Draw("hist");
   petotineC2->SetLineWidth(1); // inelastic
   petotineC2->Draw("SAME hist");
   petotcapC2->SetLineWidth(1);
   petotcapC2->Draw("SAME hist");
+  //petotcapontileC2->SetLineWidth(1); // capture signal
+  //petotcapontileC2->Draw("SAME hist");
   gPad->BuildLegend();
-  c02_pe->Write();
-  TCanvas *c02_pe_tslice0 =new TCanvas("c02_pe_tslice0", "c02_pe_tslice0_160us", 3000, 1500);
-  c02_pe_tslice0->cd();
-  petotothC2_t0_160us->SetLineWidth(1); // non LAr interactions
-  petotothC2_t0_160us->Draw("hist");
-  petotineC2_t0_160us->SetLineWidth(1); // inelastic
-  petotineC2_t0_160us->Draw("SAME hist");
-  petotcapC2_t0_160us->SetLineWidth(1);
-  petotcapC2_t0_160us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c02_pe_tslice0->Write();
-  TCanvas *c02_pe_tslice1 =new TCanvas("c02_pe_tslice1", "c02_pe_tslice160_480us", 3000, 1500);
-  c02_pe_tslice1->cd();
-  petotothC2_t160_480us->SetLineWidth(1); // non LAr interactions
-  petotothC2_t160_480us->Draw("hist");
-  petotineC2_t160_480us->SetLineWidth(1); // inelastic
-  petotineC2_t160_480us->Draw("SAME hist");
-  petotcapC2_t160_480us->SetLineWidth(1);
-  petotcapC2_t160_480us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c02_pe_tslice1->Write();
-  TCanvas *c02_pe_tslice2 =new TCanvas("c02_pe_tslice2", "c02_pe_tslice480_1050us", 3000, 1500);
-  c02_pe_tslice2->cd();
-  petotothC2_t480_1050us->SetLineWidth(1); // non LAr interactions
-  petotothC2_t480_1050us->Draw("hist");
-  petotineC2_t480_1050us->SetLineWidth(1); // inelastic
-  petotineC2_t480_1050us->Draw("SAME hist");
-  petotcapC2_t480_1050us->SetLineWidth(1);
-  petotcapC2_t480_1050us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c02_pe_tslice2->Write();
-  TCanvas *c02_timing =new TCanvas("c02_timing", "c02_timing", 3000, 1500);
-  c02_timing->cd();
-  offlinetimeothC2->SetLineWidth(1); // non LAr interactions
-  offlinetimeothC2->Draw("hist");
-  offlinetimeineC2->SetLineWidth(1); // inelastic
-  offlinetimeineC2->Draw("SAME hist");
-  offlinetimecapC2->SetLineWidth(1);
-  offlinetimecapC2->Draw("SAME hist");
-  gPad->BuildLegend();
-  c02_timing->Write();
-
-  TCanvas *c03_pe =new TCanvas("c03_pe","c03_pe",3000,1500);
-  c03_pe->cd();
+  c02->Write();
+  TCanvas *c03 =new TCanvas("c03","c03",3000,1500);
+  c03->cd();
   petotothC3->SetLineWidth(1); // non LAr interactions
   petotothC3->Draw("hist");
   petotineC3->SetLineWidth(1); // inelastic
   petotineC3->Draw("SAME hist");
   petotcapC3->SetLineWidth(1);
   petotcapC3->Draw("SAME hist");
+  //petotcapontileC3->SetLineWidth(1); // capture signal
+  //petotcapontileC3->Draw("SAME hist");
   gPad->BuildLegend();
-  c03_pe->Write();
-  TCanvas *c03_pe_tslice0 =new TCanvas("c03_pe_tslice0", "c03_pe_tslice0_160us", 3000, 1500);
-  c03_pe_tslice0->cd();
-  petotothC3_t0_160us->SetLineWidth(1); // non LAr interactions
-  petotothC3_t0_160us->Draw("hist");
-  petotineC3_t0_160us->SetLineWidth(1); // inelastic
-  petotineC3_t0_160us->Draw("SAME hist");
-  petotcapC3_t0_160us->SetLineWidth(1);
-  petotcapC3_t0_160us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c03_pe_tslice0->Write();
-  TCanvas *c03_pe_tslice1 =new TCanvas("c03_pe_tslice1", "c03_pe_tslice160_480us", 3000, 1500);
-  c03_pe_tslice1->cd();
-  petotothC3_t160_480us->SetLineWidth(1); // non LAr interactions
-  petotothC3_t160_480us->Draw("hist");
-  petotineC3_t160_480us->SetLineWidth(1); // inelastic
-  petotineC3_t160_480us->Draw("SAME hist");
-  petotcapC3_t160_480us->SetLineWidth(1);
-  petotcapC3_t160_480us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c03_pe_tslice1->Write();
-  TCanvas *c03_pe_tslice2 =new TCanvas("c03_pe_tslice2", "c03_pe_tslice480_1050us", 3000, 1500);
-  c03_pe_tslice2->cd();
-  petotothC3_t480_1050us->SetLineWidth(1); // non LAr interactions
-  petotothC3_t480_1050us->Draw("hist");
-  petotineC3_t480_1050us->SetLineWidth(1); // inelastic
-  petotineC3_t480_1050us->Draw("SAME hist");
-  petotcapC3_t480_1050us->SetLineWidth(1);
-  petotcapC3_t480_1050us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c03_pe_tslice2->Write();
-  TCanvas *c03_timing =new TCanvas("c03_timing", "c03_timing", 3000, 1500);
-  c03_timing->cd();
-  offlinetimeothC3->SetLineWidth(1); // non LAr interactions
-  offlinetimeothC3->Draw("hist");
-  offlinetimeineC3->SetLineWidth(1); // inelastic
-  offlinetimeineC3->Draw("SAME hist");
-  offlinetimecapC3->SetLineWidth(1);
-  offlinetimecapC3->Draw("SAME hist");
-  gPad->BuildLegend();
-  c03_timing->Write();
-
-  TCanvas *c04_pe =new TCanvas("c04_pe","c04_pe",3000,1500);
-  c04_pe->cd();
+  c03->Write();
+  TCanvas *c04 =new TCanvas("c04","c04",3000,1500);
+  c04->cd();
   petotothC4->SetLineWidth(1); // non LAr interactions
   petotothC4->Draw("hist");
   petotineC4->SetLineWidth(1); // inelastic
   petotineC4->Draw("SAME hist");
   petotcapC4->SetLineWidth(1);
   petotcapC4->Draw("SAME hist");
+  //petotcapontileC4->SetLineWidth(1); // capture signal
+  //petotcapontileC4->Draw("SAME hist");
   gPad->BuildLegend();
-  c04_pe->Write();
-  TCanvas *c04_pe_tslice0 =new TCanvas("c04_pe_tslice0", "c04_pe_tslice0_160us", 3000, 1500);
-  c04_pe_tslice0->cd();
-  petotothC4_t0_160us->SetLineWidth(1); // non LAr interactions
-  petotothC4_t0_160us->Draw("hist");
-  petotineC4_t0_160us->SetLineWidth(1); // inelastic
-  petotineC4_t0_160us->Draw("SAME hist");
-  petotcapC4_t0_160us->SetLineWidth(1);
-  petotcapC4_t0_160us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c04_pe_tslice0->Write();
-  TCanvas *c04_pe_tslice1 =new TCanvas("c04_pe_tslice1", "c04_pe_tslice160_480us", 3000, 1500);
-  c04_pe_tslice1->cd();
-  petotothC4_t160_480us->SetLineWidth(1); // non LAr interactions
-  petotothC4_t160_480us->Draw("hist");
-  petotineC4_t160_480us->SetLineWidth(1); // inelastic
-  petotineC4_t160_480us->Draw("SAME hist");
-  petotcapC4_t160_480us->SetLineWidth(1);
-  petotcapC4_t160_480us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c04_pe_tslice1->Write();
-  TCanvas *c04_pe_tslice2 =new TCanvas("c04_pe_tslice2", "c04_pe_tslice480_1050us", 3000, 1500);
-  c04_pe_tslice2->cd();
-  petotothC4_t480_1050us->SetLineWidth(1); // non LAr interactions
-  petotothC4_t480_1050us->Draw("hist");
-  petotineC4_t480_1050us->SetLineWidth(1); // inelastic
-  petotineC4_t480_1050us->Draw("SAME hist");
-  petotcapC4_t480_1050us->SetLineWidth(1);
-  petotcapC4_t480_1050us->Draw("SAME hist");
-  gPad->BuildLegend();
-  c04_pe_tslice2->Write();
-  TCanvas *c04_timing =new TCanvas("c04_timing", "c04_timing", 3000, 1500);
-  c04_timing->cd();
-  offlinetimeothC4->SetLineWidth(1); // non LAr interactions
-  offlinetimeothC4->Draw("hist");
-  offlinetimeineC4->SetLineWidth(1); // inelastic
-  offlinetimeineC4->Draw("SAME hist");
-  offlinetimecapC4->SetLineWidth(1);
-  offlinetimecapC4->Draw("SAME hist");
-  gPad->BuildLegend();
-  c04_timing->Write();
-
-  /*TCanvas *c05 =new TCanvas("c05","c05",3000,1500);
+  c04->Write();
+  TCanvas *c05 =new TCanvas("c05","c05",3000,1500);
   c05->cd();
   captureDriftX->SetLineWidth(1);
   captureDriftX->Draw("hist");
-  c05->Write();*/
+  c05->Write();
 
 }

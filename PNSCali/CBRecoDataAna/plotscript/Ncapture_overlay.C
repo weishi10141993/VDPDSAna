@@ -2,16 +2,57 @@
 
 void Ncapture_overlay()
 {
-  bool useG4 = false;
+  int run_number = 1; // 25036, 25068, 25071, 1 (all runs but should never run 1?)
+  std::cout << " run_number:   " << run_number << std::endl;
+  // Overall sim normalization factor to PNS data SF (cosmic subtracted)
   //double FlukaMCsf = 6.0177; // normalize C3, Feb 2025 MC prod
-  double FlukaMCsf = 5.0511; // normalize C3, Aug 2025 MC prod, 100 PE thres
+  //double FlukaMCsf = 5.0511; // normalize C3, Aug 2025 MC prod, 100 PE thres
   //double FlukaMCsf = 4.8558; // normalize C3, Aug 2025 MC prod, adc+1 all chan
   //double FlukaMCsf = 5.319; // normalize C3, Aug 2025 MC prod, adc-1 all chan
-  int C1Flukacapevts = 3624;
-  int C2Flukacapevts = 825;
-  int C3Flukacapevts = 976;
-  int C4Flukacapevts = 8300;
-  double cosmicDatasf = 0.642; // data-driven, sf is fixed
+
+  // PNS Run by run (cosmic subtracted) Fluka sim normalization factor
+  // all normalize to C3 data
+  double FlukaMCsf;
+  if (run_number == 25036) FlukaMCsf = 2.5379;
+  else if (run_number == 25068) FlukaMCsf = 1.9953;
+  else if (run_number == 25071) FlukaMCsf = 0.5178;
+  else if (run_number == 1) FlukaMCsf = 5.0511; // sim normalization for all 3 pns runs
+
+  // PNS Data after selection
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071.root");
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut.root");
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib.root");
+
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcplus1.root");
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcminus1.root");
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin50PE.root"); // have to use min50PE becaue C4 SF is 0.7
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_min100PE_1200PEsplit_timing.root"); // Oct 29
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_min50PE_max2100PE_1200PEsplit_timing.root"); // Oct 30
+  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_min50PEprescale_min100PEpostscale_max2100PE_1200PEsplit_timing.root"); // Oct 30
+
+  // JINS review //
+  // Feb 13, 2026 JINST review comments
+  // PNS RUN by RUN cosmic sf
+  TFile *file0;
+  double cosmicDatasf;
+  if (run_number == 25036) {
+    file0 = TFile::Open("CBAna_run25036_JINST_Timeslice_PE.root"); // time offset -305us
+    cosmicDatasf = 0.2796; // for run 25036
+  }
+  else if (run_number == 25068) {
+    file0 = TFile::Open("CBAna_run25068_JINST_Timeslice_PE.root"); // time offset -225us
+    cosmicDatasf = 0.2121; // for run 25068
+  }
+  else if (run_number == 25071) {
+    file0 = TFile::Open("CBAna_run25071_JINST_Timeslice_PE.root"); // time offset -305us
+    cosmicDatasf = 0.1503; // for run 25068
+  }
+  else if (run_number == 1) {
+    file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_min50PEprescale_min100PEpostscale_max2100PE_JINSTaddtimingslices.root");
+    // OVERALL cosmic sf for all pns runs
+    cosmicDatasf = 0.642;
+  }
+
 
   TH1 *hpnsdataC4;
   TH1 *hpnsdataC4time;
@@ -56,18 +97,6 @@ void Ncapture_overlay()
   TCanvas *c1 = new TCanvas();
   c1->cd();
 
-  // Data after selection
-  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071.root");
-  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut.root");
-  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib.root");
-
-  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcplus1.root");
-  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcminus1.root");
-  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE.root"); // DO NOT USE
-  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin50PE.root"); // have to use min50PE becaue C4 SF is 0.7
-  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_min100PE_1200PEsplit_timing.root"); // Oct 29
-  //TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_min50PE_max2100PE_1200PEsplit_timing.root"); // Oct 30
-  TFile *file0 = TFile::Open("PNS_runs_25036_25068_25071_minimumcut_min50PEprescale_min100PEpostscale_max2100PE_1200PEsplit_timing.root"); // Oct 30
 
   TTree *myMatchedC4Peaks_pns = (TTree*)file0->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_pns->Draw("C4_matched_PDPeak_PE>>hpnsdataC4(50, 100, 2100)");
@@ -115,10 +144,12 @@ void Ncapture_overlay()
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib.root");
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcplus1.root");
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE_syst_allchadcminus1.root");
-  //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin100PE.root"); // DO NOT USE
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_adc2pepluspde_cali_ajib_perXAtotPEmin50PE.root"); // have to use min50PE becaue C4 SF is 0.7
   //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_min100PE_1200PEsplit_timing.root");
-  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_min50PEprescale_min100PEpostscale_max2100PE_1200PEsplit_timing.root");
+  //TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_min50PEprescale_min100PEpostscale_max2100PE_1200PEsplit_timing.root");
+
+  // JINS review //
+  TFile *file1 = TFile::Open("Cosmic_runs_25004_25066_25078_25084_25086_minimumcut_min50PEprescale_min100PEpostscale_max2100PE_JINSTaddtimingslices.root");  // Feb 13, 2026 JINST review comments
 
   TTree *myMatchedC4Peaks_cosmic = (TTree*)file1->Get("myMatchedC4Peaks");
   myMatchedC4Peaks_cosmic->Draw("C4_matched_PDPeak_PE>>hcosmicdataC4(50, 100, 2100)");
@@ -185,29 +216,39 @@ void Ncapture_overlay()
   //TFile *file3 = TFile::Open("vbox_sep24_pe.root");
   //TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut.root");
   //TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut_calibrated2peak.root");
-  TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut_calibrated2peak_Aug2025AdjustLY.root");
-  TCanvas *c04 = (TCanvas*)file3->Get("c04");
-  TH1F *hinactivebkgC4 = (TH1F*)c04->GetPrimitive("petotothC4");
+  //TFile *file3 = TFile::Open("vbox_sep24_pe_minimumcut_calibrated2peak_Aug2025AdjustLY.root");
+
+  // JINST review comments
+  TFile *file3;
+  if (run_number == 25036 || run_number == 25071 || run_number == 1  ) { // for all runs, it's tricky if timing is involved beacuse of different beam timing offset in runs
+    file3 = TFile::Open("vbox_sep24_sim_JINSTreview_timeoffset305us.root"); // time offset -305us
+  }
+  else if (run_number == 25068) {
+    file3 = TFile::Open("vbox_sep24_sim_JINSTreview_timeoffset225us.root"); // time offset -225us
+  }
+
+  TCanvas *c04_pe = (TCanvas*)file3->Get("c04_pe");
+  TH1F *hinactivebkgC4 = (TH1F*)c04_pe->GetPrimitive("petotothC4");
   hinactivebkgC4->Scale(FlukaMCsf);
-  TH1F *hinelasticbkgC4 = (TH1F*)c04->GetPrimitive("petotineC4");
+  TH1F *hinelasticbkgC4 = (TH1F*)c04_pe->GetPrimitive("petotineC4");
   hinelasticbkgC4->Scale(FlukaMCsf);
 
-  TCanvas *c03 = (TCanvas*)file3->Get("c03");
-  TH1F *hinactivebkgC3 = (TH1F*)c03->GetPrimitive("petotothC3");
+  TCanvas *c03_pe = (TCanvas*)file3->Get("c03_pe");
+  TH1F *hinactivebkgC3 = (TH1F*)c03_pe->GetPrimitive("petotothC3");
   hinactivebkgC3->Scale(FlukaMCsf);
-  TH1F *hinelasticbkgC3 = (TH1F*)c03->GetPrimitive("petotineC3");
+  TH1F *hinelasticbkgC3 = (TH1F*)c03_pe->GetPrimitive("petotineC3");
   hinelasticbkgC3->Scale(FlukaMCsf);
 
-  TCanvas *c02 = (TCanvas*)file3->Get("c02");
-  TH1F *hinactivebkgC2 = (TH1F*)c02->GetPrimitive("petotothC2");
+  TCanvas *c02_pe = (TCanvas*)file3->Get("c02_pe");
+  TH1F *hinactivebkgC2 = (TH1F*)c02_pe->GetPrimitive("petotothC2");
   hinactivebkgC2->Scale(FlukaMCsf);
-  TH1F *hinelasticbkgC2 = (TH1F*)c02->GetPrimitive("petotineC2");
+  TH1F *hinelasticbkgC2 = (TH1F*)c02_pe->GetPrimitive("petotineC2");
   hinelasticbkgC2->Scale(FlukaMCsf);
 
-  TCanvas *c01 = (TCanvas*)file3->Get("c01");
-  TH1F *hinactivebkgC1 = (TH1F*)c01->GetPrimitive("petotothC1");
+  TCanvas *c01_pe = (TCanvas*)file3->Get("c01_pe");
+  TH1F *hinactivebkgC1 = (TH1F*)c01_pe->GetPrimitive("petotothC1");
   hinactivebkgC1->Scale(FlukaMCsf);
-  TH1F *hinelasticbkgC1 = (TH1F*)c01->GetPrimitive("petotineC1");
+  TH1F *hinelasticbkgC1 = (TH1F*)c01_pe->GetPrimitive("petotineC1");
   hinelasticbkgC1->Scale(FlukaMCsf);
 
   TH1 *hsimsignalC4;
@@ -220,54 +261,21 @@ void Ncapture_overlay()
   // XA4 shoule be C3 XA4Det_CaponXA4top_drift5_20_yz_abs_30
   // XA3 shoule be C1 XA3Det_CaponXA3top_drift5_20_yz_abs_30
   // XA2 shoule be C4 XA2Det_CaponXA2top_drift5_20_yz_abs_30
-  if (useG4) {
-    TFile *file2 = TFile::Open("Plots_1M_PNSside_job84035104.root");
-    TTree *myTree = (TTree*)file2->Get("myTree");
-    int C4G4capevts = myTree->GetEntries("XA2Det_CaponXA2top_drift5_20_yz_abs_30 > 0");
-    // tot cap on each module need to scale relative to Fluka’s sim
-    double G4MCcapsfC4 = FlukaMCsf*C4Flukacapevts/C4G4capevts;
-    std::cout << " C4G4cap: " << C4G4capevts << std::endl;
-    myTree->Draw("XA2Det_CaponXA2top_drift5_20_yz_abs_30>>hsimsignalC4(50, 100, 2100)"); // Closest to PNS is ch5, correspond to C4 in CB
-    hsimsignalC4 = (TH1*)gPad->GetPrimitive("hsimsignalC4");
-    hsimsignalC4->Scale(G4MCcapsfC4);
 
-    int C3G4capevts = myTree->GetEntries("XA4Det_CaponXA4top_drift5_20_yz_abs_30 > 0");
-    double G4MCcapsfC3 = FlukaMCsf*C3Flukacapevts/C3G4capevts;
-    std::cout << " C3G4cap: " << C3G4capevts << std::endl;
-    myTree->Draw("XA4Det_CaponXA4top_drift5_20_yz_abs_30>>hsimsignalC3(50, 100, 2100)");
-    hsimsignalC3 = (TH1*)gPad->GetPrimitive("hsimsignalC3");
-    hsimsignalC3->Scale(G4MCcapsfC3);
-
-    int C2G4capevts = myTree->GetEntries("XA5Det_CaponXA5top_drift5_20_yz_abs_30 > 0");
-    double G4MCcapsfC2 = FlukaMCsf*C2Flukacapevts/C2G4capevts;
-    std::cout << " C2G4cap: " << C2G4capevts << std::endl;
-    myTree->Draw("XA5Det_CaponXA5top_drift5_20_yz_abs_30>>hsimsignalC2(50, 100, 2100)"); // Furthest to PNS is ch5, correspond to C2 in CB
-    hsimsignalC2 = (TH1*)gPad->GetPrimitive("hsimsignalC2");
-    hsimsignalC2->Scale(G4MCcapsfC2);
-
-    int C1G4capevts = myTree->GetEntries("XA3Det_CaponXA3top_drift5_20_yz_abs_30 > 0");
-    double G4MCcapsfC1 = FlukaMCsf*C1Flukacapevts/C1G4capevts;
-    std::cout << " C1G4cap: " << C1G4capevts << std::endl;
-    myTree->Draw("XA3Det_CaponXA3top_drift5_20_yz_abs_30>>hsimsignalC1(50, 100, 2100)");
-    hsimsignalC1 = (TH1*)gPad->GetPrimitive("hsimsignalC1");
-    hsimsignalC1->Scale(G4MCcapsfC1);
-  }
-  else{
-    // Fluka sim PNS signal
-    // same fluka scale factor
-    //hsimsignalC4 = (TH1F*)c04->GetPrimitive("petotcapontileC4");
-    hsimsignalC4 = (TH1F*)c04->GetPrimitive("petotcapC4");
-    hsimsignalC4->Scale(FlukaMCsf);
-    //hsimsignalC3 = (TH1F*)c03->GetPrimitive("petotcapontileC3");
-    hsimsignalC3 = (TH1F*)c03->GetPrimitive("petotcapC3");
-    hsimsignalC3->Scale(FlukaMCsf);
-    //hsimsignalC2 = (TH1F*)c02->GetPrimitive("petotcapontileC2");
-    hsimsignalC2 = (TH1F*)c02->GetPrimitive("petotcapC2");
-    hsimsignalC2->Scale(FlukaMCsf);
-    //hsimsignalC1 = (TH1F*)c01->GetPrimitive("petotcapontileC1");
-    hsimsignalC1 = (TH1F*)c01->GetPrimitive("petotcapC1");
-    hsimsignalC1->Scale(FlukaMCsf);
-  }
+  // Fluka sim PNS signal
+  // same fluka scale factor
+  //hsimsignalC4 = (TH1F*)c04_pe->GetPrimitive("petotcapontileC4");
+  hsimsignalC4 = (TH1F*)c04_pe->GetPrimitive("petotcapC4");
+  hsimsignalC4->Scale(FlukaMCsf);
+  //hsimsignalC3 = (TH1F*)c03_pe->GetPrimitive("petotcapontileC3");
+  hsimsignalC3 = (TH1F*)c03_pe->GetPrimitive("petotcapC3");
+  hsimsignalC3->Scale(FlukaMCsf);
+  //hsimsignalC2 = (TH1F*)c02_pe->GetPrimitive("petotcapontileC2");
+  hsimsignalC2 = (TH1F*)c02_pe->GetPrimitive("petotcapC2");
+  hsimsignalC2->Scale(FlukaMCsf);
+  //hsimsignalC1 = (TH1F*)c01_pe->GetPrimitive("petotcapontileC1");
+  hsimsignalC1 = (TH1F*)c01_pe->GetPrimitive("petotcapC1");
+  hsimsignalC1->Scale(FlukaMCsf);
 
 
   TCanvas *can = new TCanvas();
@@ -304,8 +312,7 @@ void Ncapture_overlay()
   legc4->AddEntry(hcosmicdataC4, "Cosmics (data driven)", "f");
   legc4->AddEntry(hinactivebkgC4, "All inactive materials neutron bkg (Fluka)", "f");
   legc4->AddEntry(hinelasticbkgC4, "Active LAr n inelastic (Fluka)", "f");
-  if (useG4) {legc4->AddEntry(hsimsignalC4, "capture signal (G4)", "f");}
-  else {legc4->AddEntry(hsimsignalC4, "Active LAr n capture (Fluka)", "f");}
+  legc4->AddEntry(hsimsignalC4, "Active LAr n capture (Fluka)", "f");
   legc4->AddEntry(hpnsdataC4, "Data", "ep");
   legc4->SetBorderSize(0);
   legc4->Draw();
@@ -347,8 +354,7 @@ void Ncapture_overlay()
   legc4nocosmic->SetTextSize(0.05);
   legc4nocosmic->AddEntry(hinactivebkgC4, "All inactive materials neutron bkg (Fluka)", "f");
   legc4nocosmic->AddEntry(hinelasticbkgC4, "Active LAr n inelastic (Fluka)", "f");
-  if (useG4) {legc4nocosmic->AddEntry(hsimsignalC4, "capture signal (G4)", "f");}
-  else {legc4nocosmic->AddEntry(hsimsignalC4, "Active LAr n capture (Fluka)", "f");}
+  legc4nocosmic->AddEntry(hsimsignalC4, "Active LAr n capture (Fluka)", "f");
   legc4nocosmic->AddEntry(hpnsdataC4, "Data (cosmics subtracted)", "ep");
   legc4nocosmic->SetBorderSize(0);
   legc4nocosmic->Draw();
@@ -469,8 +475,7 @@ void Ncapture_overlay()
   legc3->AddEntry(hcosmicdataC3, "Cosmics (data driven)", "f");
   legc3->AddEntry(hinactivebkgC3, "All inactive materials neutron bkg (Fluka)", "f");
   legc3->AddEntry(hinelasticbkgC3, "Active LAr n inelastic (Fluka)", "f");
-  if (useG4) {legc3->AddEntry(hsimsignalC3, "n capture signal active LAr (G4)", "f");}
-  else {legc3->AddEntry(hsimsignalC3, "Active LAr n capture (Fluka)", "f");}
+  legc3->AddEntry(hsimsignalC3, "Active LAr n capture (Fluka)", "f");
   legc3->AddEntry(hpnsdataC3, "Data", "ep");
   legc3->SetBorderSize(0);
   legc3->Draw();
@@ -512,8 +517,7 @@ void Ncapture_overlay()
   legc3nocosmic->SetTextSize(0.05);
   legc3nocosmic->AddEntry(hinactivebkgC3, "All inactive materials neutron bkg (Fluka)", "f");
   legc3nocosmic->AddEntry(hinelasticbkgC3, "Active LAr n inelastic (Fluka)", "f");
-  if (useG4) {legc3nocosmic->AddEntry(hsimsignalC3, "capture signal (G4)", "f");}
-  else {legc3nocosmic->AddEntry(hsimsignalC3, "Active LAr n capture (Fluka)", "f");}
+  legc3nocosmic->AddEntry(hsimsignalC3, "Active LAr n capture (Fluka)", "f");
   legc3nocosmic->AddEntry(hpnsdataC3, "Data (cosmics subtracted)", "ep");
   legc3nocosmic->SetBorderSize(0);
   legc3nocosmic->Draw();
@@ -633,8 +637,7 @@ void Ncapture_overlay()
   legc2->AddEntry(hcosmicdataC2, "Cosmics (data driven)", "f");
   legc2->AddEntry(hinactivebkgC2, "All inactive materials neutron bkg (Fluka)", "f");
   legc2->AddEntry(hinelasticbkgC2, "Active LAr n inelastic (Fluka)", "f");
-  if (useG4) {legc2->AddEntry(hsimsignalC2, "capture signal (G4)", "f");}
-  else{legc2->AddEntry(hsimsignalC2, "Active LAr n capture (Fluka)", "f");}
+  legc2->AddEntry(hsimsignalC2, "Active LAr n capture (Fluka)", "f");
   legc2->AddEntry(hpnsdataC2, "Data", "ep");
   legc2->SetBorderSize(0);
   legc2->Draw();
@@ -677,8 +680,7 @@ void Ncapture_overlay()
   legc2nocosmic->SetTextSize(0.05);
   legc2nocosmic->AddEntry(hinactivebkgC2, "All inactive materials neutron bkg (Fluka)", "f");
   legc2nocosmic->AddEntry(hinelasticbkgC2, "Active LAr n inelastic (Fluka)", "f");
-  if (useG4) {legc2nocosmic->AddEntry(hsimsignalC2, "capture signal (G4)", "f");}
-  else {legc2nocosmic->AddEntry(hsimsignalC2, "Active LAr n capture (Fluka)", "f");}
+  legc2nocosmic->AddEntry(hsimsignalC2, "Active LAr n capture (Fluka)", "f");
   legc2nocosmic->AddEntry(hpnsdataC2, "Data (cosmics subtracted)", "ep");
   legc2nocosmic->SetBorderSize(0);
   legc2nocosmic->Draw();
@@ -799,8 +801,7 @@ void Ncapture_overlay()
   legc1->AddEntry(hcosmicdataC1, "Cosmics (data driven)", "f");
   legc1->AddEntry(hinactivebkgC1, "All inactive materials neutron bkg (Fluka)", "f");
   legc1->AddEntry(hinelasticbkgC1, "Active LAr n inelastic (Fluka)", "f");
-  if (useG4) {legc1->AddEntry(hsimsignalC1, "capture signal (G4)", "f");}
-  else{legc1->AddEntry(hsimsignalC1, "Active LAr n capture (Fluka)", "f");}
+  legc1->AddEntry(hsimsignalC1, "Active LAr n capture (Fluka)", "f");
   legc1->AddEntry(hpnsdataC1, "Data", "ep");
   legc1->SetBorderSize(0);
   legc1->Draw();
@@ -842,8 +843,7 @@ void Ncapture_overlay()
   legc1nocosmic->SetTextSize(0.05);
   legc1nocosmic->AddEntry(hinactivebkgC1, "All inactive materials neutron bkg (Fluka)", "f");
   legc1nocosmic->AddEntry(hinelasticbkgC1, "Active LAr n inelastic (Fluka)", "f");
-  if (useG4) {legc1nocosmic->AddEntry(hsimsignalC1, "capture signal (G4)", "f");}
-  else {legc1nocosmic->AddEntry(hsimsignalC1, "Active LAr n capture (Fluka)", "f");}
+  legc1nocosmic->AddEntry(hsimsignalC1, "Active LAr n capture (Fluka)", "f");
   legc1nocosmic->AddEntry(hpnsdataC1, "Data (cosmics subtracted)", "ep");
   legc1nocosmic->SetBorderSize(0);
   legc1nocosmic->Draw();

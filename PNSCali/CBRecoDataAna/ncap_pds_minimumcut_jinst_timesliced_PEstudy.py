@@ -168,7 +168,7 @@ if not os.path.exists(out_path):
 print(" \n") # separate output
 
 # Create the ROOT file that will hold the output of this script
-f_out = TFile('{0}/CBAna_Timingstudy.root'.format(out_path), 'RECREATE')
+f_out = TFile('{0}/CBAna_JINST_Timeslice_PE.root'.format(out_path), 'RECREATE')
 
 myTotTriggers = TTree('myTotTriggers', 'myTotTriggers')
 myMatchedC1Peaks = TTree('myMatchedC1Peaks', 'myMatchedC1Peaks')
@@ -180,30 +180,57 @@ my_nTriggers = array('i', [0])
 myTotTriggers.Branch('my_nTriggers', my_nTriggers, 'my_nTriggers/I')
 C1_matched_PDPeak_PE = array('f', [0.0])
 myMatchedC1Peaks.Branch('C1_matched_PDPeak_PE', C1_matched_PDPeak_PE, 'C1_matched_PDPeak_PE/F')
+C1_matched_PDPeak_PE_0_10kpdticks = array('f', [0.0])
+myMatchedC1Peaks.Branch('C1_matched_PDPeak_PE_0_10kpdticks', C1_matched_PDPeak_PE_0_10kpdticks, 'C1_matched_PDPeak_PE_0_10kpdticks/F')
+C1_matched_PDPeak_PE_10k_30kpdticks = array('f', [0.0])
+myMatchedC1Peaks.Branch('C1_matched_PDPeak_PE_10k_30kpdticks', C1_matched_PDPeak_PE_10k_30kpdticks, 'C1_matched_PDPeak_PE_10k_30kpdticks/F')
+C1_matched_PDPeak_PE_30kpluspdticks = array('f', [0.0])
+myMatchedC1Peaks.Branch('C1_matched_PDPeak_PE_30kpluspdticks', C1_matched_PDPeak_PE_30kpluspdticks, 'C1_matched_PDPeak_PE_30kpluspdticks/F')
 C1_matched_PDPeak_Time = array('f', [0.0])
 myMatchedC1Peaks.Branch('C1_matched_PDPeak_Time', C1_matched_PDPeak_Time, 'C1_matched_PDPeak_Time/F')
 C1_matched_PDPeak_Time_100_1200PE = array('f', [0.0])
 myMatchedC1Peaks.Branch('C1_matched_PDPeak_Time_100_1200PE', C1_matched_PDPeak_Time_100_1200PE, 'C1_matched_PDPeak_Time_100_1200PE/F')
 C1_matched_PDPeak_Time_above_1200PE = array('f', [0.0])
 myMatchedC1Peaks.Branch('C1_matched_PDPeak_Time_above_1200PE', C1_matched_PDPeak_Time_above_1200PE, 'C1_matched_PDPeak_Time_above_1200PE/F')
+
 C2_matched_PDPeak_PE = array('f', [0.0])
 myMatchedC2Peaks.Branch('C2_matched_PDPeak_PE', C2_matched_PDPeak_PE, 'C2_matched_PDPeak_PE/F')
+C2_matched_PDPeak_PE_0_10kpdticks = array('f', [0.0])
+myMatchedC2Peaks.Branch('C2_matched_PDPeak_PE_0_10kpdticks', C2_matched_PDPeak_PE_0_10kpdticks, 'C2_matched_PDPeak_PE_0_10kpdticks/F')
+C2_matched_PDPeak_PE_10k_30kpdticks = array('f', [0.0])
+myMatchedC2Peaks.Branch('C2_matched_PDPeak_PE_10k_30kpdticks', C2_matched_PDPeak_PE_10k_30kpdticks, 'C2_matched_PDPeak_PE_10k_30kpdticks/F')
+C2_matched_PDPeak_PE_30kpluspdticks = array('f', [0.0])
+myMatchedC2Peaks.Branch('C2_matched_PDPeak_PE_30kpluspdticks', C2_matched_PDPeak_PE_30kpluspdticks, 'C2_matched_PDPeak_PE_30kpluspdticks/F')
 C2_matched_PDPeak_Time = array('f', [0.0])
 myMatchedC2Peaks.Branch('C2_matched_PDPeak_Time', C2_matched_PDPeak_Time, 'C2_matched_PDPeak_Time/F')
 C2_matched_PDPeak_Time_100_1200PE = array('f', [0.0])
 myMatchedC2Peaks.Branch('C2_matched_PDPeak_Time_100_1200PE', C2_matched_PDPeak_Time_100_1200PE, 'C2_matched_PDPeak_Time_100_1200PE/F')
 C2_matched_PDPeak_Time_above_1200PE = array('f', [0.0])
 myMatchedC2Peaks.Branch('C2_matched_PDPeak_Time_above_1200PE', C2_matched_PDPeak_Time_above_1200PE, 'C2_matched_PDPeak_Time_above_1200PE/F')
+
 C3_matched_PDPeak_PE = array('f', [0.0])
 myMatchedC3Peaks.Branch('C3_matched_PDPeak_PE', C3_matched_PDPeak_PE, 'C3_matched_PDPeak_PE/F')
+C3_matched_PDPeak_PE_0_10kpdticks = array('f', [0.0])
+myMatchedC3Peaks.Branch('C3_matched_PDPeak_PE_0_10kpdticks', C3_matched_PDPeak_PE_0_10kpdticks, 'C3_matched_PDPeak_PE_0_10kpdticks/F')
+C3_matched_PDPeak_PE_10k_30kpdticks = array('f', [0.0])
+myMatchedC3Peaks.Branch('C3_matched_PDPeak_PE_10k_30kpdticks', C3_matched_PDPeak_PE_10k_30kpdticks, 'C3_matched_PDPeak_PE_10k_30kpdticks/F')
+C3_matched_PDPeak_PE_30kpluspdticks = array('f', [0.0])
+myMatchedC3Peaks.Branch('C3_matched_PDPeak_PE_30kpluspdticks', C3_matched_PDPeak_PE_30kpluspdticks, 'C3_matched_PDPeak_PE_30kpluspdticks/F')
 C3_matched_PDPeak_Time = array('f', [0.0])
 myMatchedC3Peaks.Branch('C3_matched_PDPeak_Time', C3_matched_PDPeak_Time, 'C3_matched_PDPeak_Time/F')
 C3_matched_PDPeak_Time_100_1200PE = array('f', [0.0])
 myMatchedC3Peaks.Branch('C3_matched_PDPeak_Time_100_1200PE', C3_matched_PDPeak_Time_100_1200PE, 'C3_matched_PDPeak_Time_100_1200PE/F')
 C3_matched_PDPeak_Time_above_1200PE = array('f', [0.0])
 myMatchedC3Peaks.Branch('C3_matched_PDPeak_Time_above_1200PE', C3_matched_PDPeak_Time_above_1200PE, 'C3_matched_PDPeak_Time_above_1200PE/F')
+
 C4_matched_PDPeak_PE = array('f', [0.0])
 myMatchedC4Peaks.Branch('C4_matched_PDPeak_PE', C4_matched_PDPeak_PE, 'C4_matched_PDPeak_PE/F')
+C4_matched_PDPeak_PE_0_10kpdticks = array('f', [0.0])
+myMatchedC4Peaks.Branch('C4_matched_PDPeak_PE_0_10kpdticks', C4_matched_PDPeak_PE_0_10kpdticks, 'C4_matched_PDPeak_PE_0_10kpdticks/F')
+C4_matched_PDPeak_PE_10k_30kpdticks = array('f', [0.0])
+myMatchedC4Peaks.Branch('C4_matched_PDPeak_PE_10k_30kpdticks', C4_matched_PDPeak_PE_10k_30kpdticks, 'C4_matched_PDPeak_PE_10k_30kpdticks/F')
+C4_matched_PDPeak_PE_30kpluspdticks = array('f', [0.0])
+myMatchedC4Peaks.Branch('C4_matched_PDPeak_PE_30kpluspdticks', C4_matched_PDPeak_PE_30kpluspdticks, 'C4_matched_PDPeak_PE_30kpluspdticks/F')
 C4_matched_PDPeak_Time = array('f', [0.0])
 myMatchedC4Peaks.Branch('C4_matched_PDPeak_Time', C4_matched_PDPeak_Time, 'C4_matched_PDPeak_Time/F')
 C4_matched_PDPeak_Time_100_1200PE = array('f', [0.0])
@@ -280,6 +307,19 @@ for files in sys.argv[1:]:
 
                         # output branch to root file
                         C1_matched_PDPeak_PE[0] = C1_per_evt_large_signal[ipdpeak][0]/pescaleC1
+                        # store time sliced PE
+                        if C1_per_evt_large_signal[ipdpeak][1] >= 0 and C1_per_evt_large_signal[ipdpeak][1] < 10000: # pd ticks
+                            C1_matched_PDPeak_PE_0_10kpdticks[0] = C1_per_evt_large_signal[ipdpeak][0]/pescaleC1
+                            C1_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
+                            C1_matched_PDPeak_PE_30kpluspdticks[0] = -9999
+                        elif C1_per_evt_large_signal[ipdpeak][1] >= 10000 and C1_per_evt_large_signal[ipdpeak][1] < 30000:
+                            C1_matched_PDPeak_PE_0_10kpdticks[0] = -9999
+                            C1_matched_PDPeak_PE_10k_30kpdticks[0] = C1_per_evt_large_signal[ipdpeak][0]/pescaleC1
+                            C1_matched_PDPeak_PE_30kpluspdticks[0] = -9999
+                        elif C1_per_evt_large_signal[ipdpeak][1] >= 30000:
+                            C1_matched_PDPeak_PE_0_10kpdticks[0] = -9999
+                            C1_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
+                            C1_matched_PDPeak_PE_30kpluspdticks[0] = C1_per_evt_large_signal[ipdpeak][0]/pescaleC1
 
                         # store timing
                         if C1_matched_PDPeak_PE[0] >= 100 and C1_matched_PDPeak_PE[0] < 2100:
@@ -323,6 +363,19 @@ for files in sys.argv[1:]:
 
                         # output branch to root file
                         C2_matched_PDPeak_PE[0] = C2_per_evt_large_signal[ipdpeak][0]/pescaleC2
+                        # store time sliced PE
+                        if C2_per_evt_large_signal[ipdpeak][1] >= 0 and C2_per_evt_large_signal[ipdpeak][1] < 10000: # pd ticks
+                            C2_matched_PDPeak_PE_0_10kpdticks[0] = C2_per_evt_large_signal[ipdpeak][0]/pescaleC2
+                            C2_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
+                            C2_matched_PDPeak_PE_30kpluspdticks[0] = -9999
+                        elif C2_per_evt_large_signal[ipdpeak][1] >= 10000 and C2_per_evt_large_signal[ipdpeak][1] < 30000:
+                            C2_matched_PDPeak_PE_0_10kpdticks[0] = -9999
+                            C2_matched_PDPeak_PE_10k_30kpdticks[0] = C2_per_evt_large_signal[ipdpeak][0]/pescaleC2
+                            C2_matched_PDPeak_PE_30kpluspdticks[0] = -9999
+                        elif C2_per_evt_large_signal[ipdpeak][1] >= 30000:
+                            C2_matched_PDPeak_PE_0_10kpdticks[0] = -9999
+                            C2_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
+                            C2_matched_PDPeak_PE_30kpluspdticks[0] = C2_per_evt_large_signal[ipdpeak][0]/pescaleC2
 
                         # store timing
                         if C2_matched_PDPeak_PE[0] >= 100 and C2_matched_PDPeak_PE[0] < 2100:
@@ -368,6 +421,19 @@ for files in sys.argv[1:]:
 
                         # output branch to root file
                         C3_matched_PDPeak_PE[0] = C3_per_evt_large_signal[ipdpeak][0]/pescaleC3
+                        # store time sliced PE
+                        if C3_per_evt_large_signal[ipdpeak][1] >= 0 and C3_per_evt_large_signal[ipdpeak][1] < 10000: # pd ticks
+                            C3_matched_PDPeak_PE_0_10kpdticks[0] = C3_per_evt_large_signal[ipdpeak][0]/pescaleC3
+                            C3_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
+                            C3_matched_PDPeak_PE_30kpluspdticks[0] = -9999
+                        elif C3_per_evt_large_signal[ipdpeak][1] >= 10000 and C3_per_evt_large_signal[ipdpeak][1] < 30000:
+                            C3_matched_PDPeak_PE_0_10kpdticks[0] = -9999
+                            C3_matched_PDPeak_PE_10k_30kpdticks[0] = C3_per_evt_large_signal[ipdpeak][0]/pescaleC3
+                            C3_matched_PDPeak_PE_30kpluspdticks[0] = -9999
+                        elif C3_per_evt_large_signal[ipdpeak][1] >= 30000:
+                            C3_matched_PDPeak_PE_0_10kpdticks[0] = -9999
+                            C3_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
+                            C3_matched_PDPeak_PE_30kpluspdticks[0] = C3_per_evt_large_signal[ipdpeak][0]/pescaleC3
 
                         # store timing
                         if C3_matched_PDPeak_PE[0] >= 100 and C3_matched_PDPeak_PE[0] < 2100:
@@ -411,6 +477,19 @@ for files in sys.argv[1:]:
 
                         # output branch to root file
                         C4_matched_PDPeak_PE[0] = C4_per_evt_large_signal[ipdpeak][0]/pescaleC4
+                        # store time sliced PE
+                        if C4_per_evt_large_signal[ipdpeak][1] >= 0 and C4_per_evt_large_signal[ipdpeak][1] < 10000: # pd ticks
+                            C4_matched_PDPeak_PE_0_10kpdticks[0] = C4_per_evt_large_signal[ipdpeak][0]/pescaleC4
+                            C4_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
+                            C4_matched_PDPeak_PE_30kpluspdticks[0] = -9999
+                        elif C4_per_evt_large_signal[ipdpeak][1] >= 10000 and C4_per_evt_large_signal[ipdpeak][1] < 30000:
+                            C4_matched_PDPeak_PE_0_10kpdticks[0] = -9999
+                            C4_matched_PDPeak_PE_10k_30kpdticks[0] = C4_per_evt_large_signal[ipdpeak][0]/pescaleC4
+                            C4_matched_PDPeak_PE_30kpluspdticks[0] = -9999
+                        elif C4_per_evt_large_signal[ipdpeak][1] >= 30000:
+                            C4_matched_PDPeak_PE_0_10kpdticks[0] = -9999
+                            C4_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
+                            C4_matched_PDPeak_PE_30kpluspdticks[0] = C4_per_evt_large_signal[ipdpeak][0]/pescaleC4
 
                         # store timing
                         if C4_matched_PDPeak_PE[0] >= 100 and C4_matched_PDPeak_PE[0] < 2100:
