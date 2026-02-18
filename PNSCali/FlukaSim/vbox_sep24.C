@@ -264,10 +264,9 @@ rfile->GetObject("cpers_s",h);
     // varies run by run
     // -- check agreement overlay run by run
 	  // -280  is to get exactly 1 and 1/2 bunch as in data
-    // pns run 25036: time offset -305
-    // pns run 25068: time offset -225
-    // pns run 25071: time offset -305
-	  rr2 = rr2*80. -225.;
+    // pns run 25036, 25071: time offset -280 new
+    // pns run 25068: time offset -200
+	  rr2 = rr2*80. -200.;
 	  //now choose a time within the bunch
 	  rr=myran->Rndm() * 60. ;
 	  offset = rr +rr2 ;
@@ -284,10 +283,10 @@ rfile->GetObject("cpers_s",h);
 
     // get tot phe on each tile
     if (ncaptures==1) {// capture signal time
-      petotcapC4->Fill(TotPhe[3]*effi*peakscalefactor);
-      petotcapC1->Fill(TotPhe[2]*effi*peakscalefactor);
-      petotcapC3->Fill(TotPhe[1]*effi*peakscalefactor);
-      petotcapC2->Fill(TotPhe[0]*effi*peakscalefactor);
+      if (earliestPheHittimeTile3>=0 && earliestPheHittimeTile3<1050) petotcapC4->Fill(TotPhe[3]*effi*peakscalefactor);
+      if (earliestPheHittimeTile2>=0 && earliestPheHittimeTile2<1050) petotcapC1->Fill(TotPhe[2]*effi*peakscalefactor);
+      if (earliestPheHittimeTile1>=0 && earliestPheHittimeTile1<1050) petotcapC3->Fill(TotPhe[1]*effi*peakscalefactor);
+      if (earliestPheHittimeTile0>=0 && earliestPheHittimeTile0<1050) petotcapC2->Fill(TotPhe[0]*effi*peakscalefactor);
       //time sliced PE
       if (earliestPheHittimeTile3>=0 && earliestPheHittimeTile3<160) petotcapC4_t0_160us->Fill(TotPhe[3]*effi*peakscalefactor);
       if (earliestPheHittimeTile3>=160 && earliestPheHittimeTile3<480) petotcapC4_t160_480us->Fill(TotPhe[3]*effi*peakscalefactor);
@@ -305,15 +304,16 @@ rfile->GetObject("cpers_s",h);
       if (earliestPheHittimeTile0>=160 && earliestPheHittimeTile0<480) petotcapC2_t160_480us->Fill(TotPhe[0]*effi*peakscalefactor);
       if (earliestPheHittimeTile0>=480 && earliestPheHittimeTile0<1050) petotcapC2_t480_1050us->Fill(TotPhe[0]*effi*peakscalefactor);
 
-      offlinetimecapC4->Fill(earliestPheHittimeTile3); // us
-      offlinetimecapC1->Fill(earliestPheHittimeTile2);
-      offlinetimecapC3->Fill(earliestPheHittimeTile1);
-      offlinetimecapC2->Fill(earliestPheHittimeTile0);
+      // apply same PE range for timing
+      if (TotPhe[3]*effi*peakscalefactor>=100 && TotPhe[3]*effi*peakscalefactor<2100) offlinetimecapC4->Fill(earliestPheHittimeTile3); // us
+      if (TotPhe[2]*effi*peakscalefactor>=100 && TotPhe[2]*effi*peakscalefactor<2100) offlinetimecapC1->Fill(earliestPheHittimeTile2);
+      if (TotPhe[1]*effi*peakscalefactor>=100 && TotPhe[1]*effi*peakscalefactor<2100) offlinetimecapC3->Fill(earliestPheHittimeTile1);
+      if (TotPhe[0]*effi*peakscalefactor>=100 && TotPhe[0]*effi*peakscalefactor<2100) offlinetimecapC2->Fill(earliestPheHittimeTile0);
     } else if ( nnvtx >0 ) {// active Ar inelastic
-      petotineC4->Fill(TotPhe[3]*effi*peakscalefactor);
-      petotineC1->Fill(TotPhe[2]*effi*peakscalefactor);
-      petotineC3->Fill(TotPhe[1]*effi*peakscalefactor);
-      petotineC2->Fill(TotPhe[0]*effi*peakscalefactor);
+      if (earliestPheHittimeTile3>=0 && earliestPheHittimeTile3<1050) petotineC4->Fill(TotPhe[3]*effi*peakscalefactor);
+      if (earliestPheHittimeTile2>=0 && earliestPheHittimeTile2<1050) petotineC1->Fill(TotPhe[2]*effi*peakscalefactor);
+      if (earliestPheHittimeTile1>=0 && earliestPheHittimeTile1<1050) petotineC3->Fill(TotPhe[1]*effi*peakscalefactor);
+      if (earliestPheHittimeTile0>=0 && earliestPheHittimeTile0<1050) petotineC2->Fill(TotPhe[0]*effi*peakscalefactor);
       //time sliced PE
       if (earliestPheHittimeTile3>=0 && earliestPheHittimeTile3<160) petotineC4_t0_160us->Fill(TotPhe[3]*effi*peakscalefactor);
       if (earliestPheHittimeTile3>=160 && earliestPheHittimeTile3<480) petotineC4_t160_480us->Fill(TotPhe[3]*effi*peakscalefactor);
@@ -331,15 +331,15 @@ rfile->GetObject("cpers_s",h);
       if (earliestPheHittimeTile0>=160 && earliestPheHittimeTile0<480) petotineC2_t160_480us->Fill(TotPhe[0]*effi*peakscalefactor);
       if (earliestPheHittimeTile0>=480 && earliestPheHittimeTile0<1050) petotineC2_t480_1050us->Fill(TotPhe[0]*effi*peakscalefactor);
 
-      offlinetimeineC4->Fill(earliestPheHittimeTile3); // us
-      offlinetimeineC1->Fill(earliestPheHittimeTile2);
-      offlinetimeineC3->Fill(earliestPheHittimeTile1);
-      offlinetimeineC2->Fill(earliestPheHittimeTile0);
+      if (TotPhe[3]*effi*peakscalefactor>=100 && TotPhe[3]*effi*peakscalefactor<2100) offlinetimeineC4->Fill(earliestPheHittimeTile3); // us
+      if (TotPhe[2]*effi*peakscalefactor>=100 && TotPhe[2]*effi*peakscalefactor<2100) offlinetimeineC1->Fill(earliestPheHittimeTile2);
+      if (TotPhe[1]*effi*peakscalefactor>=100 && TotPhe[1]*effi*peakscalefactor<2100) offlinetimeineC3->Fill(earliestPheHittimeTile1);
+      if (TotPhe[0]*effi*peakscalefactor>=100 && TotPhe[0]*effi*peakscalefactor<2100) offlinetimeineC2->Fill(earliestPheHittimeTile0);
     } else { // bkg outside active LAr
-      petotothC4->Fill(TotPhe[3]*effi*peakscalefactor);
-      petotothC1->Fill(TotPhe[2]*effi*peakscalefactor);
-      petotothC3->Fill(TotPhe[1]*effi*peakscalefactor);
-      petotothC2->Fill(TotPhe[0]*effi*peakscalefactor);
+      if (earliestPheHittimeTile3>=0 && earliestPheHittimeTile3<1050) petotothC4->Fill(TotPhe[3]*effi*peakscalefactor); // cut 100-2100PE
+      if (earliestPheHittimeTile2>=0 && earliestPheHittimeTile2<1050) petotothC1->Fill(TotPhe[2]*effi*peakscalefactor);
+      if (earliestPheHittimeTile1>=0 && earliestPheHittimeTile1<1050) petotothC3->Fill(TotPhe[1]*effi*peakscalefactor);
+      if (earliestPheHittimeTile0>=0 && earliestPheHittimeTile0<1050) petotothC2->Fill(TotPhe[0]*effi*peakscalefactor);
       //time sliced PE
       if (earliestPheHittimeTile3>=0 && earliestPheHittimeTile3<160) petotothC4_t0_160us->Fill(TotPhe[3]*effi*peakscalefactor);
       if (earliestPheHittimeTile3>=160 && earliestPheHittimeTile3<480) petotothC4_t160_480us->Fill(TotPhe[3]*effi*peakscalefactor);
@@ -357,10 +357,10 @@ rfile->GetObject("cpers_s",h);
       if (earliestPheHittimeTile0>=160 && earliestPheHittimeTile0<480) petotothC2_t160_480us->Fill(TotPhe[0]*effi*peakscalefactor);
       if (earliestPheHittimeTile0>=480 && earliestPheHittimeTile0<1050) petotothC2_t480_1050us->Fill(TotPhe[0]*effi*peakscalefactor);
 
-      offlinetimeothC4->Fill(earliestPheHittimeTile3); // us
-      offlinetimeothC1->Fill(earliestPheHittimeTile2);
-      offlinetimeothC3->Fill(earliestPheHittimeTile1);
-      offlinetimeothC2->Fill(earliestPheHittimeTile0);
+      if (TotPhe[3]*effi*peakscalefactor>=100 && TotPhe[3]*effi*peakscalefactor<2100) offlinetimeothC4->Fill(earliestPheHittimeTile3); // us
+      if (TotPhe[2]*effi*peakscalefactor>=100 && TotPhe[2]*effi*peakscalefactor<2100) offlinetimeothC1->Fill(earliestPheHittimeTile2);
+      if (TotPhe[1]*effi*peakscalefactor>=100 && TotPhe[1]*effi*peakscalefactor<2100) offlinetimeothC3->Fill(earliestPheHittimeTile1);
+      if (TotPhe[0]*effi*peakscalefactor>=100 && TotPhe[0]*effi*peakscalefactor<2100) offlinetimeothC2->Fill(earliestPheHittimeTile0);
     }
 
     /*
@@ -629,7 +629,9 @@ for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
 
   //TFile *f = new TFile("vbox_sep24_pe_minimumcut_calibrated2peak.root", "RECREATE");
   //TFile *f = new TFile("vbox_sep24_pe_minimumcut_calibrated2peak_Aug2025AdjustLY.root", "RECREATE");
-  TFile *f = new TFile("vbox_sep24_sim_JINSTreview_timeoffset225us.root", "RECREATE");
+  //TFile *f = new TFile("vbox_sep24_sim_JINSTreview_timeoffset280us_PEcut4timing.root", "RECREATE");
+  //TFile *f = new TFile("vbox_sep24_sim_JINSTreview_timeoffset200us_PEcut4timing.root", "RECREATE");
+  TFile *f = new TFile("vbox_sep24_sim_JINSTreview_timeoffset200us_PEcut4timing_DAQtcut4PE.root", "RECREATE");
   TCanvas *c01_pe =new TCanvas("c01_pe", "c01_pe", 3000, 1500);
   c01_pe->cd();
   petotothC1->SetLineWidth(1); // non LAr interactions

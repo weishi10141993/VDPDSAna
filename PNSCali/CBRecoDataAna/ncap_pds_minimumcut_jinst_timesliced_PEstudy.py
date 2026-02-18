@@ -306,7 +306,10 @@ for files in sys.argv[1:]:
                         C1_all_evts_large_signals_gaptime.append(C1_per_evt_large_signal[ipdpeak][1] - C1_per_evt_large_signal[ipdpeak-1][1])
 
                         # output branch to root file
-                        C1_matched_PDPeak_PE[0] = C1_per_evt_large_signal[ipdpeak][0]/pescaleC1
+                        if C1_per_evt_large_signal[ipdpeak][1] >= 0 and C1_per_evt_large_signal[ipdpeak][1] < 65625: # DAQ window
+                            C1_matched_PDPeak_PE[0] = C1_per_evt_large_signal[ipdpeak][0]/pescaleC1
+                        else:
+                            C1_matched_PDPeak_PE[0] = -9999
                         # store time sliced PE
                         if C1_per_evt_large_signal[ipdpeak][1] >= 0 and C1_per_evt_large_signal[ipdpeak][1] < 10000: # pd ticks
                             C1_matched_PDPeak_PE_0_10kpdticks[0] = C1_per_evt_large_signal[ipdpeak][0]/pescaleC1
@@ -316,7 +319,7 @@ for files in sys.argv[1:]:
                             C1_matched_PDPeak_PE_0_10kpdticks[0] = -9999
                             C1_matched_PDPeak_PE_10k_30kpdticks[0] = C1_per_evt_large_signal[ipdpeak][0]/pescaleC1
                             C1_matched_PDPeak_PE_30kpluspdticks[0] = -9999
-                        elif C1_per_evt_large_signal[ipdpeak][1] >= 30000:
+                        elif C1_per_evt_large_signal[ipdpeak][1] >= 30000 and C1_per_evt_large_signal[ipdpeak][1] < 65625:
                             C1_matched_PDPeak_PE_0_10kpdticks[0] = -9999
                             C1_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
                             C1_matched_PDPeak_PE_30kpluspdticks[0] = C1_per_evt_large_signal[ipdpeak][0]/pescaleC1
@@ -362,7 +365,10 @@ for files in sys.argv[1:]:
                         C2_all_evts_large_signals_gaptime.append(C2_per_evt_large_signal[ipdpeak][1] - C2_per_evt_large_signal[ipdpeak-1][1])
 
                         # output branch to root file
-                        C2_matched_PDPeak_PE[0] = C2_per_evt_large_signal[ipdpeak][0]/pescaleC2
+                        if C2_per_evt_large_signal[ipdpeak][1] >= 0 and C2_per_evt_large_signal[ipdpeak][1] < 65625: # DAQ window
+                            C2_matched_PDPeak_PE[0] = C2_per_evt_large_signal[ipdpeak][0]/pescaleC2
+                        else:
+                            C2_matched_PDPeak_PE[0] = -9999
                         # store time sliced PE
                         if C2_per_evt_large_signal[ipdpeak][1] >= 0 and C2_per_evt_large_signal[ipdpeak][1] < 10000: # pd ticks
                             C2_matched_PDPeak_PE_0_10kpdticks[0] = C2_per_evt_large_signal[ipdpeak][0]/pescaleC2
@@ -372,7 +378,7 @@ for files in sys.argv[1:]:
                             C2_matched_PDPeak_PE_0_10kpdticks[0] = -9999
                             C2_matched_PDPeak_PE_10k_30kpdticks[0] = C2_per_evt_large_signal[ipdpeak][0]/pescaleC2
                             C2_matched_PDPeak_PE_30kpluspdticks[0] = -9999
-                        elif C2_per_evt_large_signal[ipdpeak][1] >= 30000:
+                        elif C2_per_evt_large_signal[ipdpeak][1] >= 30000 and C2_per_evt_large_signal[ipdpeak][1] < 65625:
                             C2_matched_PDPeak_PE_0_10kpdticks[0] = -9999
                             C2_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
                             C2_matched_PDPeak_PE_30kpluspdticks[0] = C2_per_evt_large_signal[ipdpeak][0]/pescaleC2
@@ -420,7 +426,10 @@ for files in sys.argv[1:]:
                         C3_all_evts_large_signals_gaptime.append(C3_per_evt_large_signal[ipdpeak][1] - C3_per_evt_large_signal[ipdpeak-1][1])
 
                         # output branch to root file
-                        C3_matched_PDPeak_PE[0] = C3_per_evt_large_signal[ipdpeak][0]/pescaleC3
+                        if C3_per_evt_large_signal[ipdpeak][1] >= 0 and C3_per_evt_large_signal[ipdpeak][1] < 65625: # DAQ window
+                            C3_matched_PDPeak_PE[0] = C3_per_evt_large_signal[ipdpeak][0]/pescaleC3
+                        else:
+                            C3_matched_PDPeak_PE[0] = -9999
                         # store time sliced PE
                         if C3_per_evt_large_signal[ipdpeak][1] >= 0 and C3_per_evt_large_signal[ipdpeak][1] < 10000: # pd ticks
                             C3_matched_PDPeak_PE_0_10kpdticks[0] = C3_per_evt_large_signal[ipdpeak][0]/pescaleC3
@@ -430,7 +439,7 @@ for files in sys.argv[1:]:
                             C3_matched_PDPeak_PE_0_10kpdticks[0] = -9999
                             C3_matched_PDPeak_PE_10k_30kpdticks[0] = C3_per_evt_large_signal[ipdpeak][0]/pescaleC3
                             C3_matched_PDPeak_PE_30kpluspdticks[0] = -9999
-                        elif C3_per_evt_large_signal[ipdpeak][1] >= 30000:
+                        elif C3_per_evt_large_signal[ipdpeak][1] >= 30000 and C3_per_evt_large_signal[ipdpeak][1] < 65625:
                             C3_matched_PDPeak_PE_0_10kpdticks[0] = -9999
                             C3_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
                             C3_matched_PDPeak_PE_30kpluspdticks[0] = C3_per_evt_large_signal[ipdpeak][0]/pescaleC3
@@ -476,7 +485,10 @@ for files in sys.argv[1:]:
                         C4_all_evts_large_signals_gaptime.append(C4_per_evt_large_signal[ipdpeak][1] - C4_per_evt_large_signal[ipdpeak-1][1])
 
                         # output branch to root file
-                        C4_matched_PDPeak_PE[0] = C4_per_evt_large_signal[ipdpeak][0]/pescaleC4
+                        if C4_per_evt_large_signal[ipdpeak][1] >= 0 and C4_per_evt_large_signal[ipdpeak][1] < 65625: # DAQ window
+                            C4_matched_PDPeak_PE[0] = C4_per_evt_large_signal[ipdpeak][0]/pescaleC4
+                        else:
+                            C4_matched_PDPeak_PE[0] = -9999
                         # store time sliced PE
                         if C4_per_evt_large_signal[ipdpeak][1] >= 0 and C4_per_evt_large_signal[ipdpeak][1] < 10000: # pd ticks
                             C4_matched_PDPeak_PE_0_10kpdticks[0] = C4_per_evt_large_signal[ipdpeak][0]/pescaleC4
@@ -486,7 +498,7 @@ for files in sys.argv[1:]:
                             C4_matched_PDPeak_PE_0_10kpdticks[0] = -9999
                             C4_matched_PDPeak_PE_10k_30kpdticks[0] = C4_per_evt_large_signal[ipdpeak][0]/pescaleC4
                             C4_matched_PDPeak_PE_30kpluspdticks[0] = -9999
-                        elif C4_per_evt_large_signal[ipdpeak][1] >= 30000:
+                        elif C4_per_evt_large_signal[ipdpeak][1] >= 30000 and C4_per_evt_large_signal[ipdpeak][1] < 65625:
                             C4_matched_PDPeak_PE_0_10kpdticks[0] = -9999
                             C4_matched_PDPeak_PE_10k_30kpdticks[0] = -9999
                             C4_matched_PDPeak_PE_30kpluspdticks[0] = C4_per_evt_large_signal[ipdpeak][0]/pescaleC4
