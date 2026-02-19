@@ -31,7 +31,7 @@ void vbox::Loop()
 //by  b_branchname->GetEntry(ientry); //read only this branch
    if (fheader == 0) return;
    TRandom *myran       = new TRandom();
-   Double_t rr=0.0, rr2=0.0, offset=0.0, timeoff=0.0;
+   Double_t rr=0.0, rr2=0.0, offset=0.0, timeoff=9999;
    Double_t earliestPheHittimeTile0 = 2000, earliestPheHittimeTile1 = 2000, earliestPheHittimeTile2 = 2000, earliestPheHittimeTile3 = 2000;
    Long64_t nentries = fheader->GetEntriesFast();
    int nmaxima=0;
@@ -266,7 +266,7 @@ rfile->GetObject("cpers_s",h);
 	  // -280  is to get exactly 1 and 1/2 bunch as in data
     // pns run 25036, 25071: time offset -280 new
     // pns run 25068: time offset -200
-	  rr2 = rr2*80. -200.;
+	  rr2 = rr2*80. -280.;
 	  //now choose a time within the bunch
 	  rr=myran->Rndm() * 60. ;
 	  offset = rr +rr2 ;
@@ -274,10 +274,12 @@ rfile->GetObject("cpers_s",h);
 	  for (int iph=0; iph<NPheHits; iph++){
       timeoff = PheTime[iph]/1000. +offset; // mus
       // find earliest time >=0 and associated tile PheTile
-      if (timeoff < earliestPheHittimeTile3 && timeoff >=0 && PheTile[iph] == 3) earliestPheHittimeTile3 = timeoff;
-      if (timeoff < earliestPheHittimeTile2 && timeoff >=0 && PheTile[iph] == 2) earliestPheHittimeTile2 = timeoff;
-      if (timeoff < earliestPheHittimeTile1 && timeoff >=0 && PheTile[iph] == 1) earliestPheHittimeTile1 = timeoff;
-      if (timeoff < earliestPheHittimeTile0 && timeoff >=0 && PheTile[iph] == 0) earliestPheHittimeTile0 = timeoff;
+      // Here shouldn't require timeoff>0 as that selects a fake earliest time (true earliest time <0)
+      if (timeoff < earliestPheHittimeTile3 && PheTile[iph] == 3) earliestPheHittimeTile3 = timeoff;
+      if (timeoff < earliestPheHittimeTile2 && PheTile[iph] == 2) earliestPheHittimeTile2 = timeoff;
+      if (timeoff < earliestPheHittimeTile1 && PheTile[iph] == 1) earliestPheHittimeTile1 = timeoff;
+      if (timeoff < earliestPheHittimeTile0 && PheTile[iph] == 0) earliestPheHittimeTile0 = timeoff;
+      //if (timeoff < earliestPheHittimeTile0 && timeoff >=0 && PheTile[iph] == 0) earliestPheHittimeTile0 = timeoff;
 
     }// end loop
 
@@ -631,7 +633,7 @@ for (int ix=1;ix<=nx;ix++) nintlar->GetXaxis()->SetBinLabel(ix,regnames[ix-1]);
   //TFile *f = new TFile("vbox_sep24_pe_minimumcut_calibrated2peak_Aug2025AdjustLY.root", "RECREATE");
   //TFile *f = new TFile("vbox_sep24_sim_JINSTreview_timeoffset280us_PEcut4timing.root", "RECREATE");
   //TFile *f = new TFile("vbox_sep24_sim_JINSTreview_timeoffset200us_PEcut4timing.root", "RECREATE");
-  TFile *f = new TFile("vbox_sep24_sim_JINSTreview_timeoffset200us_PEcut4timing_DAQtcut4PE.root", "RECREATE");
+  TFile *f = new TFile("vbox_sep24_sim_JINSTreview_timeoffset280us_PEcut4timing_DAQtcut4PE.root", "RECREATE");
   TCanvas *c01_pe =new TCanvas("c01_pe", "c01_pe", 3000, 1500);
   c01_pe->cd();
   petotothC1->SetLineWidth(1); // non LAr interactions

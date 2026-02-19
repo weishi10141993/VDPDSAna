@@ -10,12 +10,12 @@ void Ncapture_overlay()
   // Overall sim normalization factor to PNS data SF (cosmic subtracted)
   double FlukaMCsf = 0.0, FlukaMCsfoffset200us = 0.0, FlukaMCsfoffset280us  = 0.0;
   //double FlukaMCsf = 5.0511; // normalize C3, Aug 2025 MC prod, 100 PE thres
-  if (run_number == 25036) FlukaMCsf = 3.5197;
-  else if (run_number == 25068) FlukaMCsf = 2.4439;
-  else if (run_number == 25071) FlukaMCsf = 0.7182;
+  if (run_number == 25036) FlukaMCsf = 3.6551;
+  else if (run_number == 25068) FlukaMCsf = 2.5154;
+  else if (run_number == 25071) FlukaMCsf = 0.7458;
   else if (run_number == 1) {
-    FlukaMCsfoffset280us = 4.2379;
-    FlukaMCsfoffset200us = 2.4439;
+    FlukaMCsfoffset280us = 4.4009;
+    FlukaMCsfoffset200us = 2.5154;
   }
 
   // PNS Data after selection
@@ -1082,10 +1082,10 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC4:    " << hsimsignalC4->Integral(1, 50)    << std::endl;
   std::cout << " hpnsdataC4:      " << hpnsdataC4->Integral(1, 50)     << std::endl;
   std::cout << " C4 data-cosmic PE total entries:   " << hpnsdataC4->Integral(1, 50) - hcosmicdataC4->Integral(1, 50) << std::endl;
-  TLegend *legc4 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc4 = new TLegend(0.24,0.67,0.7,0.89);
   legc4->SetTextSize(0.05);
   legc4->AddEntry(hcosmicdataC4, "Cosmics (data driven)", "f");
-  legc4->AddEntry(hinactivebkgC4, "All inactive materials neutron bkg (Fluka)", "f");
+  legc4->AddEntry(hinactivebkgC4, "All inactive materials n bkg (Fluka)", "f");
   legc4->AddEntry(hinelasticbkgC4, "Active LAr n inelastic (Fluka)", "f");
   legc4->AddEntry(hsimsignalC4, "Active LAr n capture (Fluka)", "f");
   legc4->AddEntry(hpnsdataC4, "Data", "ep");
@@ -1121,9 +1121,9 @@ void Ncapture_overlay()
   hpnsdataC4->SetMarkerSize(0.6);
   hpnsdataC4->Draw("E1 X0 SAME");
   std::cout << " C4 data-cosmic mean PE:   " << hpnsdataC4->GetMean() << std::endl;
-  TLegend *legc4nocosmic = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc4nocosmic = new TLegend(0.24,0.67,0.7,0.89);
   legc4nocosmic->SetTextSize(0.05);
-  legc4nocosmic->AddEntry(hinactivebkgC4, "All inactive materials neutron bkg (Fluka)", "f");
+  legc4nocosmic->AddEntry(hinactivebkgC4, "All inactive materials n bkg (Fluka)", "f");
   legc4nocosmic->AddEntry(hinelasticbkgC4, "Active LAr n inelastic (Fluka)", "f");
   legc4nocosmic->AddEntry(hsimsignalC4, "Active LAr n capture (Fluka)", "f");
   legc4nocosmic->AddEntry(hpnsdataC4, "Data (cosmics subtracted)", "ep");
@@ -1159,10 +1159,10 @@ void Ncapture_overlay()
   std::cout << " hpnsdataC4:      " << hpnsdataC4petimeslice0->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 0 *** " << std::endl;
 
-  TLegend *legc4tslice0 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc4tslice0 = new TLegend(0.24,0.67,0.7,0.89);
   legc4tslice0->SetTextSize(0.05);
   legc4tslice0->AddEntry(hcosmicdataC4petimeslice0, "Cosmics (data driven)", "f");
-  legc4tslice0->AddEntry(hinactivebkgC4_pe_tslice0, "All inactive materials neutron bkg (Fluka)", "f");
+  legc4tslice0->AddEntry(hinactivebkgC4_pe_tslice0, "All inactive materials n bkg (Fluka)", "f");
   legc4tslice0->AddEntry(hinelasticbkgC4_pe_tslice0, "Active LAr n inelastic (Fluka)", "f");
   legc4tslice0->AddEntry(hsimsignalC4_pe_tslice0, "Active LAr n capture (Fluka)", "f");
   legc4tslice0->AddEntry(hpnsdataC4petimeslice0, "Data", "ep");
@@ -1197,9 +1197,9 @@ void Ncapture_overlay()
   hpnsdataC4petimeslice0->SetMarkerStyle(20);
   hpnsdataC4petimeslice0->SetMarkerSize(0.6);
   hpnsdataC4petimeslice0->Draw("E1 X0 SAME");
-  TLegend *legc4nocosmictslice0 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc4nocosmictslice0 = new TLegend(0.24,0.67,0.7,0.89);
   legc4nocosmictslice0->SetTextSize(0.05);
-  legc4nocosmictslice0->AddEntry(hinactivebkgC4_pe_tslice0, "All inactive materials neutron bkg (Fluka)", "f");
+  legc4nocosmictslice0->AddEntry(hinactivebkgC4_pe_tslice0, "All inactive materials n bkg (Fluka)", "f");
   legc4nocosmictslice0->AddEntry(hinelasticbkgC4_pe_tslice0, "Active LAr n inelastic (Fluka)", "f");
   legc4nocosmictslice0->AddEntry(hsimsignalC4_pe_tslice0, "Active LAr n capture (Fluka)", "f");
   legc4nocosmictslice0->AddEntry(hpnsdataC4petimeslice0, "Data (cosmics subtracted)", "ep");
@@ -1236,10 +1236,10 @@ void Ncapture_overlay()
   std::cout << " hpnsdataC4:      " << hpnsdataC4petimeslice1->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 1 *** " << std::endl;
 
-  TLegend *legc4tslice1 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc4tslice1 = new TLegend(0.24,0.67,0.7,0.89);
   legc4tslice1->SetTextSize(0.05);
   legc4tslice1->AddEntry(hcosmicdataC4petimeslice1, "Cosmics (data driven)", "f");
-  legc4tslice1->AddEntry(hinactivebkgC4_pe_tslice1, "All inactive materials neutron bkg (Fluka)", "f");
+  legc4tslice1->AddEntry(hinactivebkgC4_pe_tslice1, "All inactive materials n bkg (Fluka)", "f");
   legc4tslice1->AddEntry(hinelasticbkgC4_pe_tslice1, "Active LAr n inelastic (Fluka)", "f");
   legc4tslice1->AddEntry(hsimsignalC4_pe_tslice1, "Active LAr n capture (Fluka)", "f");
   legc4tslice1->AddEntry(hpnsdataC4petimeslice1, "Data", "ep");
@@ -1274,9 +1274,9 @@ void Ncapture_overlay()
   hpnsdataC4petimeslice1->SetMarkerStyle(20);
   hpnsdataC4petimeslice1->SetMarkerSize(0.6);
   hpnsdataC4petimeslice1->Draw("E1 X0 SAME");
-  TLegend *legc4nocosmictslice1 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc4nocosmictslice1 = new TLegend(0.24,0.67,0.7,0.89);
   legc4nocosmictslice1->SetTextSize(0.05);
-  legc4nocosmictslice1->AddEntry(hinactivebkgC4_pe_tslice1, "All inactive materials neutron bkg (Fluka)", "f");
+  legc4nocosmictslice1->AddEntry(hinactivebkgC4_pe_tslice1, "All inactive materials n bkg (Fluka)", "f");
   legc4nocosmictslice1->AddEntry(hinelasticbkgC4_pe_tslice1, "Active LAr n inelastic (Fluka)", "f");
   legc4nocosmictslice1->AddEntry(hsimsignalC4_pe_tslice1, "Active LAr n capture (Fluka)", "f");
   legc4nocosmictslice1->AddEntry(hpnsdataC4petimeslice1, "Data (cosmics subtracted)", "ep");
@@ -1313,10 +1313,10 @@ void Ncapture_overlay()
   std::cout << " hpnsdataC4:      " << hpnsdataC4petimeslice2->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 2 *** " << std::endl;
 
-  TLegend *legc4tslice2 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc4tslice2 = new TLegend(0.24,0.67,0.7,0.89);
   legc4tslice2->SetTextSize(0.05);
   legc4tslice2->AddEntry(hcosmicdataC4petimeslice2, "Cosmics (data driven)", "f");
-  legc4tslice2->AddEntry(hinactivebkgC4_pe_tslice2, "All inactive materials neutron bkg (Fluka)", "f");
+  legc4tslice2->AddEntry(hinactivebkgC4_pe_tslice2, "All inactive materials n bkg (Fluka)", "f");
   legc4tslice2->AddEntry(hinelasticbkgC4_pe_tslice2, "Active LAr n inelastic (Fluka)", "f");
   legc4tslice2->AddEntry(hsimsignalC4_pe_tslice2, "Active LAr n capture (Fluka)", "f");
   legc4tslice2->AddEntry(hpnsdataC4petimeslice2, "Data", "ep");
@@ -1351,9 +1351,9 @@ void Ncapture_overlay()
   hpnsdataC4petimeslice2->SetMarkerStyle(20);
   hpnsdataC4petimeslice2->SetMarkerSize(0.6);
   hpnsdataC4petimeslice2->Draw("E1 X0 SAME");
-  TLegend *legc4nocosmictslice2 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc4nocosmictslice2 = new TLegend(0.24,0.67,0.7,0.89);
   legc4nocosmictslice2->SetTextSize(0.05);
-  legc4nocosmictslice2->AddEntry(hinactivebkgC4_pe_tslice2, "All inactive materials neutron bkg (Fluka)", "f");
+  legc4nocosmictslice2->AddEntry(hinactivebkgC4_pe_tslice2, "All inactive materials n bkg (Fluka)", "f");
   legc4nocosmictslice2->AddEntry(hinelasticbkgC4_pe_tslice2, "Active LAr n inelastic (Fluka)", "f");
   legc4nocosmictslice2->AddEntry(hsimsignalC4_pe_tslice2, "Active LAr n capture (Fluka)", "f");
   legc4nocosmictslice2->AddEntry(hpnsdataC4petimeslice2, "Data (cosmics subtracted)", "ep");
@@ -1471,9 +1471,9 @@ void Ncapture_overlay()
   hpnsdataC4time_new->SetMarkerStyle(20);
   hpnsdataC4time_new->SetMarkerSize(0.6);
   hpnsdataC4time_new->Draw("E1 X0 SAME");
-  TLegend *legc4nocosmictiming = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc4nocosmictiming = new TLegend(0.24,0.67,0.7,0.89);
   legc4nocosmictiming->SetTextSize(0.05);
-  legc4nocosmictiming->AddEntry(hinactivebkgC4time, "All inactive materials neutron bkg (Fluka)", "f");
+  legc4nocosmictiming->AddEntry(hinactivebkgC4time, "All inactive materials n bkg (Fluka)", "f");
   legc4nocosmictiming->AddEntry(hinelasticbkgC4time, "Active LAr n inelastic (Fluka)", "f");
   legc4nocosmictiming->AddEntry(hsimsignalC4time, "Active LAr n capture (Fluka)", "f");
   legc4nocosmictiming->AddEntry(hpnsdataC4time_new, "Data (cosmics subtracted)", "ep");
@@ -1509,10 +1509,10 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC3:    " << hsimsignalC3->Integral(1, 50)    << std::endl;
   std::cout << " hpnsdataC3:      " << hpnsdataC3->Integral(1, 50)      << std::endl;
   std::cout << " C3 data-cosmic PE total entries:   " << hpnsdataC3->Integral(1, 50) - hcosmicdataC3->Integral(1, 50) << std::endl;
-  TLegend *legc3 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc3 = new TLegend(0.24,0.67,0.7,0.89);
   legc3->SetTextSize(0.05);
   legc3->AddEntry(hcosmicdataC3, "Cosmics (data driven)", "f");
-  legc3->AddEntry(hinactivebkgC3, "All inactive materials neutron bkg (Fluka)", "f");
+  legc3->AddEntry(hinactivebkgC3, "All inactive materials n bkg (Fluka)", "f");
   legc3->AddEntry(hinelasticbkgC3, "Active LAr n inelastic (Fluka)", "f");
   legc3->AddEntry(hsimsignalC3, "Active LAr n capture (Fluka)", "f");
   legc3->AddEntry(hpnsdataC3, "Data", "ep");
@@ -1548,9 +1548,9 @@ void Ncapture_overlay()
   hpnsdataC3->SetMarkerSize(0.6);
   hpnsdataC3->Draw("E1 X0 SAME");
   std::cout << " C3 data-cosmic mean PE:   " << hpnsdataC3->GetMean() << std::endl;
-  TLegend *legc3nocosmic = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc3nocosmic = new TLegend(0.24,0.67,0.7,0.89);
   legc3nocosmic->SetTextSize(0.05);
-  legc3nocosmic->AddEntry(hinactivebkgC3, "All inactive materials neutron bkg (Fluka)", "f");
+  legc3nocosmic->AddEntry(hinactivebkgC3, "All inactive materials n bkg (Fluka)", "f");
   legc3nocosmic->AddEntry(hinelasticbkgC3, "Active LAr n inelastic (Fluka)", "f");
   legc3nocosmic->AddEntry(hsimsignalC3, "Active LAr n capture (Fluka)", "f");
   legc3nocosmic->AddEntry(hpnsdataC3, "Data (cosmics subtracted)", "ep");
@@ -1586,10 +1586,10 @@ void Ncapture_overlay()
   std::cout << " hpnsdataC3:      " << hpnsdataC3petimeslice0->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 0 *** " << std::endl;
 
-  TLegend *legc3tslice0 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc3tslice0 = new TLegend(0.24,0.67,0.7,0.89);
   legc3tslice0->SetTextSize(0.05);
   legc3tslice0->AddEntry(hcosmicdataC3petimeslice0, "Cosmics (data driven)", "f");
-  legc3tslice0->AddEntry(hinactivebkgC3_pe_tslice0, "All inactive materials neutron bkg (Fluka)", "f");
+  legc3tslice0->AddEntry(hinactivebkgC3_pe_tslice0, "All inactive materials n bkg (Fluka)", "f");
   legc3tslice0->AddEntry(hinelasticbkgC3_pe_tslice0, "Active LAr n inelastic (Fluka)", "f");
   legc3tslice0->AddEntry(hsimsignalC3_pe_tslice0, "Active LAr n capture (Fluka)", "f");
   legc3tslice0->AddEntry(hpnsdataC3petimeslice0, "Data", "ep");
@@ -1624,9 +1624,9 @@ void Ncapture_overlay()
   hpnsdataC3petimeslice0->SetMarkerStyle(20);
   hpnsdataC3petimeslice0->SetMarkerSize(0.6);
   hpnsdataC3petimeslice0->Draw("E1 X0 SAME");
-  TLegend *legc3nocosmictslice0 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc3nocosmictslice0 = new TLegend(0.24,0.67,0.7,0.89);
   legc3nocosmictslice0->SetTextSize(0.05);
-  legc3nocosmictslice0->AddEntry(hinactivebkgC3_pe_tslice0, "All inactive materials neutron bkg (Fluka)", "f");
+  legc3nocosmictslice0->AddEntry(hinactivebkgC3_pe_tslice0, "All inactive materials n bkg (Fluka)", "f");
   legc3nocosmictslice0->AddEntry(hinelasticbkgC3_pe_tslice0, "Active LAr n inelastic (Fluka)", "f");
   legc3nocosmictslice0->AddEntry(hsimsignalC3_pe_tslice0, "Active LAr n capture (Fluka)", "f");
   legc3nocosmictslice0->AddEntry(hpnsdataC3petimeslice0, "Data (cosmics subtracted)", "ep");
@@ -1662,10 +1662,10 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC3:    " << hsimsignalC3_pe_tslice1->Integral(1, 50)    << std::endl;
   std::cout << " hpnsdataC3:      " << hpnsdataC3petimeslice1->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 1 *** " << std::endl;
-  TLegend *legc3tslice1 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc3tslice1 = new TLegend(0.24,0.67,0.7,0.89);
   legc3tslice1->SetTextSize(0.05);
   legc3tslice1->AddEntry(hcosmicdataC3petimeslice1, "Cosmics (data driven)", "f");
-  legc3tslice1->AddEntry(hinactivebkgC3_pe_tslice1, "All inactive materials neutron bkg (Fluka)", "f");
+  legc3tslice1->AddEntry(hinactivebkgC3_pe_tslice1, "All inactive materials n bkg (Fluka)", "f");
   legc3tslice1->AddEntry(hinelasticbkgC3_pe_tslice1, "Active LAr n inelastic (Fluka)", "f");
   legc3tslice1->AddEntry(hsimsignalC3_pe_tslice1, "Active LAr n capture (Fluka)", "f");
   legc3tslice1->AddEntry(hpnsdataC3petimeslice1, "Data", "ep");
@@ -1700,9 +1700,9 @@ void Ncapture_overlay()
   hpnsdataC3petimeslice1->SetMarkerStyle(20);
   hpnsdataC3petimeslice1->SetMarkerSize(0.6);
   hpnsdataC3petimeslice1->Draw("E1 X0 SAME");
-  TLegend *legc3nocosmictslice1 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc3nocosmictslice1 = new TLegend(0.24,0.67,0.7,0.89);
   legc3nocosmictslice1->SetTextSize(0.05);
-  legc3nocosmictslice1->AddEntry(hinactivebkgC3_pe_tslice1, "All inactive materials neutron bkg (Fluka)", "f");
+  legc3nocosmictslice1->AddEntry(hinactivebkgC3_pe_tslice1, "All inactive materials n bkg (Fluka)", "f");
   legc3nocosmictslice1->AddEntry(hinelasticbkgC3_pe_tslice1, "Active LAr n inelastic (Fluka)", "f");
   legc3nocosmictslice1->AddEntry(hsimsignalC3_pe_tslice1, "Active LAr n capture (Fluka)", "f");
   legc3nocosmictslice1->AddEntry(hpnsdataC3petimeslice1, "Data (cosmics subtracted)", "ep");
@@ -1738,10 +1738,10 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC3:    " << hsimsignalC3_pe_tslice2->Integral(1, 50)    << std::endl;
   std::cout << " hpnsdataC3:      " << hpnsdataC3petimeslice2->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 2 *** " << std::endl;
-  TLegend *legc3tslice2 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc3tslice2 = new TLegend(0.24,0.67,0.7,0.89);
   legc3tslice2->SetTextSize(0.05);
   legc3tslice2->AddEntry(hcosmicdataC3petimeslice2, "Cosmics (data driven)", "f");
-  legc3tslice2->AddEntry(hinactivebkgC3_pe_tslice2, "All inactive materials neutron bkg (Fluka)", "f");
+  legc3tslice2->AddEntry(hinactivebkgC3_pe_tslice2, "All inactive materials n bkg (Fluka)", "f");
   legc3tslice2->AddEntry(hinelasticbkgC3_pe_tslice2, "Active LAr n inelastic (Fluka)", "f");
   legc3tslice2->AddEntry(hsimsignalC3_pe_tslice2, "Active LAr n capture (Fluka)", "f");
   legc3tslice2->AddEntry(hpnsdataC3petimeslice2, "Data", "ep");
@@ -1776,9 +1776,9 @@ void Ncapture_overlay()
   hpnsdataC3petimeslice2->SetMarkerStyle(20);
   hpnsdataC3petimeslice2->SetMarkerSize(0.6);
   hpnsdataC3petimeslice2->Draw("E1 X0 SAME");
-  TLegend *legc3nocosmictslice2 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc3nocosmictslice2 = new TLegend(0.24,0.67,0.7,0.89);
   legc3nocosmictslice2->SetTextSize(0.05);
-  legc3nocosmictslice2->AddEntry(hinactivebkgC3_pe_tslice2, "All inactive materials neutron bkg (Fluka)", "f");
+  legc3nocosmictslice2->AddEntry(hinactivebkgC3_pe_tslice2, "All inactive materials n bkg (Fluka)", "f");
   legc3nocosmictslice2->AddEntry(hinelasticbkgC3_pe_tslice2, "Active LAr n inelastic (Fluka)", "f");
   legc3nocosmictslice2->AddEntry(hsimsignalC3_pe_tslice2, "Active LAr n capture (Fluka)", "f");
   legc3nocosmictslice2->AddEntry(hpnsdataC3petimeslice2, "Data (cosmics subtracted)", "ep");
@@ -1897,9 +1897,9 @@ void Ncapture_overlay()
   hpnsdataC3time_new->SetMarkerStyle(20);
   hpnsdataC3time_new->SetMarkerSize(0.6);
   hpnsdataC3time_new->Draw("E1 X0 SAME");
-  TLegend *legc3nocosmictiming = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc3nocosmictiming = new TLegend(0.24,0.67,0.7,0.89);
   legc3nocosmictiming->SetTextSize(0.05);
-  legc3nocosmictiming->AddEntry(hinactivebkgC3time, "All inactive materials neutron bkg (Fluka)", "f");
+  legc3nocosmictiming->AddEntry(hinactivebkgC3time, "All inactive materials n bkg (Fluka)", "f");
   legc3nocosmictiming->AddEntry(hinelasticbkgC3time, "Active LAr n inelastic (Fluka)", "f");
   legc3nocosmictiming->AddEntry(hsimsignalC3time, "Active LAr n capture (Fluka)", "f");
   legc3nocosmictiming->AddEntry(hpnsdataC3time_new, "Data (cosmics subtracted)", "ep");
@@ -1935,10 +1935,10 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC2:    " << hsimsignalC2->Integral(1, 50)    << std::endl;
   std::cout << " hpnsdataC2:      " << hpnsdataC2->Integral(1, 50)      << std::endl;
   std::cout << " C2 data-cosmic PE total entries:   " << hpnsdataC2->Integral(1, 50) - hcosmicdataC2->Integral(1, 50) << std::endl;
-  TLegend *legc2 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc2 = new TLegend(0.24,0.67,0.7,0.89);
   legc2->SetTextSize(0.05);
   legc2->AddEntry(hcosmicdataC2, "Cosmics (data driven)", "f");
-  legc2->AddEntry(hinactivebkgC2, "All inactive materials neutron bkg (Fluka)", "f");
+  legc2->AddEntry(hinactivebkgC2, "All inactive materials n bkg (Fluka)", "f");
   legc2->AddEntry(hinelasticbkgC2, "Active LAr n inelastic (Fluka)", "f");
   legc2->AddEntry(hsimsignalC2, "Active LAr n capture (Fluka)", "f");
   legc2->AddEntry(hpnsdataC2, "Data", "ep");
@@ -1979,9 +1979,9 @@ void Ncapture_overlay()
 
   std::cout << " C2 data-cosmic mean PE:   " << hpnsdataC2->GetMean() << std::endl;
 
-  TLegend *legc2nocosmic = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc2nocosmic = new TLegend(0.24,0.67,0.7,0.89);
   legc2nocosmic->SetTextSize(0.05);
-  legc2nocosmic->AddEntry(hinactivebkgC2, "All inactive materials neutron bkg (Fluka)", "f");
+  legc2nocosmic->AddEntry(hinactivebkgC2, "All inactive materials n bkg (Fluka)", "f");
   legc2nocosmic->AddEntry(hinelasticbkgC2, "Active LAr n inelastic (Fluka)", "f");
   legc2nocosmic->AddEntry(hsimsignalC2, "Active LAr n capture (Fluka)", "f");
   legc2nocosmic->AddEntry(hpnsdataC2, "Data (cosmics subtracted)", "ep");
@@ -2018,10 +2018,10 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC2:    " << hsimsignalC2_pe_tslice0->Integral(1, 50)    << std::endl;
   std::cout << " hpnsdataC2:      " << hpnsdataC2petimeslice0->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 0 *** " << std::endl;
-  TLegend *legc2tslice0 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc2tslice0 = new TLegend(0.24,0.67,0.7,0.89);
   legc2tslice0->SetTextSize(0.05);
   legc2tslice0->AddEntry(hcosmicdataC2petimeslice0, "Cosmics (data driven)", "f");
-  legc2tslice0->AddEntry(hinactivebkgC2_pe_tslice0, "All inactive materials neutron bkg (Fluka)", "f");
+  legc2tslice0->AddEntry(hinactivebkgC2_pe_tslice0, "All inactive materials n bkg (Fluka)", "f");
   legc2tslice0->AddEntry(hinelasticbkgC2_pe_tslice0, "Active LAr n inelastic (Fluka)", "f");
   legc2tslice0->AddEntry(hsimsignalC2_pe_tslice0, "Active LAr n capture (Fluka)", "f");
   legc2tslice0->AddEntry(hpnsdataC2petimeslice0, "Data", "ep");
@@ -2056,9 +2056,9 @@ void Ncapture_overlay()
   hpnsdataC2petimeslice0->SetMarkerStyle(20);
   hpnsdataC2petimeslice0->SetMarkerSize(0.6);
   hpnsdataC2petimeslice0->Draw("E1 X0 SAME");
-  TLegend *legc2nocosmictslice0 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc2nocosmictslice0 = new TLegend(0.24,0.67,0.7,0.89);
   legc2nocosmictslice0->SetTextSize(0.05);
-  legc2nocosmictslice0->AddEntry(hinactivebkgC2_pe_tslice0, "All inactive materials neutron bkg (Fluka)", "f");
+  legc2nocosmictslice0->AddEntry(hinactivebkgC2_pe_tslice0, "All inactive materials n bkg (Fluka)", "f");
   legc2nocosmictslice0->AddEntry(hinelasticbkgC2_pe_tslice0, "Active LAr n inelastic (Fluka)", "f");
   legc2nocosmictslice0->AddEntry(hsimsignalC2_pe_tslice0, "Active LAr n capture (Fluka)", "f");
   legc2nocosmictslice0->AddEntry(hpnsdataC2petimeslice0, "Data (cosmics subtracted)", "ep");
@@ -2094,10 +2094,10 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC2:    " << hsimsignalC2_pe_tslice1->Integral(1, 50)    << std::endl;
   std::cout << " hpnsdataC2:      " << hpnsdataC2petimeslice1->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 1 *** " << std::endl;
-  TLegend *legc2tslice1 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc2tslice1 = new TLegend(0.24,0.67,0.7,0.89);
   legc2tslice1->SetTextSize(0.05);
   legc2tslice1->AddEntry(hcosmicdataC2petimeslice1, "Cosmics (data driven)", "f");
-  legc2tslice1->AddEntry(hinactivebkgC2_pe_tslice1, "All inactive materials neutron bkg (Fluka)", "f");
+  legc2tslice1->AddEntry(hinactivebkgC2_pe_tslice1, "All inactive materials n bkg (Fluka)", "f");
   legc2tslice1->AddEntry(hinelasticbkgC2_pe_tslice1, "Active LAr n inelastic (Fluka)", "f");
   legc2tslice1->AddEntry(hsimsignalC2_pe_tslice1, "Active LAr n capture (Fluka)", "f");
   legc2tslice1->AddEntry(hpnsdataC2petimeslice1, "Data", "ep");
@@ -2132,9 +2132,9 @@ void Ncapture_overlay()
   hpnsdataC2petimeslice1->SetMarkerStyle(20);
   hpnsdataC2petimeslice1->SetMarkerSize(0.6);
   hpnsdataC2petimeslice1->Draw("E1 X0 SAME");
-  TLegend *legc2nocosmictslice1 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc2nocosmictslice1 = new TLegend(0.24,0.67,0.7,0.89);
   legc2nocosmictslice1->SetTextSize(0.05);
-  legc2nocosmictslice1->AddEntry(hinactivebkgC2_pe_tslice1, "All inactive materials neutron bkg (Fluka)", "f");
+  legc2nocosmictslice1->AddEntry(hinactivebkgC2_pe_tslice1, "All inactive materials n bkg (Fluka)", "f");
   legc2nocosmictslice1->AddEntry(hinelasticbkgC2_pe_tslice1, "Active LAr n inelastic (Fluka)", "f");
   legc2nocosmictslice1->AddEntry(hsimsignalC2_pe_tslice1, "Active LAr n capture (Fluka)", "f");
   legc2nocosmictslice1->AddEntry(hpnsdataC2petimeslice1, "Data (cosmics subtracted)", "ep");
@@ -2170,10 +2170,10 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC2:    " << hsimsignalC2_pe_tslice2->Integral(1, 50)    << std::endl;
   std::cout << " hpnsdataC2:      " << hpnsdataC2petimeslice2->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 2 *** " << std::endl;
-  TLegend *legc2tslice2 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc2tslice2 = new TLegend(0.24,0.67,0.7,0.89);
   legc2tslice2->SetTextSize(0.05);
   legc2tslice2->AddEntry(hcosmicdataC2petimeslice2, "Cosmics (data driven)", "f");
-  legc2tslice2->AddEntry(hinactivebkgC2_pe_tslice2, "All inactive materials neutron bkg (Fluka)", "f");
+  legc2tslice2->AddEntry(hinactivebkgC2_pe_tslice2, "All inactive materials n bkg (Fluka)", "f");
   legc2tslice2->AddEntry(hinelasticbkgC2_pe_tslice2, "Active LAr n inelastic (Fluka)", "f");
   legc2tslice2->AddEntry(hsimsignalC2_pe_tslice2, "Active LAr n capture (Fluka)", "f");
   legc2tslice2->AddEntry(hpnsdataC2petimeslice2, "Data", "ep");
@@ -2208,9 +2208,9 @@ void Ncapture_overlay()
   hpnsdataC2petimeslice2->SetMarkerStyle(20);
   hpnsdataC2petimeslice2->SetMarkerSize(0.6);
   hpnsdataC2petimeslice2->Draw("E1 X0 SAME");
-  TLegend *legc2nocosmictslice2 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc2nocosmictslice2 = new TLegend(0.24,0.67,0.7,0.89);
   legc2nocosmictslice2->SetTextSize(0.05);
-  legc2nocosmictslice2->AddEntry(hinactivebkgC2_pe_tslice2, "All inactive materials neutron bkg (Fluka)", "f");
+  legc2nocosmictslice2->AddEntry(hinactivebkgC2_pe_tslice2, "All inactive materials n bkg (Fluka)", "f");
   legc2nocosmictslice2->AddEntry(hinelasticbkgC2_pe_tslice2, "Active LAr n inelastic (Fluka)", "f");
   legc2nocosmictslice2->AddEntry(hsimsignalC2_pe_tslice2, "Active LAr n capture (Fluka)", "f");
   legc2nocosmictslice2->AddEntry(hpnsdataC2petimeslice2, "Data (cosmics subtracted)", "ep");
@@ -2327,9 +2327,9 @@ void Ncapture_overlay()
   hpnsdataC2time_new->SetMarkerStyle(20);
   hpnsdataC2time_new->SetMarkerSize(0.6);
   hpnsdataC2time_new->Draw("E1 X0 SAME");
-  TLegend *legc2nocosmictiming = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc2nocosmictiming = new TLegend(0.24,0.67,0.7,0.89);
   legc2nocosmictiming->SetTextSize(0.05);
-  legc2nocosmictiming->AddEntry(hinactivebkgC2time, "All inactive materials neutron bkg (Fluka)", "f");
+  legc2nocosmictiming->AddEntry(hinactivebkgC2time, "All inactive materials n bkg (Fluka)", "f");
   legc2nocosmictiming->AddEntry(hinelasticbkgC2time, "Active LAr n inelastic (Fluka)", "f");
   legc2nocosmictiming->AddEntry(hsimsignalC2time, "Active LAr n capture (Fluka)", "f");
   legc2nocosmictiming->AddEntry(hpnsdataC2time_new, "Data (cosmics subtracted)", "ep");
@@ -2368,10 +2368,10 @@ void Ncapture_overlay()
   std::cout << " hpnsdataC1:      " << hpnsdataC1->Integral(1, 50)      << std::endl;
   std::cout << " C1 data-cosmic PE total entries:   " << hpnsdataC1->Integral(1, 50) - hcosmicdataC1->Integral(1, 50) << std::endl;
 
-  TLegend *legc1 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc1 = new TLegend(0.24,0.67,0.7,0.89);
   legc1->SetTextSize(0.05);
   legc1->AddEntry(hcosmicdataC1, "Cosmics (data driven)", "f");
-  legc1->AddEntry(hinactivebkgC1, "All inactive materials neutron bkg (Fluka)", "f");
+  legc1->AddEntry(hinactivebkgC1, "All inactive materials n bkg (Fluka)", "f");
   legc1->AddEntry(hinelasticbkgC1, "Active LAr n inelastic (Fluka)", "f");
   legc1->AddEntry(hsimsignalC1, "Active LAr n capture (Fluka)", "f");
   legc1->AddEntry(hpnsdataC1, "Data", "ep");
@@ -2411,9 +2411,9 @@ void Ncapture_overlay()
 
   std::cout << " C1 data-cosmic mean PE:   " << hpnsdataC1->GetMean() << std::endl;
 
-  TLegend *legc1nocosmic = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc1nocosmic = new TLegend(0.24,0.67,0.7,0.89);
   legc1nocosmic->SetTextSize(0.05);
-  legc1nocosmic->AddEntry(hinactivebkgC1, "All inactive materials neutron bkg (Fluka)", "f");
+  legc1nocosmic->AddEntry(hinactivebkgC1, "All inactive materials n bkg (Fluka)", "f");
   legc1nocosmic->AddEntry(hinelasticbkgC1, "Active LAr n inelastic (Fluka)", "f");
   legc1nocosmic->AddEntry(hsimsignalC1, "Active LAr n capture (Fluka)", "f");
   legc1nocosmic->AddEntry(hpnsdataC1, "Data (cosmics subtracted)", "ep");
@@ -2450,10 +2450,10 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC1:    " << hsimsignalC1_pe_tslice0->Integral(1, 50)    << std::endl;
   std::cout << " hpnsdataC1:      " << hpnsdataC1petimeslice0->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 0 *** " << std::endl;
-  TLegend *legc1tslice0 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc1tslice0 = new TLegend(0.24,0.67,0.7,0.89);
   legc1tslice0->SetTextSize(0.05);
   legc1tslice0->AddEntry(hcosmicdataC1petimeslice0, "Cosmics (data driven)", "f");
-  legc1tslice0->AddEntry(hinactivebkgC1_pe_tslice0, "All inactive materials neutron bkg (Fluka)", "f");
+  legc1tslice0->AddEntry(hinactivebkgC1_pe_tslice0, "All inactive materials n bkg (Fluka)", "f");
   legc1tslice0->AddEntry(hinelasticbkgC1_pe_tslice0, "Active LAr n inelastic (Fluka)", "f");
   legc1tslice0->AddEntry(hsimsignalC1_pe_tslice0, "Active LAr n capture (Fluka)", "f");
   legc1tslice0->AddEntry(hpnsdataC1petimeslice0, "Data", "ep");
@@ -2488,9 +2488,9 @@ void Ncapture_overlay()
   hpnsdataC1petimeslice0->SetMarkerStyle(20);
   hpnsdataC1petimeslice0->SetMarkerSize(0.6);
   hpnsdataC1petimeslice0->Draw("E1 X0 SAME");
-  TLegend *legc1nocosmictslice0 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc1nocosmictslice0 = new TLegend(0.24,0.67,0.7,0.89);
   legc1nocosmictslice0->SetTextSize(0.05);
-  legc1nocosmictslice0->AddEntry(hinactivebkgC1_pe_tslice0, "All inactive materials neutron bkg (Fluka)", "f");
+  legc1nocosmictslice0->AddEntry(hinactivebkgC1_pe_tslice0, "All inactive materials n bkg (Fluka)", "f");
   legc1nocosmictslice0->AddEntry(hinelasticbkgC1_pe_tslice0, "Active LAr n inelastic (Fluka)", "f");
   legc1nocosmictslice0->AddEntry(hsimsignalC1_pe_tslice0, "Active LAr n capture (Fluka)", "f");
   legc1nocosmictslice0->AddEntry(hpnsdataC1petimeslice0, "Data (cosmics subtracted)", "ep");
@@ -2526,10 +2526,10 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC1:    " << hsimsignalC1_pe_tslice1->Integral(1, 50)    << std::endl;
   std::cout << " hpnsdataC1:      " << hpnsdataC1petimeslice1->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 1 *** " << std::endl;
-  TLegend *legc1tslice1 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc1tslice1 = new TLegend(0.24,0.67,0.7,0.89);
   legc1tslice1->SetTextSize(0.05);
   legc1tslice1->AddEntry(hcosmicdataC1petimeslice1, "Cosmics (data driven)", "f");
-  legc1tslice1->AddEntry(hinactivebkgC1_pe_tslice1, "All inactive materials neutron bkg (Fluka)", "f");
+  legc1tslice1->AddEntry(hinactivebkgC1_pe_tslice1, "All inactive materials n bkg (Fluka)", "f");
   legc1tslice1->AddEntry(hinelasticbkgC1_pe_tslice1, "Active LAr n inelastic (Fluka)", "f");
   legc1tslice1->AddEntry(hsimsignalC1_pe_tslice1, "Active LAr n capture (Fluka)", "f");
   legc1tslice1->AddEntry(hpnsdataC1petimeslice1, "Data", "ep");
@@ -2564,9 +2564,9 @@ void Ncapture_overlay()
   hpnsdataC1petimeslice1->SetMarkerStyle(20);
   hpnsdataC1petimeslice1->SetMarkerSize(0.6);
   hpnsdataC1petimeslice1->Draw("E1 X0 SAME");
-  TLegend *legc1nocosmictslice1 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc1nocosmictslice1 = new TLegend(0.24,0.67,0.7,0.89);
   legc1nocosmictslice1->SetTextSize(0.05);
-  legc1nocosmictslice1->AddEntry(hinactivebkgC1_pe_tslice1, "All inactive materials neutron bkg (Fluka)", "f");
+  legc1nocosmictslice1->AddEntry(hinactivebkgC1_pe_tslice1, "All inactive materials n bkg (Fluka)", "f");
   legc1nocosmictslice1->AddEntry(hinelasticbkgC1_pe_tslice1, "Active LAr n inelastic (Fluka)", "f");
   legc1nocosmictslice1->AddEntry(hsimsignalC1_pe_tslice1, "Active LAr n capture (Fluka)", "f");
   legc1nocosmictslice1->AddEntry(hpnsdataC1petimeslice1, "Data (cosmics subtracted)", "ep");
@@ -2602,10 +2602,10 @@ void Ncapture_overlay()
   std::cout << " hsimsignalC1:    " << hsimsignalC1_pe_tslice2->Integral(1, 50)    << std::endl;
   std::cout << " hpnsdataC1:      " << hpnsdataC1petimeslice2->Integral(1, 50)     << std::endl;
   std::cout << "*** Time Slice 2 *** " << std::endl;
-  TLegend *legc1tslice2 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc1tslice2 = new TLegend(0.24,0.67,0.7,0.89);
   legc1tslice2->SetTextSize(0.05);
   legc1tslice2->AddEntry(hcosmicdataC1petimeslice2, "Cosmics (data driven)", "f");
-  legc1tslice2->AddEntry(hinactivebkgC1_pe_tslice2, "All inactive materials neutron bkg (Fluka)", "f");
+  legc1tslice2->AddEntry(hinactivebkgC1_pe_tslice2, "All inactive materials n bkg (Fluka)", "f");
   legc1tslice2->AddEntry(hinelasticbkgC1_pe_tslice2, "Active LAr n inelastic (Fluka)", "f");
   legc1tslice2->AddEntry(hsimsignalC1_pe_tslice2, "Active LAr n capture (Fluka)", "f");
   legc1tslice2->AddEntry(hpnsdataC1petimeslice2, "Data", "ep");
@@ -2640,9 +2640,9 @@ void Ncapture_overlay()
   hpnsdataC1petimeslice2->SetMarkerStyle(20);
   hpnsdataC1petimeslice2->SetMarkerSize(0.6);
   hpnsdataC1petimeslice2->Draw("E1 X0 SAME");
-  TLegend *legc1nocosmictslice2 = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc1nocosmictslice2 = new TLegend(0.24,0.67,0.7,0.89);
   legc1nocosmictslice2->SetTextSize(0.05);
-  legc1nocosmictslice2->AddEntry(hinactivebkgC1_pe_tslice2, "All inactive materials neutron bkg (Fluka)", "f");
+  legc1nocosmictslice2->AddEntry(hinactivebkgC1_pe_tslice2, "All inactive materials n bkg (Fluka)", "f");
   legc1nocosmictslice2->AddEntry(hinelasticbkgC1_pe_tslice2, "Active LAr n inelastic (Fluka)", "f");
   legc1nocosmictslice2->AddEntry(hsimsignalC1_pe_tslice2, "Active LAr n capture (Fluka)", "f");
   legc1nocosmictslice2->AddEntry(hpnsdataC1petimeslice2, "Data (cosmics subtracted)", "ep");
@@ -2759,9 +2759,9 @@ void Ncapture_overlay()
   hpnsdataC1time_new->SetMarkerStyle(20);
   hpnsdataC1time_new->SetMarkerSize(0.6);
   hpnsdataC1time_new->Draw("E1 X0 SAME");
-  TLegend *legc1nocosmictiming = new TLegend(0.24,0.63,0.75,0.89);
+  TLegend *legc1nocosmictiming = new TLegend(0.24,0.67,0.7,0.89);
   legc1nocosmictiming->SetTextSize(0.05);
-  legc1nocosmictiming->AddEntry(hinactivebkgC1time, "All inactive materials neutron bkg (Fluka)", "f");
+  legc1nocosmictiming->AddEntry(hinactivebkgC1time, "All inactive materials n bkg (Fluka)", "f");
   legc1nocosmictiming->AddEntry(hinelasticbkgC1time, "Active LAr n inelastic (Fluka)", "f");
   legc1nocosmictiming->AddEntry(hsimsignalC1time, "Active LAr n capture (Fluka)", "f");
   legc1nocosmictiming->AddEntry(hpnsdataC1time_new, "Data (cosmics subtracted)", "ep");
