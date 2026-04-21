@@ -45,9 +45,9 @@ void Plot()
 {
   // 1/6 of 14kt, 9767 events, each -4.2 to +4.2 ms, bin 0.25 MeV
   Double_t Exposurescale = (1/(14.0/6)) * (1/(8.4*9767/1000/3600/24/365)) * (1/0.25);
-  int flashminophits = 2;
-  Double_t timesliceT0 = 1000; // ns this looks at flash within T0 +/- 1000ns
-  Double_t signalT0 = 0; // this number shouldn't change for all VD sample production
+  //int flashminophits = 2;
+  //Double_t timesliceT0 = 1000; // ns this looks at flash within T0 +/- 1000ns
+  //Double_t signalT0 = 0; // this number shouldn't change for all VD sample production
 
   // signal + bkg
   TFile *file0 = TFile::Open("/pnfs/dune/persistent/users/weishi/VDMarleyCCBkgAna/SignalandBkg/cluster100ns3m_min1hits_1PE_nomemb_100kevts/Marleyandbkg_fullstream_opcluster100ns3m_min1hits_1PE_nomemb_newbtmaxEfrac_2026-1-14_QLMatch_reco22ana_001.root");
@@ -55,6 +55,15 @@ void Plot()
   //TFile *file0 = TFile::Open("/pnfs/dune/persistent/users/weishi/VDMarleyCCBkgAna/SignalOnly/100ns3mcluster_min1hits_minophit1PE/MarleyOnly_fullstream_opcluster100ns3m_min1hit_1PE_nomemb_newbtmaxEfrac_2026-1-14_QLMatch_reco22ana.root");
 
   gInterpreter->GenerateDictionary("vector<vector<int>>", "vector");
+
+  // Evaluate group flash
+  TH2F *h_grp_flash_totpe_purity = new TH2F("h_grp_flash_totpe_purity",  "h_grp_flash_totpe_purity; group flash tot pe; group flash purity", 100, 0, 10000, 10, 0, 1);
+  TH2F *h_grp_flash_totpe_time = new TH2F("h_grp_flash_totpe_time",  "h_grp_flash_totpe_time;  group flash tot pe; group flash time [us]", 100, 0, 10000, 1000, 0, 5000);
+  TH2F *h_grp_flash_totophits_purity = new TH2F("h_grp_flash_totophits_purity",  "h_grp_flash_totophits_purity; group flash tot ophits; group flash purity", 50, 0, 50, 10, 0, 1);
+  TH2F *h_grp_flash_totophits_time = new TH2F("h_grp_flash_totophits_time",  "h_grp_flash_totophits_time; group flash tot ophits; group flash time [us]", 50, 0, 50, 1000, 0, 5000);
+  TH2F *h_grp_flash_totflashes_purity = new TH2F("h_grp_flash_totflashes_purity",  "h_grp_flash_totflashes_purity; group tot flashes; group flash purity", 50, 0, 50, 10, 0, 1);
+  TH2F *h_grp_flash_totflashes_time = new TH2F("h_grp_flash_totflashes_time",  "h_grp_flash_totflashes_time; group tot flashes; group flash time [us]", 50, 0, 50, 10, 0, 1);
+
   TH1D *h_signalflashes_avg_dyz = new TH1D("h_signalflashes_avg_dyz",  "h_signalflashes_avg_dyz; mean dyz [cm]", 500, 0, 1000);
   TH1D *h_signalflashes_min_dyz = new TH1D("h_signalflashes_min_dyz",  "h_signalflashes_min_dyz; min  dyz [cm]", 500, 0, 1000);
   TH1D *h_signalflashes_max_dyz = new TH1D("h_signalflashes_max_dyz",  "h_signalflashes_max_dyz; max  dyz [cm]", 500, 500, 1500);
@@ -139,20 +148,20 @@ void Plot()
   TH1D *h_mindt_neighbor_flash_totophits_marley = new TH1D("h_mindt_neighbor_flash_totophits_marley",      "h_mindt_neighbor_flash_totophits_marley;   mindt neighbor flash ophits ",  25, 0, 25);
   TH1D *h_mindt_neighbor_flash_totophits_bkg = new TH1D("h_mindt_neighbor_flash_totophits_bkg",      "h_mindt_neighbor_flash_totophits_bkg;   mindt neighbor flash ophits ",  25, 0, 25);
 
-  TString title1=""; title1 = title1 + "max PE flash: T0+/-"+Form("%.0f", timesliceT0)+"ns; d (flash - true nue) [cm]";
-  TString title2=""; title2 = title2 + "max PE flash: T0+/-"+Form("%.0f", timesliceT0)+"ns; t (flash - true nue) [ns]";
-  TH1F *hmaxpe_T0slice_flash_d_res = new TH1F("hmaxpe_T0slice_flash_d_res",  title1, 310, -100, 3000);
-  TH1F *hmaxpe_T0slice_flash_t_res = new TH1F("hmaxpe_T0slice_flash_t_res",  title2, 100, -10000, 10000);
+  //TString title1=""; title1 = title1 + "max PE flash: T0+/-"+Form("%.0f", timesliceT0)+"ns; d (flash - true nue) [cm]";
+  //TString title2=""; title2 = title2 + "max PE flash: T0+/-"+Form("%.0f", timesliceT0)+"ns; t (flash - true nue) [ns]";
+  //TH1F *hmaxpe_T0slice_flash_d_res = new TH1F("hmaxpe_T0slice_flash_d_res",  title1, 310, -100, 3000);
+  //TH1F *hmaxpe_T0slice_flash_t_res = new TH1F("hmaxpe_T0slice_flash_t_res",  title2, 100, -10000, 10000);
 
-  TString title3=""; title3 = title3 + "max PE flash: min"+Form("%i", flashminophits)+"ophits; d (flash - true nue) [cm]";
-  TString title4=""; title4 = title4 + "max PE flash: min"+Form("%i", flashminophits)+"ophits; t (flash - true nue) [ns]";
-  TH1F *hmaxpe_minophit_flash_d_res = new TH1F("hmaxpe_minophit_flash_d_res",  title3, 310, -100, 3000);
-  TH1F *hmaxpe_minophit_flash_t_res = new TH1F("hmaxpe_minophit_flash_t_res",  title4, 900, -4500000, 4500000);
+  //TString title3=""; title3 = title3 + "max PE flash: min"+Form("%i", flashminophits)+"ophits; d (flash - true nue) [cm]";
+  //TString title4=""; title4 = title4 + "max PE flash: min"+Form("%i", flashminophits)+"ophits; t (flash - true nue) [ns]";
+  //TH1F *hmaxpe_minophit_flash_d_res = new TH1F("hmaxpe_minophit_flash_d_res",  title3, 310, -100, 3000);
+  //TH1F *hmaxpe_minophit_flash_t_res = new TH1F("hmaxpe_minophit_flash_t_res",  title4, 900, -4500000, 4500000);
 
-  TString title5=""; title5 = title5 + "max PE flash: T0+/-"+Form("%.0f", timesliceT0)+"ns, min"+Form("%i", flashminophits)+"ophits; d (flash - true nue) [cm]";
-  TString title6=""; title6 = title6 + "max PE flash: T0+/-"+Form("%.0f", timesliceT0)+"ns, min"+Form("%i", flashminophits)+"ophits; t (flash - true nue) [ns]";
-  TH1F *hmaxpe_T0slice_minophit_flash_d_res = new TH1F("hmaxpe_T0slice_minophit_flash_d_res",  title5, 310, -100, 3000);
-  TH1F *hmaxpe_T0slice_minophit_flash_t_res = new TH1F("hmaxpe_T0slice_minophit_flash_t_res",  title6, 100, -10000, 10000);
+  //TString title5=""; title5 = title5 + "max PE flash: T0+/-"+Form("%.0f", timesliceT0)+"ns, min"+Form("%i", flashminophits)+"ophits; d (flash - true nue) [cm]";
+  //TString title6=""; title6 = title6 + "max PE flash: T0+/-"+Form("%.0f", timesliceT0)+"ns, min"+Form("%i", flashminophits)+"ophits; t (flash - true nue) [ns]";
+  //TH1F *hmaxpe_T0slice_minophit_flash_d_res = new TH1F("hmaxpe_T0slice_minophit_flash_d_res",  title5, 310, -100, 3000);
+  //TH1F *hmaxpe_T0slice_minophit_flash_t_res = new TH1F("hmaxpe_T0slice_minophit_flash_t_res",  title6, 100, -10000, 10000);
 
   TH1F *hdebug_flash_min_d = new TH1F("hdebug_flash_min_d",  "flash reco debug; min d_{| flash - true nue |} [cm]", 220, -100, 1000);
   TH1F *hdebug_flash_min_t = new TH1F("hdebug_flash_min_t",  "flash reco debug; min t_{| flash - true nue |} [ns]", 500, -10000, 10000);
@@ -206,7 +215,6 @@ void Plot()
   std::vector<double> *FlashesTime = 0; // us, inherit from ophit
   std::vector<int> *Flashesbt = 0;
   std::vector<std::vector<int>> *FlashesOphitIndex=0;
-  //std::vector<std::vector<int>> *FlashesOphitIndex = nullptr;
   std::vector<double> *bkgProcess = 0;
   std::vector<double> *bkgK = 0;
 
@@ -240,7 +248,7 @@ void Plot()
   nentries = AnaTree->GetEntries();
   cout<< "nentries:" << nentries<<endl;
 
-  int count_maxpe_T0slice_goodmatch_debug = 0;
+  /*int count_maxpe_T0slice_goodmatch_debug = 0;
   int count_maxpe_T0slice_wrongtime_debug = 0;
   int count_maxpe_T0slice_wrongdist_debug = 0;
   int count_maxpe_T0slice_wrongtimeanddist_debug = 0;
@@ -253,7 +261,11 @@ void Plot()
   int count_maxpe_T0slice_minophits_goodmatch_debug = 0;
   int count_maxpe_T0slice_minophits_wrongtime_debug = 0;
   int count_maxpe_T0slice_minophits_wrongdist_debug = 0;
-  int count_maxpe_T0slice_minophits_wrongtimeanddist_debug = 0;
+  int count_maxpe_T0slice_minophits_wrongtimeanddist_debug = 0;*/
+
+  std::vector<double> FlashesUsedinGroup;
+  double grpflashdt = 2; // us
+  double grpflashdist = 5; // m
 
   for ( int ientry = 0; ientry < 100; ientry++ )
   {
@@ -261,108 +273,134 @@ void Plot()
 
     if (ientry % 100 ==0) cout<< "@ evt " << ientry<<endl;
 
-    double max_flash_pe_T0slice = -999;
-    int max_pe_T0slice_flash_index = -1;
-    double max_pe_T0slice_flash_ddist = -9999;
-    double max_pe_T0slice_flash_dt = -9999;
+    // ================================================================
+    // Group flashes at event level - build event flashes grp
+    // same physics event should produce flashes close in space and time
+    // *************************************************
+    // criteria: 2us, 5m, earliest flash has largest PE
+    // *************************************************
+    // per event can have many grps, per grp of flash has no limit of number of flahses
+    // but signal events can have 0 flash up to tens of flashes
+    // understand how many grps can be built, and use the grp that has largest # of flashes
+    // build flash group property: totPE, tothits, x, y, z, t, purity, bt, flashindex
+    // ================================================================
+    FlashesUsedinGroup.clear();
+    FlashesUsedinGroup.resize(FlashesNum, 0);
+    double iFlashGroupX = -9999.;
+    double iFlashGroupY = -9999.;
+    double iFlashGroupZ = -9999.;
+    double iFlashGroupT = -9999.;
+    double iFlashGroupTotPE = 0;
+    int iFlashGroupTotOphits = 0;
+    double iFlashGroupPuritySig = 0;
+    double GroupmaxPEFlashindex = -1;
+    double GroupearliestFlashindex = -1;
+    double GroupFlashmaxPE = 0;
+    double GroupFlashearliesttime = 9999;
+    std::vector<double> FlashGroupTotPE, FlashGroupX, FlashGroupY, FlashGroupZ, FlashGroupTime, FlashGroupSignalPurity;
+    std::vector<int> FlashGroupFlashNum, FlashGroupTotOphits, iFlashGroupFlashIndex;
 
-    double max_flash_pe_minophits = -999;
-    int max_pe_minophits_flash_index = -1;
-    double max_pe_minophits_flash_ddist = -9999;
-    double max_pe_minophits_flash_dt = -9999;
+    for (int iFlash = 0; iFlash < FlashesNum; iFlash++){
 
-    double max_flash_pe_minophits_T0slice = -999;
-    int max_pe_minophits_T0slice_flash_index = -1;
-    double max_pe_minophits_T0slice_flash_ddist = -9999;
-    double max_pe_minophits_T0slice_flash_dt = -9999;
+      if (FlashesUsedinGroup.at(iFlash) == 1) continue; // skip flash already used in group of flashes
 
-    double min_flash_dist_debug = 9999.;
-    double min_flash_dt_debug = 9999999.;
-    double min_flash_dt_debug_sign = 9999999.;
-    int min_dist_flash_index = -2;
-    int min_dt_flash_index = -3;
+      // iFlash is not the max PE flash
+      iFlashGroupX = (*FlashesX)[iFlash]*(*FlashesTotPE)[iFlash];
+      iFlashGroupY = (*FlashesY)[iFlash]*(*FlashesTotPE)[iFlash];
+      iFlashGroupZ = (*FlashesZ)[iFlash]*(*FlashesTotPE)[iFlash];
+      iFlashGroupT = (*FlashesTime)[iFlash]*(*FlashesTotPE)[iFlash];
+      iFlashGroupTotPE = (*FlashesTotPE)[iFlash];
+      iFlashGroupTotOphits = (*FlashesTotOphits)[iFlash];
+      iFlashGroupPuritySig = (*FlashesPuritySignal)[iFlash];
 
-    std::vector<double> signalflashesdistyz;
-    std::vector<double> signalflashesdisttime;
-    std::vector<double> signalflashespe;
-    std::vector<double> signalflashesophits;
-    std::vector<double> signalflashespurity;
-    signalflashesdistyz.clear();
-    signalflashesdisttime.clear();
-    signalflashespe.clear();
-    signalflashesophits.clear();
-    signalflashespurity.clear();
+      GroupFlashmaxPE = (*FlashesTotPE)[iFlash];
+      GroupmaxPEFlashindex = iFlash;
+      GroupFlashearliesttime = (*FlashesTime)[iFlash];
+      GroupearliestFlashindex = iFlash;
 
-    if (marleynueE >60 && marleynueX > -100 && marleynueX < 0) {
-    //if (marleynueE <10 && marleynueX > 100) {
-      // check region with poorest performance: low E, high drift
+      // Take note flashes used in this grp
+      iFlashGroupFlashIndex.clear();
+      iFlashGroupFlashIndex.push_back(iFlash);
 
-      for (int iFlash = 0; iFlash < FlashesNum; iFlash++){
+      for (int jFlash = 0; jFlash < FlashesNum; jFlash++){
+        if (jFlash == iFlash) continue;
 
-        // For flashes backtrack to signal in the event
-        // how far are they in spcae time, PE distribution, number of hits
-        if ((*Flashesbt)[iFlash]  == -1) {
-          // there are some 10s of flashes per evt
-          // check the mean distance in y and z, y-z plane
-          signalflashesdistyz.push_back(sqrt(pow((*FlashesY)[iFlash] - marleynueY, 2) + pow((*FlashesZ)[iFlash] - marleynueZ, 2)));
-          signalflashesdisttime.push_back((*FlashesTime)[iFlash] - marleynueTime);
-          signalflashespe.push_back((*FlashesTotPE)[iFlash]);
-          signalflashesophits.push_back((*FlashesTotOphits)[iFlash]);
-          signalflashespurity.push_back((*FlashesPuritySignal)[iFlash]);
+        // time cut
+        if ( abs( (*FlashesTime)[jFlash] - (*FlashesTime)[iFlash] ) > grpflashdt ) continue;
 
-        } // bt to signal
-      } // end flash lp
+        // distance cut
+        double d_ji = std::sqrt( ((*FlashesX)[jFlash] - (*FlashesX)[iFlash])*((*FlashesX)[jFlash] - (*FlashesX)[iFlash]) + ((*FlashesY)[jFlash] - (*FlashesY)[iFlash])*((*FlashesY)[jFlash] - (*FlashesY)[iFlash]) + ((*FlashesZ)[jFlash] - (*FlashesZ)[iFlash])*((*FlashesZ)[jFlash] - (*FlashesZ)[iFlash]) );
+        if ( d_ji > grpflashdist ) continue;
 
-      // check distance to marley true location, mean, std in y z, time, Tot PE, Tot Ophits, Purity
+        // skip ophits already used in other flash
+        if ( FlashesUsedinGroup.at(jFlash) == 1 ) continue;
 
-      if ( signalflashesdistyz.size() > 0 ) {
-        // distance
-        h_signalflashes_avg_dyz->Fill(std::accumulate(signalflashesdistyz.begin(), signalflashesdistyz.end(), 0.0)/signalflashesdistyz.size());
-        h_signalflashes_min_dyz->Fill(*std::min_element(std::begin(signalflashesdistyz), std::end(signalflashesdistyz)));
-        h_signalflashes_max_dyz->Fill(*std::max_element(std::begin(signalflashesdistyz), std::end(signalflashesdistyz)));
-        // time
-        h_signalflashes_avg_dt->Fill(std::accumulate(signalflashesdisttime.begin(), signalflashesdisttime.end(), 0.0)/signalflashesdisttime.size());
-        h_signalflashes_min_dt->Fill(*std::min_element(std::begin(signalflashesdisttime), std::end(signalflashesdisttime)));
-        h_signalflashes_max_dt->Fill(*std::max_element(std::begin(signalflashesdisttime), std::end(signalflashesdisttime)));
-        // Purity
-        h_signalflashes_avg_purity->Fill(std::accumulate(signalflashespurity.begin(), signalflashespurity.end(), 0.0)/signalflashespurity.size());
-        h_signalflashes_min_purity->Fill(*std::min_element(std::begin(signalflashespurity), std::end(signalflashespurity)));
-        h_signalflashes_max_purity->Fill(*std::max_element(std::begin(signalflashespurity), std::end(signalflashespurity)));
-        // pe
-        h_signalflashes_avg_pe->Fill(std::accumulate(signalflashespe.begin(), signalflashespe.end(), 0.0)/signalflashespe.size());
-        h_signalflashes_min_pe->Fill(*std::min_element(std::begin(signalflashespe), std::end(signalflashespe)));
-        h_signalflashes_max_pe->Fill(*std::max_element(std::begin(signalflashespe), std::end(signalflashespe)));
-        // ophits
-        h_signalflashes_avg_ophits->Fill(std::accumulate(signalflashesophits.begin(), signalflashesophits.end(), 0.0)/signalflashesophits.size());
-        h_signalflashes_min_ophits->Fill(*std::min_element(std::begin(signalflashesophits), std::end(signalflashesophits)));
-        h_signalflashes_max_ophits->Fill(*std::max_element(std::begin(signalflashesophits), std::end(signalflashesophits)));
+        // Calculate flash group properties
+        iFlashGroupX += (*FlashesX)[jFlash]*(*FlashesTotPE)[jFlash];
+        iFlashGroupY += (*FlashesY)[jFlash]*(*FlashesTotPE)[jFlash];
+        iFlashGroupZ += (*FlashesZ)[jFlash]*(*FlashesTotPE)[jFlash];
+        iFlashGroupT += (*FlashesTime)[jFlash]*(*FlashesTotPE)[jFlash];
+        iFlashGroupTotPE += (*FlashesTotPE)[jFlash];
+        iFlashGroupTotOphits += (*FlashesTotOphits)[jFlash];
+        iFlashGroupPuritySig += (*FlashesPuritySignal)[jFlash];
 
-        // check property of closest flash to true in spacetime, Tot PE, Tot Ophits, Purity
-        // Get an iterator to the minimum dyz
-        std::vector<double>::iterator min_dyz_it = std::min_element(std::begin(signalflashesdistyz), std::end(signalflashesdistyz));
-        // Get the index:
-        int min_dyz_index = std::distance(std::begin(signalflashesdistyz), min_dyz_it);
-        h_signalflashes_mindyz_flash_pe->Fill(signalflashespe.at(min_dyz_index));
-        h_signalflashes_mindyz_flash_ophits->Fill(signalflashesophits.at(min_dyz_index));
+        if ((*FlashesTotPE)[jFlash] > GroupFlashmaxPE) { // max PE flash in grp
+          GroupFlashmaxPE = (*FlashesTotPE)[jFlash];
+          GroupmaxPEFlashindex = jFlash;
+        }
+        if ((*FlashesTime)[jFlash] <= GroupFlashearliesttime) {
+          GroupFlashearliesttime = (*FlashesTime)[jFlash];
+          GroupearliestFlashindex = jFlash;
+        }
 
-        // same for min dt
-        std::vector<double>::iterator min_dt_it = std::min_element(std::begin(signalflashesdisttime), std::end(signalflashesdisttime));
-        // Get the index:
-        int min_dt_index = std::distance(std::begin(signalflashesdisttime), min_dt_it);
-        h_signalflashes_mindt_flash_pe->Fill(signalflashespe.at(min_dt_index));
-        h_signalflashes_mindt_flash_ophits->Fill(signalflashesophits.at(min_dt_index));
+        // Take note flash
+        iFlashGroupFlashIndex.push_back(jFlash);
 
-        // same for max purity
-        std::vector<double>::iterator max_purity_it = std::max_element(std::begin(signalflashespurity), std::end(signalflashespurity));
-        // Get the index:
-        int max_purity_index = std::distance(std::begin(signalflashespurity), max_purity_it);
-        h_signalflashes_maxpurity_flash_pe->Fill(signalflashespe.at(max_purity_index));
-        h_signalflashes_maxpurity_flash_ophits->Fill(signalflashesophits.at(max_purity_index));
-      } // end signal flash exists
+      } // loop over jflash
 
-      // Fill histogram
+      // Set group flash property
+      iFlashGroupX = iFlashGroupX/iFlashGroupTotPE;
+      iFlashGroupY = iFlashGroupY/iFlashGroupTotPE;
+      iFlashGroupZ = iFlashGroupZ/iFlashGroupTotPE;
+      iFlashGroupT = iFlashGroupT/iFlashGroupTotPE;
+      int iFlashGroupFlashNum = iFlashGroupFlashIndex.size();
+      iFlashGroupPuritySig = iFlashGroupPuritySig/iFlashGroupFlashNum;
 
-    } // marley sel selection
+      // At this point a flash is build, ask for largest PE flash is earliest flash
+      if (GroupmaxPEFlashindex != GroupearliestFlashindex) continue;
+
+      // At this point, we flag used flashes in this grp so that shouldn't be used again
+      for (int iUsedFlash = 0; iUsedFlash < iFlashGroupFlashNum; iUsedFlash++){
+        FlashesUsedinGroup.at(iFlashGroupFlashIndex.at(iUsedFlash)) = 1;
+      }
+
+      // And store group of flash
+      /*FlashGroupTotPE.push_back(iFlashGroupTotPE);
+      FlashGroupX.push_back(iFlashGroupX);
+      FlashGroupY.push_back(iFlashGroupY);
+      FlashGroupZ.push_back(iFlashGroupZ);
+      FlashGroupTime.push_back(iFlashGroupT);
+      FlashGroupTotOphits.push_back(iFlashGroupTotOphits);
+      FlashGroupFlashNum.push_back(iFlashGroupFlashNum);
+      FlashGroupSignalPurity.push_back(iFlashGroupPuritySig);*/
+
+      // Evaluate the group flash
+      h_grp_flash_totpe_purity->Fill(iFlashGroupTotPE, iFlashGroupPuritySig);
+      h_grp_flash_totpe_time->Fill(iFlashGroupTotPE, iFlashGroupT);
+      h_grp_flash_totophits_purity->Fill(iFlashGroupTotOphits, iFlashGroupPuritySig);
+      h_grp_flash_totophits_time->Fill(iFlashGroupTotOphits, iFlashGroupT);
+      h_grp_flash_totflashes_purity->Fill(iFlashGroupFlashNum, iFlashGroupPuritySig);
+      h_grp_flash_totflashes_time->Fill(iFlashGroupFlashNum, iFlashGroupT);
+
+      // Which flash to select for signal, maxtotPE, maxtothit, other criteria?
+
+
+    } // loop over iflash
+
+
+    // ================================================================
+    // Evaluate flash and neighbor flash property
+    // ================================================================
 
     double flashpestd = 0;
     double flashavghittimediff = 0;
@@ -391,7 +429,6 @@ void Plot()
       //=================================
       // Calculate single flash property
       //=================================
-      //std::vector<int> iFlashophitsindex      = FlashesOphitIndex->at(iFlash);
       const std::vector<int>& iFlashophitsindex = FlashesOphitIndex->at(iFlash);
 
       flashpestd = 0;
@@ -543,6 +580,26 @@ void Plot()
       // Performance eval plots:
       //      Use biggest PE flash with cuts on ophits and time
       // ================================================================
+      double max_flash_pe_T0slice = -999;
+      int max_pe_T0slice_flash_index = -1;
+      double max_pe_T0slice_flash_ddist = -9999;
+      double max_pe_T0slice_flash_dt = -9999;
+
+      double max_flash_pe_minophits = -999;
+      int max_pe_minophits_flash_index = -1;
+      double max_pe_minophits_flash_ddist = -9999;
+      double max_pe_minophits_flash_dt = -9999;
+
+      double max_flash_pe_minophits_T0slice = -999;
+      int max_pe_minophits_T0slice_flash_index = -1;
+      double max_pe_minophits_T0slice_flash_ddist = -9999;
+      double max_pe_minophits_T0slice_flash_dt = -9999;
+
+      double min_flash_dist_debug = 9999.;
+      double min_flash_dt_debug = 9999999.;
+      double min_flash_dt_debug_sign = 9999999.;
+      int min_dist_flash_index = -2;
+      int min_dt_flash_index = -3;
       // only study purity =1 flash
       if ( (*FlashesPuritySignal)[iFlash] < 1 ) continue;
 
@@ -620,6 +677,94 @@ void Plot()
     if (min_dist_flash_index != max_pe_minophits_T0slice_flash_index && max_pe_minophits_T0slice_flash_index == min_dt_flash_index) count_maxpe_T0slice_minophits_wrongdist_debug++;
     if (min_dist_flash_index != max_pe_minophits_T0slice_flash_index && max_pe_minophits_T0slice_flash_index != min_dt_flash_index) count_maxpe_T0slice_minophits_wrongtimeanddist_debug++;
     */
+
+
+    // ========================================================================
+    // Select a specific region in phase space and check basic performance
+    // ========================================================================
+    std::vector<double> signalflashesdistyz;
+    std::vector<double> signalflashesdisttime;
+    std::vector<double> signalflashespe;
+    std::vector<double> signalflashesophits;
+    std::vector<double> signalflashespurity;
+    signalflashesdistyz.clear();
+    signalflashesdisttime.clear();
+    signalflashespe.clear();
+    signalflashesophits.clear();
+    signalflashespurity.clear();
+    if (marleynueE >60 && marleynueX > -100 && marleynueX < 0) {
+    //if (marleynueE <10 && marleynueX > 100) {
+      // check region with poorest performance: low E, high drift
+
+      for (int iFlash = 0; iFlash < FlashesNum; iFlash++){
+
+        // For flashes backtrack to signal in the event
+        // how far are they in spcae time, PE distribution, number of hits
+        if ((*Flashesbt)[iFlash]  == -1) {
+          // there are some 10s of flashes per evt
+          // check the mean distance in y and z, y-z plane
+          signalflashesdistyz.push_back(sqrt(pow((*FlashesY)[iFlash] - marleynueY, 2) + pow((*FlashesZ)[iFlash] - marleynueZ, 2)));
+          signalflashesdisttime.push_back((*FlashesTime)[iFlash] - marleynueTime);
+          signalflashespe.push_back((*FlashesTotPE)[iFlash]);
+          signalflashesophits.push_back((*FlashesTotOphits)[iFlash]);
+          signalflashespurity.push_back((*FlashesPuritySignal)[iFlash]);
+
+        } // bt to signal
+      } // end flash lp
+
+      // check distance to marley true location, mean, std in y z, time, Tot PE, Tot Ophits, Purity
+
+      if ( signalflashesdistyz.size() > 0 ) {
+        // distance
+        h_signalflashes_avg_dyz->Fill(std::accumulate(signalflashesdistyz.begin(), signalflashesdistyz.end(), 0.0)/signalflashesdistyz.size());
+        h_signalflashes_min_dyz->Fill(*std::min_element(std::begin(signalflashesdistyz), std::end(signalflashesdistyz)));
+        h_signalflashes_max_dyz->Fill(*std::max_element(std::begin(signalflashesdistyz), std::end(signalflashesdistyz)));
+        // time
+        h_signalflashes_avg_dt->Fill(std::accumulate(signalflashesdisttime.begin(), signalflashesdisttime.end(), 0.0)/signalflashesdisttime.size());
+        h_signalflashes_min_dt->Fill(*std::min_element(std::begin(signalflashesdisttime), std::end(signalflashesdisttime)));
+        h_signalflashes_max_dt->Fill(*std::max_element(std::begin(signalflashesdisttime), std::end(signalflashesdisttime)));
+        // Purity
+        h_signalflashes_avg_purity->Fill(std::accumulate(signalflashespurity.begin(), signalflashespurity.end(), 0.0)/signalflashespurity.size());
+        h_signalflashes_min_purity->Fill(*std::min_element(std::begin(signalflashespurity), std::end(signalflashespurity)));
+        h_signalflashes_max_purity->Fill(*std::max_element(std::begin(signalflashespurity), std::end(signalflashespurity)));
+        // pe
+        h_signalflashes_avg_pe->Fill(std::accumulate(signalflashespe.begin(), signalflashespe.end(), 0.0)/signalflashespe.size());
+        h_signalflashes_min_pe->Fill(*std::min_element(std::begin(signalflashespe), std::end(signalflashespe)));
+        h_signalflashes_max_pe->Fill(*std::max_element(std::begin(signalflashespe), std::end(signalflashespe)));
+        // ophits
+        h_signalflashes_avg_ophits->Fill(std::accumulate(signalflashesophits.begin(), signalflashesophits.end(), 0.0)/signalflashesophits.size());
+        h_signalflashes_min_ophits->Fill(*std::min_element(std::begin(signalflashesophits), std::end(signalflashesophits)));
+        h_signalflashes_max_ophits->Fill(*std::max_element(std::begin(signalflashesophits), std::end(signalflashesophits)));
+
+        // check property of closest flash to true in spacetime, Tot PE, Tot Ophits, Purity
+        // Get an iterator to the minimum dyz
+        std::vector<double>::iterator min_dyz_it = std::min_element(std::begin(signalflashesdistyz), std::end(signalflashesdistyz));
+        // Get the index:
+        int min_dyz_index = std::distance(std::begin(signalflashesdistyz), min_dyz_it);
+        h_signalflashes_mindyz_flash_pe->Fill(signalflashespe.at(min_dyz_index));
+        h_signalflashes_mindyz_flash_ophits->Fill(signalflashesophits.at(min_dyz_index));
+
+        // same for min dt
+        std::vector<double>::iterator min_dt_it = std::min_element(std::begin(signalflashesdisttime), std::end(signalflashesdisttime));
+        // Get the index:
+        int min_dt_index = std::distance(std::begin(signalflashesdisttime), min_dt_it);
+        h_signalflashes_mindt_flash_pe->Fill(signalflashespe.at(min_dt_index));
+        h_signalflashes_mindt_flash_ophits->Fill(signalflashesophits.at(min_dt_index));
+
+        // same for max purity
+        std::vector<double>::iterator max_purity_it = std::max_element(std::begin(signalflashespurity), std::end(signalflashespurity));
+        // Get the index:
+        int max_purity_index = std::distance(std::begin(signalflashespurity), max_purity_it);
+        h_signalflashes_maxpurity_flash_pe->Fill(signalflashespe.at(max_purity_index));
+        h_signalflashes_maxpurity_flash_ophits->Fill(signalflashesophits.at(max_purity_index));
+      } // end signal flash exists
+
+      // Fill histogram
+
+    } // marley sel selection
+
+
+
 
     if (ientry < nentries ){ // all evts accumulate
 
@@ -754,6 +899,20 @@ void Plot()
   auto flashvarcomp = new TCanvas("flashvarcomp", "flashvarcomp", 700, 500);
   flashvarcomp->cd();
   flashvarcomp->SetLogy();
+
+  h_grp_flash_totpe_purity->Draw();
+  flashvarcomp->Write("grp_flash_2D_totpe_purity");
+  h_grp_flash_totpe_time->Draw();
+  flashvarcomp->Write("grp_flash_totpe_time");
+  h_grp_flash_totophits_purity->Draw();
+  flashvarcomp->Write("grp_flash_totophits_purity");
+  h_grp_flash_totophits_time->Draw();
+  flashvarcomp->Write("grp_flash_totophits_time");
+  h_grp_flash_totflashes_purity->Draw();
+  flashvarcomp->Write("grp_flash_totflashes_purity");
+  h_grp_flash_totflashes_time->Draw();
+  flashvarcomp->Write("grp_flash_totflashes_time");
+
   h_flash_totophits_marley->Scale(1.0/h_flash_totophits_marley->GetEntries());
   h_flash_totophits_bkg->Scale(1.0/h_flash_totophits_bkg->GetEntries());
   h_flash_totophits_marley->SetLineColor(4); h_flash_totophits_marley->Draw();
