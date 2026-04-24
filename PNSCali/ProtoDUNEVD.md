@@ -1,3 +1,59 @@
+## Test v5 ggd PNS geo LArsoft
+```
+# from develop branch
+git clone https://github.com/weishi10141993/dunecore.git -b pdvdv5pns_test
+
+
+# build on dunegpvm
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash \
+-B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid \
+/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+export UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
+
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+# check latest dunesw: ups list -aK+ dunesw | tail -n 10
+setup dunesw v10_20_05d01 -q e26:prof
+
+mrb newDev
+source /exp/dune/app/users/weishi/testpns_np02G4/localProducts_larsoft_v10_20_05_e26_prof/setup
+
+cd srcs
+
+rsync -e ssh -avSz  ./* weishi@dunegpvm13.fnal.gov:/exp/dune/app/users/weishi/testpns_np02G4/srcs
+
+# Build the code:
+mrb uc
+cd ${MRB_BUILDDIR}       
+mrb z
+mrbsetenv
+mrb b
+
+cd /exp/dune/app/users/weishi/VDPDSAna/PNSCali/PDVD
+# this uses SinglesGen particle gun
+lar -c protoDUNE_VD_neutronDDG_gen.fcl -n 10     
+# g4 stage 1
+lar -c protodunevd_g4_stage1_PNS.fcl -n -1 ProtoDUNE_VD_mc_gen_pns_allbkg.root
+# pure LAr g4 stage 2
+lar -c protodunevd_g4_stage2_PNS.fcl -n -1 ProtoDUNE_VD_mc_gen_pns_allbkg_g4_stage1.root
+# detsim pure LAr
+lar -c protodunevd_detsim_PNS.fcl -n -1 ProtoDUNE_VD_mc_gen_pns_allbkg_g4_stage1_g4_stage2.root
+# reco
+lar -c protodunevd_reco_PNS.fcl -n -1 ProtoDUNE_VD_mc_gen_pns_allbkg_g4_stage1_g4_stage2_detsim.root
+```
+
+If re-login,
+
+```
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+setup dunesw v10_20_05d01 -q e26:prof
+source /exp/dune/app/users/weishi/testpns_np02G4/localProducts_larsoft_v10_20_05_e26_prof/setup
+
+mrbsetenv
+cd /exp/dune/app/users/weishi/VDPDSAna/PNSCali/PDVD
+
+```
+
 ## Fast np02 data analysis with lardon
 ```
 [First time only]
