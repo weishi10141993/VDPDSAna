@@ -100,14 +100,14 @@ void FlashGroupAndMatchQBlips()
   TH1F *h_marleyX = new TH1F("h_marleyX",     "h_marleyX;    marley true X [cm]", 40, -400, 400);
   TH1F *h_marleyE = new TH1F("h_marleyE",     "h_marleyE;    marley true E [MeV]", 80, 0, 80);
 
-  TH2F *h_maxblipn2ll_evol   = new TH2F("h_maxblipn2ll_evol",    "h_maxblipn2ll_evol;blip number;blipn2ll", 10, 0, 10, 100, -100, 100);
+  //TH2F *h_maxblipn2ll_evol   = new TH2F("h_maxblipn2ll_evol",    "h_maxblipn2ll_evol;blip number;blipn2ll", 10, 0, 10, 100, -100, 100);
 
   TH1F *h_selflashgrp_selblip_X_res = new TH1F("h_selflashgrp_selblip_X_res",     "h_selflashgrp_selblip_X_res;    blip x - true blip x [cm]", 40, -400, 400);
   TH1F *h_selflashgrp_selblip_Y_res = new TH1F("h_selflashgrp_selblip_Y_res",     "h_selflashgrp_selblip_Y_res;    blip y - true blip y [cm]", 80, -800, 800);
   TH1F *h_selflashgrp_selblip_Z_res = new TH1F("h_selflashgrp_selblip_Z_res",     "h_selflashgrp_selblip_Z_res;    blip z - true blip z [cm]", 210, 0, 2100);
   TH1F *h_selflashgrp_selblip_T_res = new TH1F("h_selflashgrp_selblip_T_res",     "h_selflashgrp_selblip_T_res;    blip t - true blip t [us]", 400, -4000, 4000);
   TH1F *h_selflashgrp_selblip_E_res = new TH1F("h_selflashgrp_selblip_E_res",     "h_selflashgrp_selblip_E_res;    blip E - true blip E [MeV]", 400, -100, 100);
-  TH1F *h_selflashgrp_selblip_bt    = new TH1F("h_selflashgrp_selblip_bt",        "h_selflashgrp_selblip_bt;       true processes", 32, -2, 30);
+  TH1F *h_selflashgrp_maxn2llblip_bt    = new TH1F("h_selflashgrp_maxn2llblip_bt",        "h_selflashgrp_maxn2llblip_bt;       true processes", 32, -2, 30);
 
   // check performance at event level
   TH1F *h_selflashgrp_selblip_evt_X_res = new TH1F("h_selflashgrp_selblip_evt_X_res",     "h_selflashgrp_selblip_evt_X_res;    blip x - true marley x [cm]", 40, -400, 400);
@@ -115,8 +115,8 @@ void FlashGroupAndMatchQBlips()
   TH1F *h_selflashgrp_selblip_evt_Z_res = new TH1F("h_selflashgrp_selblip_evt_Z_res",     "h_selflashgrp_selblip_evt_Z_res;    blip z - true marley z [cm]", 210, 0, 2100);
   TH1F *h_selflashgrp_selblip_evt_T_res = new TH1F("h_selflashgrp_selblip_evt_T_res",     "h_selflashgrp_selblip_evt_T_res;    blip t - true marley t [us]", 400, -4000, 4000);
 
-  TH1F *h_selflashgrp_selblip_signalbt_marleyX = new TH1F("h_selflashgrp_selblip_signalbt_marleyX",     "h_selflashgrp_selblip_signalbt_marleyX;    marley true x [cm]", 40, -400, 400);
-  TH1F *h_selflashgrp_selblip_signalbt_marleyE = new TH1F("h_selflashgrp_selblip_signalbt_marleyE",     "h_selflashgrp_selblip_signalbt_marleyE;    marley true E [MeV]", 80, 0, 80);
+  TH1F *h_selflashgrp_matched_blipbt2signal_marleyX = new TH1F("h_selflashgrp_matched_blipbt2signal_marleyX",     "h_selflashgrp_matched_blipbt2signal_marleyX;    marley true x [cm]", 40, -400, 400);
+  TH1F *h_selflashgrp_matched_blipbt2signal_marleyE = new TH1F("h_selflashgrp_matched_blipbt2signal_marleyE",     "h_selflashgrp_matched_blipbt2signal_marleyE;    marley true E [MeV]", 80, 0, 80);
 
   TH1F *h_sig_preROImatch_flash2shower_dist   = new TH1F("h_sig_preROImatch_flash2shower_dist",  "Pre ROI match Signal Flash to Shower distance;distance [cm]", 300, 0, 3000);
 
@@ -149,19 +149,26 @@ void FlashGroupAndMatchQBlips()
   TH1F *h_selflashgrp_matched_showerbt2signal_25MeVmarleyX = new TH1F("h_selflashgrp_matched_showerbt2signal_25MeVmarleyX",     "h_selflashgrp_matched_showerbt2signal_25MeVmarleyX;    marley true x [cm]", 40, -400, 400);
   TH1F *h_selflashgrp_matched_showerbt2signal_50MeVmarleyX = new TH1F("h_selflashgrp_matched_showerbt2signal_50MeVmarleyX",     "h_selflashgrp_matched_showerbt2signal_50MeVmarleyX;    marley true x [cm]", 40, -400, 400);
 
+  // Post shower matching performance
+  TH1F *h_selflashgrp_matched_showerbt2signal_pdsrecoT0 = new TH1F("h_selflashgrp_matched_showerbt2signal_pdsrecoT0",   "h_selflashgrp_matched_showerbt2signal_pdsrecoT0;    flash matched shower pds t0 [us]", 400, -4000, 4000);
   TH1F *h_selflashgrp_matched_showerbt2signal_tpcrecoX_t0corr = new TH1F("h_selflashgrp_matched_showerbt2signal_tpcrecoX_t0corr",     "h_selflashgrp_matched_showerbt2signal_tpcrecoX_t0corr;    flash matched tpc shower x t0 corrected [cm]", 40, -400, 400);
+
   TH1F *h_selflashgrp_matched_showerbt2signal_tpcrecoY = new TH1F("h_selflashgrp_matched_showerbt2signal_tpcrecoY",     "h_selflashgrp_matched_showerbt2signal_tpcrecoY;    flash matched shower tpc y [cm]", 80, -800, 800);
   TH1F *h_selflashgrp_matched_showerbt2signal_tpcrecoZ = new TH1F("h_selflashgrp_matched_showerbt2signal_tpcrecoZ",     "h_selflashgrp_matched_showerbt2signal_tpcrecoZ;    flash matched shower tpc z [cm]", 210, 0, 2100);
   TH1F *h_selflashgrp_matched_showerbt2signal_tpcrecoE = new TH1F("h_selflashgrp_matched_showerbt2signal_tpcrecoE",     "h_selflashgrp_matched_showerbt2signal_tpcrecoE;    flash matched shower tpc E [MeV]", 80, 0, 80);
 
   TH1F *h_selflashgrp_matched_showerbt2signal_pdsrecoY = new TH1F("h_selflashgrp_matched_showerbt2signal_pdsrecoY",     "h_selflashgrp_matched_showerbt2signal_pdsrecoY;    flash matched shower pds y [cm]", 80, -800, 800);
   TH1F *h_selflashgrp_matched_showerbt2signal_pdsrecoZ = new TH1F("h_selflashgrp_matched_showerbt2signal_pdsrecoZ",     "h_selflashgrp_matched_showerbt2signal_pdsrecoZ;    flash matched shower pds z [cm]", 210, 0, 2100);
-  TH1F *h_selflashgrp_matched_showerbt2signal_pdsrecoT0 = new TH1F("h_selflashgrp_matched_showerbt2signal_pdsrecoT0",   "h_selflashgrp_matched_showerbt2signal_pdsrecoT0;    flash matched shower pds t0 [us]", 400, -4000, 4000);
 
-  TH1F *h_selflashgrp_selshower_evt_X_res = new TH1F("h_selflashgrp_selshower_evt_X_res",     "h_selflashgrp_selshower_evt_X_res;    select shower x - true marley x [cm]", 40, -400, 400);
-  TH1F *h_selflashgrp_selshower_evt_Y_res = new TH1F("h_selflashgrp_selshower_evt_Y_res",     "h_selflashgrp_selshower_evt_Y_res;    select shower y - true marley y [cm]",  80, -800, 800);
-  TH1F *h_selflashgrp_selshower_evt_Z_res = new TH1F("h_selflashgrp_selshower_evt_Z_res",     "h_selflashgrp_selshower_evt_Z_res;    select shower z - true marley z [cm]", 210, 0, 2100);
-  TH1F *h_selflashgrp_selshower_evt_T_res = new TH1F("h_selflashgrp_selshower_evt_T_res",     "h_selflashgrp_selshower_evt_T_res;    select shower t - true marley t [us]", 400, -4000, 4000);
+  //  tpc reco resolution
+  TH1F *h_selflashgrp_selshower_evt_X_tpc_res = new TH1F("h_selflashgrp_selshower_evt_X_tpc_res",     "h_selflashgrp_selshower_evt_X_tpc_res;    matched shower tpc x corrected - true marley x [cm]", 40, -400, 400);
+  TH1F *h_selflashgrp_selshower_evt_Y_tpc_res = new TH1F("h_selflashgrp_selshower_evt_Y_tpc_res",     "h_selflashgrp_selshower_evt_Y_tpc_res;    matched shower tpc y - true marley y [cm]",  80, -800, 800);
+  TH1F *h_selflashgrp_selshower_evt_Z_tpc_res = new TH1F("h_selflashgrp_selshower_evt_Z_tpc_res",     "h_selflashgrp_selshower_evt_Z_tpc_res;    matched shower tpc z - true marley z [cm]", 210, 0, 2100);
+
+  TH1F *h_selflashgrp_selshower_evt_T_pds_res = new TH1F("h_selflashgrp_selshower_evt_T_pds_res",     "h_selflashgrp_selshower_evt_T_pds_res;    matched shower flash t - true marley t [us]", 400, -4000, 4000);
+  TH1F *h_selflashgrp_selshower_evt_Y_pds_res = new TH1F("h_selflashgrp_selshower_evt_Y_pds_res",     "h_selflashgrp_selshower_evt_Y_pds_res;    matched shower flash y - true marley y [cm]",  80, -800, 800);
+  TH1F *h_selflashgrp_selshower_evt_Z_pds_res = new TH1F("h_selflashgrp_selshower_evt_Z_pds_res",     "h_selflashgrp_selshower_evt_Z_pds_res;    matched shower flash z - true marley z [cm]", 210, 0, 2100);
+
 
   // these are branches you want to read from the above root file
   Double_t marleynueX, marleynueY, marleynueZ, marleynueTime, marleynueE;
@@ -728,8 +735,8 @@ void FlashGroupAndMatchQBlips()
     double maxn2llshowertpcrecoE=-999;
     double maxn2llshower_bt = -999;
 
-    double maxn2llshowerpdsrecoY=-999;
-    double maxn2llshowerpdsrecoZ=-999;
+    double maxn2llblippdsrecoY=-999;
+    double maxn2llblippdsrecoZ=-999;
     double maxn2llshowerpdsrecoT0=-999;
 
     double dy_flashgrp_tpcbtshowerstart = -999;
@@ -754,8 +761,8 @@ void FlashGroupAndMatchQBlips()
       maxn2llshowertpcrecoE=-999;
       maxn2llshower_bt = -999;
 
-      maxn2llshowerpdsrecoY=-999;
-      maxn2llshowerpdsrecoZ=-999;
+      maxn2llblippdsrecoY=-999;
+      maxn2llblippdsrecoZ=-999;
       maxn2llshowerpdsrecoT0=-999;
 
       // *************
@@ -836,8 +843,8 @@ void FlashGroupAndMatchQBlips()
         maxn2llshowertpcrecoZ = (*ShowerStartZ)[ishower];
         maxn2llshowertpcrecoE = (*ShowerE)[ishower];
         // max n2ll shower pds reco
-        maxn2llshowerpdsrecoY = LightROIcenterY;
-        maxn2llshowerpdsrecoZ = LightROIcenterZ;
+        maxn2llblippdsrecoY = LightROIcenterY;
+        maxn2llblippdsrecoZ = LightROIcenterZ;
         maxn2llshowerpdsrecoT0 = LightROIcenterT;
         // light can have E reco - need VD LY map!!!
 
@@ -904,19 +911,24 @@ void FlashGroupAndMatchQBlips()
           h_selflashgrp_matched_showerbt2signal_50MeVmarleyX->Fill(marleynueX); // 50 MeV signal
         }
 
+        // fill performance
+        h_selflashgrp_matched_showerbt2signal_pdsrecoT0->Fill(maxn2llshowerpdsrecoT0);
         h_selflashgrp_matched_showerbt2signal_tpcrecoX_t0corr->Fill(maxn2llshowertpcrecoX_t0corr);
+        // tpc reco
         h_selflashgrp_matched_showerbt2signal_tpcrecoY->Fill(maxn2llshowertpcrecoY);
         h_selflashgrp_matched_showerbt2signal_tpcrecoZ->Fill(maxn2llshowertpcrecoZ);
         h_selflashgrp_matched_showerbt2signal_tpcrecoE->Fill(maxn2llshowertpcrecoE);
+        // pds reco
+        h_selflashgrp_matched_showerbt2signal_pdsrecoY->Fill(maxn2llblippdsrecoY);
+        h_selflashgrp_matched_showerbt2signal_pdsrecoZ->Fill(maxn2llblippdsrecoZ);
+        // evt level info
+        h_selflashgrp_selshower_evt_X_tpc_res->Fill(maxn2llshowertpcrecoX_t0corr-marleynueX);
+        h_selflashgrp_selshower_evt_Y_tpc_res->Fill(maxn2llshowertpcrecoY-marleynueY);
+        h_selflashgrp_selshower_evt_Z_tpc_res->Fill(maxn2llshowertpcrecoZ-marleynueZ);
 
-        h_selflashgrp_matched_showerbt2signal_pdsrecoY->Fill(maxn2llshowerpdsrecoY);
-        h_selflashgrp_matched_showerbt2signal_pdsrecoZ->Fill(maxn2llshowerpdsrecoZ);
-        h_selflashgrp_matched_showerbt2signal_pdsrecoT0->Fill(maxn2llshowerpdsrecoT0);
-
-        h_selflashgrp_selshower_evt_X_res->Fill(maxn2llshowertpcrecoX_t0corr-marleynueX);
-        h_selflashgrp_selshower_evt_Y_res->Fill(maxn2llshowertpcrecoY-marleynueY);
-        h_selflashgrp_selshower_evt_Z_res->Fill(maxn2llshowertpcrecoZ-marleynueZ);
-        h_selflashgrp_selshower_evt_T_res->Fill(maxn2llshowerpdsrecoT0-marleynueTime);
+        h_selflashgrp_selshower_evt_T_pds_res->Fill(maxn2llshowerpdsrecoT0-marleynueTime);
+        h_selflashgrp_selshower_evt_Y_pds_res->Fill(maxn2llblippdsrecoY-marleynueY);
+        h_selflashgrp_selshower_evt_Z_pds_res->Fill(maxn2llblippdsrecoZ-marleynueZ);
       } else if (maxn2llshower_bt > -1) {//bkg
         //as a func of event drift X
         h_selflashgrp_matched_showerbt2bkg_marleyX->Fill(marleynueX);
@@ -941,42 +953,42 @@ void FlashGroupAndMatchQBlips()
     // extract E_reco, Q and E_reco, L
     // ===============================
     // Take blips collection
-    double blip_X_coordinate = -999;
+    double blip_X_coordinate_t0corr = -999;
     double dt = -999, iblipdistance2anode = -999;
     int countROIblips = 0;
     double maxblipn2ll = -999;
     double blipn2ll=0;
-    double selblipX=-999;
-    double selblipY=-999;
-    double selblipZ=-999;
-    double selblipT=-999;
-    double selblipE=-999;
+    double maxn2llbliptpcrecoX_t0corr=-999;
+    double maxn2llbliptpcrecoY=-999;
+    double maxn2llbliptpcrecoZ=-999;
+    double maxn2llblippdsrecoT0=-999;
+    double maxn2llbliptpcrecoE=-999;
 
-    double selblip_trueX=-999;
-    double selblip_trueY=-999;
-    double selblip_trueZ=-999;
-    double selblip_trueT=-999;
-    double selblip_trueE=-999;
-    int selblip_bt = -999;
+    double maxn2llblip_trueX=-999;
+    double maxn2llblip_trueY=-999;
+    double maxn2llblip_trueZ=-999;
+    double maxn2llblip_trueT=-999;
+    double maxn2llblip_trueE=-999;
+    int maxn2llblip_bt = -999;
 
     for (int iblip = 0; iblip < nblips; iblip++){
-      blip_X_coordinate = -999;
+      blip_X_coordinate_t0corr = -999;
       dt = -999;
       iblipdistance2anode = -999;
       maxblipn2ll = -999;
       blipn2ll=0;
-      selblipX=-999;
-      selblipY=-999;
-      selblipZ=-999;
-      selblipT=-999;
-      selblipE=-999;
+      maxn2llbliptpcrecoX_t0corr=-999;
+      maxn2llbliptpcrecoY=-999;
+      maxn2llbliptpcrecoZ=-999;
+      maxn2llblippdsrecoT0=-999;
+      maxn2llbliptpcrecoE=-999;
 
-      selblip_trueX=-999;
-      selblip_trueY=-999;
-      selblip_trueZ=-999;
-      selblip_trueT=-999;
-      selblip_trueE=-999;
-      selblip_bt = -999;
+      maxn2llblip_trueX=-999;
+      maxn2llblip_trueY=-999;
+      maxn2llblip_trueZ=-999;
+      maxn2llblip_trueT=-999;
+      maxn2llblip_trueE=-999;
+      maxn2llblip_bt = -999;
 
       if ( sqrt( pow((*blipY)[iblip] - LightROIcenterY, 2) + pow((*blipZ)[iblip] - LightROIcenterZ, 2) )  > LightROIradius) continue; // skip stuff outside ROI
       // report number of blips meet the criteria
@@ -987,17 +999,17 @@ void FlashGroupAndMatchQBlips()
       dt = (*blipDriftT)[iblip]*0.5 - LightROIcenterT; // us
 
       iblipdistance2anode = dt*vdmmpus/10; // cm
-      blip_X_coordinate = anodeX - iblipdistance2anode;
+      blip_X_coordinate_t0corr = anodeX - iblipdistance2anode;
 
-      // now the blip is located @ blip_X_coordinate, blipY, and blipZ, FlashGroupT
+      // now the blip is located @ blip_X_coordinate_t0corr, blipY, and blipZ, FlashGroupT
       // calculate expected amount of light from the blip to each detector
       // assume MIP, 25k ph/MeV, 3% PDE, XA size 60x60cm
       for (int iflashgrphit = 0; iflashgrphit < LightROIOphitsPE.size(); iflashgrphit++){
         // Calculate solid angle based on square detector in Eq.4-6 in http://zaluzec.com/NJZTools/Zaluzec-FinalAsPublished-SolidAngleFormulaePaper.pdf
         // add non radial correction: tilt angle > 0
         // det X fixed at -320 cm
-        double d = sqrt( pow((*blipY)[iblip] - LightROIOphitsY.at(iflashgrphit), 2) + pow((*blipZ)[iblip] - LightROIOphitsZ.at(iflashgrphit), 2) + pow(blip_X_coordinate + 320, 2) ); // distance from blip to det center
-        double D = blip_X_coordinate + 320; // distance to YZ plane;  det X fixed at -320 cm
+        double d = sqrt( pow((*blipY)[iblip] - LightROIOphitsY.at(iflashgrphit), 2) + pow((*blipZ)[iblip] - LightROIOphitsZ.at(iflashgrphit), 2) + pow(blip_X_coordinate_t0corr + 320, 2) ); // distance from blip to det center
+        double D = blip_X_coordinate_t0corr + 320; // distance to YZ plane;  det X fixed at -320 cm
         double H = sqrt( pow((*blipY)[iblip] - LightROIOphitsY.at(iflashgrphit), 2) + pow((*blipZ)[iblip] - LightROIOphitsZ.at(iflashgrphit), 2) ); // distance in YZ plane;
         double cosinetilt = D/sqrt(D*D + H*H);
         double alpha = TMath::ATan(60/(2*d)); // cm
@@ -1014,23 +1026,29 @@ void FlashGroupAndMatchQBlips()
       if (blipn2ll > maxblipn2ll) {
         maxblipn2ll = blipn2ll;
         // control plot
-        if (ientry == 0) {
-          h_maxblipn2ll_evol->Fill(countROIblips, maxblipn2ll);
+        //if (ientry == 0) {
+          //h_maxblipn2ll_evol->Fill(countROIblips, maxblipn2ll);
           //cout<< "@ evt " << ientry << ", countROIblips: "<< countROIblips << ", maxblipn2ll: " <<maxblipn2ll  <<endl;
-        }
-        // selected max n2ll blip info
-        selblipX = blip_X_coordinate;
-        selblipY = (*blipY)[iblip];
-        selblipZ = (*blipZ)[iblip];
-        selblipT = LightROIcenterT;
-        selblipE = (*blipE)[iblip];
+        //}
 
-        selblip_trueX = (*blipX_true)[iblip];
-        selblip_trueY = (*blipY_true)[iblip];
-        selblip_trueZ = (*blipZ_true)[iblip];
-        selblip_trueT = (*blipT_true)[iblip];
-        selblip_trueE = (*blipE_true)[iblip];
-        selblip_bt    = (*blipbt)[iblip];
+        // selected max n2ll blip info
+        maxn2llblip_bt    = (*blipbt)[iblip];
+        // max n2ll blip tpc reco
+        maxn2llbliptpcrecoX_t0corr = blip_X_coordinate_t0corr;
+        maxn2llbliptpcrecoY = (*blipY)[iblip];
+        maxn2llbliptpcrecoZ = (*blipZ)[iblip];
+        maxn2llbliptpcrecoE = (*blipE)[iblip];
+        // max n2ll blip pds reco
+        maxn2llblippdsrecoY = LightROIcenterY;
+        maxn2llblippdsrecoZ = LightROIcenterZ;
+        maxn2llblippdsrecoT0 = LightROIcenterT;
+
+        maxn2llblip_trueX = (*blipX_true)[iblip];
+        maxn2llblip_trueY = (*blipY_true)[iblip];
+        maxn2llblip_trueZ = (*blipZ_true)[iblip];
+        maxn2llblip_trueT = (*blipT_true)[iblip];
+        maxn2llblip_trueE = (*blipE_true)[iblip];
+
       }// max likelihood blip
 
 
@@ -1048,28 +1066,28 @@ void FlashGroupAndMatchQBlips()
     // Evaluate light matched blip performance
     // *************************************
     // blip level performance
-    h_selflashgrp_selblip_X_res->Fill(selblipX-selblip_trueX);// X location compare: most important
-    h_selflashgrp_selblip_Y_res->Fill(selblipY-selblip_trueY);
-    h_selflashgrp_selblip_Z_res->Fill(selblipZ-selblip_trueZ);
-    h_selflashgrp_selblip_T_res->Fill(selblipT-selblip_trueT);
-    h_selflashgrp_selblip_E_res->Fill(selblipE-selblip_trueE);
-    h_selflashgrp_selblip_bt->Fill(selblip_bt);
+    h_selflashgrp_selblip_X_res->Fill(maxn2llbliptpcrecoX_t0corr-maxn2llblip_trueX);// X location compare: most important
+    h_selflashgrp_selblip_Y_res->Fill(maxn2llbliptpcrecoY-maxn2llblip_trueY);
+    h_selflashgrp_selblip_Z_res->Fill(maxn2llbliptpcrecoZ-maxn2llblip_trueZ);
+    h_selflashgrp_selblip_T_res->Fill(maxn2llblippdsrecoT0-maxn2llblip_trueT);
+    h_selflashgrp_selblip_E_res->Fill(maxn2llbliptpcrecoE-maxn2llblip_trueE);
+    h_selflashgrp_maxn2llblip_bt->Fill(maxn2llblip_bt);
 
     // Event level blip performance
-    h_selflashgrp_selblip_evt_X_res->Fill(selblipX-marleynueX);
-    h_selflashgrp_selblip_evt_Y_res->Fill(selblipY-marleynueY);
-    h_selflashgrp_selblip_evt_Z_res->Fill(selblipZ-marleynueZ);
-    h_selflashgrp_selblip_evt_T_res->Fill(selblipT-marleynueTime);
+    h_selflashgrp_selblip_evt_X_res->Fill(maxn2llbliptpcrecoX_t0corr-marleynueX);
+    h_selflashgrp_selblip_evt_Y_res->Fill(maxn2llbliptpcrecoY-marleynueY);
+    h_selflashgrp_selblip_evt_Z_res->Fill(maxn2llbliptpcrecoZ-marleynueZ);
+    h_selflashgrp_selblip_evt_T_res->Fill(maxn2llblippdsrecoT0-marleynueTime);
 
 
     // whether you got the blip bt to true sign, as a func of event drift X
-    if (selblip_bt == -1) {// found blip bt to signal
-      h_selflashgrp_selblip_signalbt_marleyX->Fill(marleynueX);
+    if (maxn2llblip_bt == -1) {// found blip bt to signal
+      h_selflashgrp_matched_blipbt2signal_marleyX->Fill(marleynueX);
     }
 
     // as a func of event energy
-    if (selblip_bt == -1) {// found blip bt to signal
-      h_selflashgrp_selblip_signalbt_marleyE->Fill(marleynueE);
+    if (maxn2llblip_bt == -1) {// found blip bt to signal
+      h_selflashgrp_matched_blipbt2signal_marleyE->Fill(marleynueE);
     }
 
 
@@ -1228,51 +1246,60 @@ void FlashGroupAndMatchQBlips()
 
   outFile->mkdir("Post_matching_showereval");
   outFile->cd("Post_matching_showereval");
-  // tpc reco quantities
+
+  // matching time
+  h_selflashgrp_matched_showerbt2signal_pdsrecoT0->Write();
   h_selflashgrp_matched_showerbt2signal_tpcrecoX_t0corr->Write();
+  // tpc reco quantities
   h_selflashgrp_matched_showerbt2signal_tpcrecoY->Write();
   h_selflashgrp_matched_showerbt2signal_tpcrecoZ->Write();
   h_selflashgrp_matched_showerbt2signal_tpcrecoE->Write();
   // light reco quantities
   h_selflashgrp_matched_showerbt2signal_pdsrecoY->Write();
   h_selflashgrp_matched_showerbt2signal_pdsrecoZ->Write();
-  h_selflashgrp_matched_showerbt2signal_pdsrecoT0->Write();
-
-  h_selflashgrp_selshower_evt_X_res->Write();
-  h_selflashgrp_selshower_evt_Y_res->Write();
-  h_selflashgrp_selshower_evt_Z_res->Write();
-  h_selflashgrp_selshower_evt_T_res->Write();
+  // resolution tpc
+  h_selflashgrp_selshower_evt_X_tpc_res->Write();
+  h_selflashgrp_selshower_evt_Y_tpc_res->Write();
+  h_selflashgrp_selshower_evt_Z_tpc_res->Write();
+  // resolution pds
+  h_selflashgrp_selshower_evt_T_pds_res->Write();
+  h_selflashgrp_selshower_evt_Y_pds_res->Write();
+  h_selflashgrp_selshower_evt_Z_pds_res->Write();
 
 
 
   // Blip
   // Blip
   // Blip
+  outFile->mkdir("Flash_blip_matching_eval");
+  outFile->cd("Flash_blip_matching_eval");
+  h_selflashgrp_matched_blipbt2signal_marleyX->Write();
+  h_selflashgrp_matched_blipbt2signal_marleyE->Write();
+  // PROBLEM HERE - Denominator should be events with signal blips recoed, not all events???
+  TH1F *h_selflashgrp_matched_blipbt2signal_marleyX_eff = (TH1F*)h_selflashgrp_matched_blipbt2signal_marleyX->Clone("h_selflashgrp_matched_blipbt2signal_marleyX_eff");
+  h_selflashgrp_matched_blipbt2signal_marleyX_eff->Divide(h_marleyX);
+  h_selflashgrp_matched_blipbt2signal_marleyX_eff->Write();
+  TH1F *h_selflashgrp_matched_blipbt2signal_marleyE_eff = (TH1F*)h_selflashgrp_matched_blipbt2signal_marleyE->Clone("h_selflashgrp_matched_blipbt2signal_marleyE_eff");
+  h_selflashgrp_matched_blipbt2signal_marleyE_eff->Divide(h_marleyE);
+  h_selflashgrp_matched_blipbt2signal_marleyE_eff->Write();
+
+
   outFile->mkdir("Post_matching_blipeval");
   outFile->cd("Post_matching_blipeval");
   // blip level performance
-  h_maxblipn2ll_evol->Write();
+  //h_maxblipn2ll_evol->Write();
   h_selflashgrp_selblip_X_res->Write();
   h_selflashgrp_selblip_Y_res->Write();
   h_selflashgrp_selblip_Z_res->Write();
   h_selflashgrp_selblip_T_res->Write();
   h_selflashgrp_selblip_E_res->Write();
-  h_selflashgrp_selblip_bt->Write();
+  h_selflashgrp_maxn2llblip_bt->Write();
 
   // check performance at event level Evt location compare
   h_selflashgrp_selblip_evt_X_res->Write();
   h_selflashgrp_selblip_evt_Y_res->Write();
   h_selflashgrp_selblip_evt_Z_res->Write();
   h_selflashgrp_selblip_evt_T_res->Write();
-
-  h_selflashgrp_selblip_signalbt_marleyX->Write();
-  h_selflashgrp_selblip_signalbt_marleyE->Write();
-  TH1F *h_selflashgrp_selblip_signalbt_marleyX_eff = (TH1F*)h_selflashgrp_selblip_signalbt_marleyX->Clone("h_selflashgrp_selblip_signalbt_marleyX_eff");
-  h_selflashgrp_selblip_signalbt_marleyX_eff->Divide(h_marleyX);
-  h_selflashgrp_selblip_signalbt_marleyX_eff->Write();
-  TH1F *h_selflashgrp_selblip_signalbt_marleyE_eff = (TH1F*)h_selflashgrp_selblip_signalbt_marleyE->Clone("h_selflashgrp_selblip_signalbt_marleyE_eff");
-  h_selflashgrp_selblip_signalbt_marleyE_eff->Divide(h_marleyE);
-  h_selflashgrp_selblip_signalbt_marleyE_eff->Write();
 
   outFile->Close();
 
