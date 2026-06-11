@@ -1,3 +1,81 @@
+## LArSoft analyzer PNS run at np02
+
+```
+# build on dunegpvm
+
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash \
+-B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid \
+/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+export UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
+```
+```
+cd /exp/dune/app/users/weishi/np02pns_larsoft
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+
+ups list -aK+ dunesw
+setup dunesw v10_20_09d00 -q e26:prof
+
+mkdir dunesw_v102009d00
+cd dunesw_v102009d00/
+
+mrb newDev
+source /exp/dune/app/users/weishi/np02pns_larsoft/dunesw_v102009d00/localProducts_larsoft_v10_20_09_e26_prof/setup
+
+cd srcs
+mrb g dunereco
+
+cd $MRB_BUILDDIR
+mrbsetenv
+mrbslp # need this to proper config and fix wirecell error
+
+setup ninja
+mrb i --generator ninja
+#That sets up the default dunereco.
+```
+
+Next to setup Blipreco code and the analyzer module, copy two directories below to your dunereco:
+
+```
+/exp/dune/app/users/apaudel/dunesw_setups/v10_20_06d01/srcs/dunereco/dunereco/BlipRecoDUNE
+/exp/dune/app/users/apaudel/dunesw_setups/v10_20_06d01/srcs/dunereco/dunereco/TrackRemoval
+```
+
+add the directory BlipRecoDUNE and TrackRemoval in the CMakeLists file,
+```
+/exp/dune/app/users/apaudel/dunesw_setups/v10_20_06d01/srcs/dunereco/dunereco/CMakeLists.txt
+```
+
+```
+cd $MRB_BUILDDIR and do
+mrbsetenv
+ninja install
+```
+
+Produce sim samples
+```
+cd np02pns_larsoft_fcls
+./runcode.sh
+```
+
+Relogin:
+```
+/cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash \
+-B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid \
+/cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+
+export UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
+
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+setup dunesw v10_20_09d00 -q e26:prof
+source /exp/dune/app/users/weishi/np02pns_larsoft/dunesw_v102009d00/localProducts_larsoft_v10_20_09_e26_prof/setup
+
+mrbsetenv
+mrbslp
+
+lar -c eventdump.fcl <filename> -n 1
+```
+
 ## Test v5 ggd PNS geo LArsoft
 ```
 # from develop branch
