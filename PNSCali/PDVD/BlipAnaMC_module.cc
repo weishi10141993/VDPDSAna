@@ -500,6 +500,8 @@ class BlipAnaMCTreeDataStruct
   int   blip_cryo[kMaxBlips];         // blip cryostat ID
   int   blip_tpc[kMaxBlips];          // blip TPC
   int   blip_nplanes[kMaxBlips];      // number of planes matched (2 or 3)
+  int   blip_leadTrkID[kMaxBlips];    // lead G4 trk id
+  int   blip_bt[kMaxBlips];           // blip backtrack
   float blip_time[kMaxBlips];         // drift time [us]
   float blip_x[kMaxBlips];            // X position [cm]
   float blip_y[kMaxBlips];            // Y position [cm]
@@ -690,6 +692,8 @@ class BlipAnaMCTreeDataStruct
     FillWith(blip_cryo,        -9);
     FillWith(blip_tpc,        -9);
     FillWith(blip_nplanes,    -9);
+    FillWith(blip_leadTrkID,  -9);
+    FillWith(blip_bt,         -999);
     FillWith(blip_time,       -99);
     FillWith(blip_x,          -9999);
     FillWith(blip_y,          -9999);
@@ -847,6 +851,8 @@ class BlipAnaMCTreeDataStruct
     evtTree->Branch("blip_cryo",blip_cryo,"blip_cryo[nblips]/I");
     evtTree->Branch("blip_tpc",blip_tpc,"blip_tpc[nblips]/I");
     evtTree->Branch("blip_nplanes",blip_nplanes,"blip_nplanes[nblips]/I");
+    evtTree->Branch("blip_leadTrkID",blip_leadTrkID,"blip_leadTrkID[nblips]/I");
+    evtTree->Branch("blip_bt",blip_bt,"blip_bt[nblips]/I");
     evtTree->Branch("blip_time",blip_time,"blip_time[nblips]/F");
     evtTree->Branch("blip_x",blip_x,"blip_x[nblips]/F");
     evtTree->Branch("blip_y",blip_y,"blip_y[nblips]/F");
@@ -2227,6 +2233,29 @@ void BlipAnaMC::analyze(const art::Event& evt)
     fData->blip_energy[i]     = blp.Energy;
     fData->blip_energyCorr[i] = blp.EnergyCorr;
     //fData->blip_yzcorr[i]     = tpcCalib.YZdqdxCorrection(fCaloPlane,blp.Position.Y(),blp.Position.Z());
+
+    // Extract the leading true particle Track ID
+    int leadTrkID = blp.truth.LeadG4ID;
+    fData->blip_leadTrkID[i] = leadTrkID;
+    
+    std::cout << "DEBUG: Blip #" << i << " LeadG4ID = " << leadTrkID
+          << " | ngen size: " << ngenG4trkID.size()
+          << " | ar39 size: " << ar39G4trkID.size() << std::endl;
+
+    if (ngenG4trkID.count(leadTrkID))                   fData->blip_bt[i] = 0;   // ngen Signal
+    else if (ar39G4trkID.count(leadTrkID))              fData->blip_bt[i] = 1;   // ar39
+    else if (ar42G4trkID.count(leadTrkID))              fData->blip_bt[i] = 2;   // ar42
+    else if (kr85G4trkID.count(leadTrkID))              fData->blip_bt[i] = 3;   // kr85
+    else if (k42fromar42G4trkID.count(leadTrkID))       fData->blip_bt[i] = 4;   // k42fromar42
+    else if (k40cathodeG4trkID.count(leadTrkID))        fData->blip_bt[i] = 5;   // k40cathode
+    else if (th232cathodeG4trkID.count(leadTrkID))      fData->blip_bt[i] = 6;   // th232cathode
+    else if (u238cathodeG4trkID.count(leadTrkID))       fData->blip_bt[i] = 7;   // u238cathode
+    else if (k40anodeG4trkID.count(leadTrkID))          fData->blip_bt[i] = 8;   // k40anode
+    else if (th232anodeG4trkID.count(leadTrkID))        fData->blip_bt[i] = 9;   // th232anode
+    else if (u238anodeG4trkID.count(leadTrkID))         fData->blip_bt[i] = 10;  // u238anode
+    else if (cryostatfoamgammaG4trkID.count(leadTrkID)) fData->blip_bt[i] = 11;  // cryostatfoamgamma
+    else if (cosmicgenG4trkID.count(leadTrkID))         fData->blip_bt[i] = 12;  // cosmicgen
+    else                                                fData->blip_bt[i] = -999; // Unknown background / noise
 
     // Fill cluster charge 2D histograms
     h_blip_charge   ->Fill(blp.Charge);
