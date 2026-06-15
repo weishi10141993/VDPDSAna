@@ -46,6 +46,8 @@ add the directory BlipRecoDUNE and TrackRemoval in the CMakeLists file,
 /exp/dune/app/users/apaudel/dunesw_setups/v10_20_06d01/srcs/dunereco/dunereco/CMakeLists.txt
 ```
 
+modify the ```dunereco/dunereco/BlipRecoDUNE/CMakeLists.txt``` to add PhotonBackTrackerService, or copy from github:https://github.com/weishi10141993/VDPDSAna/tree/main/PNSCali/PDVD
+
 ```
 cd $MRB_BUILDDIR and do
 mrbsetenv
@@ -74,6 +76,14 @@ mrbsetenv
 mrbslp
 
 lar -c eventdump.fcl <filename> -n 1
+```
+
+Recompile:
+```
+cd ${MRB_BUILDDIR}   
+# for complete rebuild, do: mrb z
+mrbsetenv
+ninja install
 ```
 
 ## Test v5 ggd PNS geo LArsoft

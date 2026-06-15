@@ -7,6 +7,7 @@
 #include "LArG4_dune.fcl"
 #include "calorimetry_vdcb.fcl"
 #include "calorimetry.fcl"
+#include "photonbacktrackerservice_dune.fcl"
 
 process_name: BlipAnaMC
 
@@ -40,7 +41,7 @@ services:
   # We pick exactly the ones we need here.
   # In alternative, we could load a standard set provided by the experiment,
   # but we would be wasting resources on unused services.
-  # 
+  #
   # - Geometry service:
   #   provides information about the geometry of the detector and the mapping
   #   of TPC channels to the wires.
@@ -59,11 +60,17 @@ services:
   @table::protodunevd_larg4_services
 
   # @table::dunefd_simulation_services
-  @table::protodunevd_refactored_simulation_services	
+  @table::protodunevd_refactored_simulation_services
   Geometry: @local::protodunevd_v5_pns_geo
+  PhotonBackTrackerService: @local::dunefdvd_photonbacktrackerservice
 } # services
 
+# ophit backtrack
+services.PhotonBackTrackerService.PhotonBackTracker.MinimumHitEnergyFraction: 0.1
+services.PhotonBackTrackerService.PhotonBackTracker.Delay: 0
+
 services.BackTrackerService.BackTracker.SimChannelModuleLabel: "tpcrawdecoder:simpleSC"
+
 # The 'source' section tells the script to expect an input file with art::Event records.
 # Note that the name of the input file is not included here. You specify that on the
 # command line when you run this script; e.g.,
@@ -75,15 +82,15 @@ source:
   module_type: RootInput
 
   # Number of events to analyze; "-1" means all of the events in the input
-  # file. You can override this value with the "-n" option on the command line. 
-  maxEvents:  -1 
+  # file. You can override this value with the "-n" option on the command line.
+  maxEvents:  -1
 
   # I've commented this out, but if you really want to include the name of
   # an input file in this script, here's how you do it.
   # fileNames: ["myinput.root"]
 }
 
-# This is empty, because we're not writing any art::Events to an output file. 
+# This is empty, because we're not writing any art::Events to an output file.
 outputs:{}
 
 # The 'physics' section defines and configures some modules to do work on each event.
@@ -93,8 +100,8 @@ physics:
   # Define the variables we'll need to run for this analysis program.
   analyzers:
   {
-    # This name defines a job step below, and will appear as a directory 
-    # in the output histogram file. 
+    # This name defines a job step below, and will appear as a directory
+    # in the output histogram file.
     pdblipana: @local::pdune_blipana
     #pdblipana. module_type: "BlipAnaMC"
   }
@@ -113,4 +120,3 @@ physics:
 
   end_paths: [ analysis ]
 }
-
