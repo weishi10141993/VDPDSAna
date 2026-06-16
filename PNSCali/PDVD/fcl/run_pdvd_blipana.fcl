@@ -123,3 +123,18 @@ physics:
 # do not use largeant (default)!
 physics.analyzers.pdblipana.BlipAlg.GeantProducer:    "simplemerge"
 services.ParticleInventoryService.ParticleInventory.G4ModuleLabel: "simplemerge" # keep consistent with BlipAlg.GeantProducer
+physics.analyzers.pdblipana.SignalLabel:    "ngen"        # 0
+physics.analyzers.pdblipana.BackgroundLabelVector: [
+                      "ar39",                             # 1
+                      "ar42",                             # 2
+                      "kr85",                             # 3
+                      "k42fromar42",                      # 4
+                      "k40cathode",                       # 5
+                      "th232cathode",                     # 6
+                      "u238cathode",                      # 7
+                      "k40anode",                         # 8
+                      "th232anode",                       # 9
+                      "u238anode",                        # 10
+                      "cryostatfoamgamma",                # 11
+                      "cosmicgen"                         # 12
+]

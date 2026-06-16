@@ -1272,7 +1272,7 @@ BlipAnaMC::BlipAnaMC(fhicl::ParameterSet const& pset) :
   fhicl::ParameterSet pset_blipalg = pset.get<fhicl::ParameterSet>("BlipAlg");
   fHitProducer    = pset_blipalg.get<std::string>   ("HitProducer",     "gaushit");
   fTrkProducer    = pset_blipalg.get<std::string>   ("TrkProducer",     "pandora");
-  fGeantProducer  = pset_blipalg.get<std::string>   ("GeantProducer",   "largeant");
+  fGeantProducer  = pset_blipalg.get<std::string>   ("GeantProducer",   "simplemerge");
   fSimDepProducer = pset_blipalg.get<std::string>   ("SimEDepProducer", "ionization");
   fCaloPlane      = pset_blipalg.get<int>           ("CaloPlane",       2);
   fSavePlaneInfo  = pset.get<std::vector<bool>>     ("SavePlaneInfo",   {true,true,true});
@@ -1286,14 +1286,17 @@ BlipAnaMC::BlipAnaMC(fhicl::ParameterSet const& pset) :
   fPlotBlipYBounds  = pset.get<std::vector<float>>  ("PlotBlipYBounds", {160,-400,400});
   fPlotBlipZBounds  = pset.get<std::vector<float>>  ("PlotBlipZBounds", {100,-100,400});
 
-  fSignalLabel = pset.get<std::string>("SignalLabel", "ngen");
+  fSignalLabel = pset.get<std::string>("SignalLabel");
+  fBackgroundLabels = pset.get<std::vector<std::string>>("BackgroundLabelVector");
+
+  //fSignalLabel = pset.get<std::string>("SignalLabel", "ngen");
   // Explicitly configuring the background labels
-  fBackgroundLabels = pset.get<std::vector<std::string>>("BackgroundLabels", {
-    "ar39", "ar42", "kr85", "k42fromar42",
+  /*fBackgroundLabels = pset.get<std::vector<std::string>>("BackgroundLabels", {
+  "ar39", "ar42", "kr85", "k42fromar42",
     "k40cathode", "th232cathode", "u238cathode",
     "k40anode", "th232anode", "u238anode",
     "cryostatfoamgamma", "cosmicgen"
-  });
+  });*/
 
   // data tree object
   fData = new BlipAnaMCTreeDataStruct();
@@ -1378,11 +1381,8 @@ void BlipAnaMC::analyze(const art::Event& evt)
   //============================================
   // Run blip reconstruction:
   //============================================
-  std::cout<<"start debug: "<<"\n";
   fBlipAlg.RunBlipReco(evt);
-  std::cout<<"start debug: 1 "<<"\n";
   if( !fBlipAlg.hitinfo.size() ) return;
-  std::cout<<"start debug: 2"<<"\n";
 
   //
   //  In the above step, we pass the entire art::Event to the algorithm,
@@ -1410,11 +1410,8 @@ void BlipAnaMC::analyze(const art::Event& evt)
   //=======================================
   // Get ProtoDUNE trigger
   //=======================================
-  std::cout<<"start debug: 3"<<"\n";
   if( fGetRDTimestamp ) {
-    std::cout<<"start debug: 3.1"<<"\n";
     try {
-      std::cout<<"start debug: 3.2"<<"\n";
       art::ValidHandle<std::vector<raw::RDTimeStamp>> timeStamps
         = evt.getValidHandle<std::vector<raw::RDTimeStamp>>("timingrawdecoder:daq");
       // Check that we have good information
@@ -1429,7 +1426,6 @@ void BlipAnaMC::analyze(const art::Event& evt)
     catch (...) {
     }
   }
-  std::cout<<"start debug: 4"<<"\n";
 
 
 
@@ -1442,7 +1438,6 @@ void BlipAnaMC::analyze(const art::Event& evt)
   std::vector<art::Ptr<simb::MCParticle> > plist;
   if (evt.getByLabel(fGeantProducer,pHandle)) // here need to be consistent to what supplies to blipreco: i.e., fGeantProducer configured in fcl, not largeant
     art::fill_ptr_vector(plist, pHandle);
-  std::cout<<"start debug: 5"<<"\n";
 
   // -- hits (from input module)
   art::Handle< std::vector<recob::Hit> > hitHandle;
@@ -1450,15 +1445,11 @@ void BlipAnaMC::analyze(const art::Event& evt)
   if (evt.getByLabel(fHitProducer,hitHandle))
     art::fill_ptr_vector(hitlist, hitHandle);
 
-  std::cout<<"start debug: 6"<<"\n";
-
   // -- optical hits
   art::Handle< std::vector<recob::OpHit> > opHitHandle;
   std::vector<art::Ptr<recob::OpHit> > ophitlist;
   if (evt.getByLabel("ophit", opHitHandle))
     art::fill_ptr_vector(ophitlist, opHitHandle);
-
-  std::cout<<"start debug: 7"<<"\n";
 
   // -- tracks
   auto tracklistHandle = evt.getHandle<std::vector<recob::Track>>(fTrkProducer);
@@ -1466,27 +1457,18 @@ void BlipAnaMC::analyze(const art::Event& evt)
   if (tracklistHandle) art::fill_ptr_vector(tracklist, tracklistHandle);
   art::FindManyP<recob::Hit> fmtht(tracklistHandle, evt, fTrkProducer);
 
-  std::cout<<"start debug: 8"<<"\n";
-
   // Resize data struct objects
   fData->nhits      = (int)hitlist.size();
-  std::cout<<"start debug: 9"<<"\n";
   fData->nophits    = std::min((int)ophitlist.size(), kMaxOpHits);
-  std::cout<<"start debug: 10"<<"\n";
   fData->nparticles = (int)plist.size();
-  std::cout<<"start debug: 11"<<"\n";
   fData->ntrks      = (int)tracklist.size();
-  std::cout<<"start debug: 12"<<"\n";
   fData->badchans   = fBlipAlg.EvtBadChanCount;
-  std::cout<<"start debug: 13"<<"\n";
   fData->Resize();
-  std::cout<<"start debug: 14"<<"\n";
 
 
 
   // flag this data as MC
   fIsMC = ( plist.size()>0 );
-  std::cout<<"start debug: 15"<<"\n";
 
   std::cout<<" - found "<<hitlist.size()<<" hits from "<<fHitProducer<<"\n";
   std::cout<<" - found "<<ophitlist.size()<<" OpHits from ophit\n";
@@ -1896,6 +1878,7 @@ void BlipAnaMC::analyze(const art::Event& evt)
       if (!sdp_vector.empty()) {
         // Replicating QLMatchAna logic: check the track ID of the main contributing particle
         int trackID = sdp_vector[0].trackID;
+        //std::cout << "DEBUG: ophit #" << i << " trackID = " << trackID << std::endl;
         // Question from Wei:
         // here should we ask for ancester trk ID because ngenG4trkID anf anybkgID are only obtained from largeant assn product, it misses all secodnary particles G4 decides not to track
 
@@ -2265,7 +2248,6 @@ void BlipAnaMC::analyze(const art::Event& evt)
     // here should we ask for ancester trk ID because ngenG4trkID anf anybkgID are only obtained from largeant assn product, it misses all secodnary particles G4 decides not to track
 
     std::cout << "DEBUG: Blip #" << i << " LeadG4ID = " << leadTrkID << std::endl;
-
 
     if (ngenG4trkID.count(leadTrkID))                   fData->blip_bt[i] = 0;   // ngen Signal
     else if (ar39G4trkID.count(leadTrkID))              fData->blip_bt[i] = 1;   // ar39

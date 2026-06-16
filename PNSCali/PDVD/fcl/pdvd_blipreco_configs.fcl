@@ -3,9 +3,9 @@ BEGIN_PROLOG
 # Main BlipAlg settings
 pdune_blipalg:
 {
-  HitProducer:          "hitpdune"       #// input recob::Hits to use for blip reconstruction
+  HitProducer:          "hitpdune"      #// input recob::Hits to use for blip reconstruction
   TrkProducer:          "pandoraTrack"  #// input recob::Tracks to use for blip reconstruction
-  GeantProducer:        "largeant"      #// input sim::MCParticles (getting true particle info)
+  GeantProducer:        "simplemerge"   #// input sim::MCParticles (getting true particle info)
   SimEDepProducer:      "IonAndScint"   #// input sim::SimEnergyDeposits (getting energy/electrons deposited)
   SimChanProducer:      "tpcrawdecoder:simpleSC" #// label for sim::SimChannels (getting drifted charge; optional)
   MaxHitTrkLength:      5.0             #// hits in trks > this length will be vetoed [cm]
@@ -53,9 +53,9 @@ pdune_blipana:
 
 # TrackMasker settings
 pdune_trackmasker:
-{ 
+{
   module_type:        "TrackMasker"
-  HitProducer:        "hitpdune" 
+  HitProducer:        "hitpdune"
   TrkProducer:        "pandoraTrack"
   MinTrkLength:       5   # cm
   MinTrkLengthVeto:   15  # cm
