@@ -1,3 +1,0 @@
-#include "protodunevd_detsim.fcl"
-
-services.Geometry: @local::protodunevd_v5_pns_geo

@@ -103,7 +103,6 @@ physics:
     # This name defines a job step below, and will appear as a directory
     # in the output histogram file.
     pdblipana: @local::pdune_blipana
-    #pdblipana. module_type: "BlipAnaMC"
   }
 
   # Schedule job step(s) for execution by defining the analysis module
@@ -113,10 +112,14 @@ physics:
   # listed here must match a name in the 'analyzers' section above.
 
   analysis: [ pdblipana ]
- #analysis: [ ana ]
 
   # "end_paths" is a keyword and contains the modules that do not modify the art::Event;
   # i.e., analyzers and output streams.
 
   end_paths: [ analysis ]
 }
+
+# full list of G4 simb::MCParticle for blip truth matching
+# do not use largeant (default)!
+physics.analyzers.pdblipana.BlipAlg.GeantProducer:    "simplemerge"
+services.ParticleInventoryService.ParticleInventory.G4ModuleLabel: "simplemerge" # keep consistent with BlipAlg.GeantProducer

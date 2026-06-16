@@ -25,7 +25,11 @@ source /exp/dune/app/users/weishi/np02pns_larsoft/dunesw_v102009d00/localProduct
 cd srcs
 mrb g dunereco
 
-cd $MRB_BUILDDIR
+mrb uc # if you have src code need to add to CMake
+cd .. # top level, above srcs
+mrb z
+
+
 mrbsetenv
 mrbslp # need this to proper config and fix wirecell error
 
@@ -46,11 +50,13 @@ add the directory BlipRecoDUNE and TrackRemoval in the CMakeLists file,
 /exp/dune/app/users/apaudel/dunesw_setups/v10_20_06d01/srcs/dunereco/dunereco/CMakeLists.txt
 ```
 
-modify the ```dunereco/dunereco/BlipRecoDUNE/CMakeLists.txt``` to add PhotonBackTrackerService, or copy from github:https://github.com/weishi10141993/VDPDSAna/tree/main/PNSCali/PDVD
+modify the ```dunereco/dunereco/BlipRecoDUNE/CMakeLists.txt``` to add PhotonBackTrackerService, or copy from github: https://github.com/weishi10141993/VDPDSAna/tree/main/PNSCali/PDVD/CMakeLists.txt
+sync the  https://github.com/weishi10141993/VDPDSAna/tree/main/PNSCali/PDVD/BlipAnaMC_module.cc
 
 ```
-cd $MRB_BUILDDIR and do
+cd $MRB_BUILDDIR
 mrbsetenv
+mrbslp        # required to configure wirecell properly
 ninja install
 ```
 
@@ -58,6 +64,11 @@ Produce sim samples
 ```
 cd np02pns_larsoft_fcls
 ./runcode.sh
+
+# event dump
+lar -c eventdump.fcl <filename> -n 1
+#fcl dump
+fhicl-dump run_pdvd_blipana.fcl
 ```
 
 Relogin:
@@ -73,16 +84,13 @@ setup dunesw v10_20_09d00 -q e26:prof
 source /exp/dune/app/users/weishi/np02pns_larsoft/dunesw_v102009d00/localProducts_larsoft_v10_20_09_e26_prof/setup
 
 mrbsetenv
-mrbslp
-
-lar -c eventdump.fcl <filename> -n 1
 ```
 
 Recompile:
 ```
-cd ${MRB_BUILDDIR}   
-# for complete rebuild, do: mrb z
+cd ${MRB_BUILDDIR}  
 mrbsetenv
+mrbslp     # required to configure wirecell properly
 ninja install
 ```
 
