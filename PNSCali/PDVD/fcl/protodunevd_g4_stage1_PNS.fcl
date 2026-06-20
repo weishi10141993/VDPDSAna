@@ -1,3 +1,15 @@
 #include "protodunevd_g4_stage1.fcl"
 
 services.Geometry: @local::protodunevd_v5_pns_geo
+
+physics.producers.largeant.G4Commands: [ "/process/inactivate nKiller" ]
+physics.producers.simplemerge.G4Commands: [ "/process/inactivate nKiller" ]
+
+#services.LArG4Parameters.enableNeutronLimit: true
+#services.LArG4Parameters.NeutronTimeLimit: 1e9
+#services.LArG4Parameters.NeutronKinELimit: 0
+
+#services.LArG4Parameters.KeepEMShowerDaughters: true
+#services.LArG4Parameters.G4Commands: [ "/process/inactivate nKiller" ]
+#physics.producers.largeant.G4Commands: [ "/physics_engine/neutron/timeLimit 1 s", "/physics_engine/neutron/energyLimit 0 MeV" ]
+#physics.producers.simplemerge.G4Commands: [ "/physics_engine/neutron/timeLimit 1 s","/physics_engine/neutron/energyLimit 0 MeV" ]

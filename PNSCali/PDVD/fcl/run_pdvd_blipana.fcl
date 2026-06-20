@@ -121,6 +121,7 @@ physics:
 
 # full list of G4 simb::MCParticle for blip truth matching
 # do not use largeant (default)!
+physics.analyzers.pdblipana.DebugMode:     "true"  
 physics.analyzers.pdblipana.BlipAlg.GeantProducer:    "simplemerge"
 services.ParticleInventoryService.ParticleInventory.G4ModuleLabel: "simplemerge" # keep consistent with BlipAlg.GeantProducer
 physics.analyzers.pdblipana.SignalLabel:    "ngen"        # 0

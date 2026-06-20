@@ -1100,8 +1100,10 @@ class BlipAnaMC : public art::EDAnalyzer
   std::set<int> cryostatfoamgammaG4trkID;
   std::set<int> cosmicgenG4trkID;
 
+  art::ServiceHandle<geo::Geometry> geo;
   art::ServiceHandle<cheat::BackTrackerService> bt_serv;
   art::ServiceHandle<cheat::PhotonBackTrackerService> pbt;
+  art::ServiceHandle<cheat::ParticleInventoryService> pi_serv;
 
 
   // Initialize histograms
@@ -1332,6 +1334,8 @@ void BlipAnaMC::analyze(const art::Event& evt)
   fIsRealData       = evt.isRealData();
   fNumEvents++;
 
+  auto const* geo = lar::providerFrom<geo::Geometry>();
+
   // Clear previous event sets
   ngenG4trkID.clear();
   ar39G4trkID.clear();          ar42G4trkID.clear();          kr85G4trkID.clear();
@@ -1488,6 +1492,7 @@ void BlipAnaMC::analyze(const art::Event& evt)
   // Save MCParticle information
   //====================================
   std::map<int,int> map_g4trkid_index;
+  std::map<int, const simb::MCParticle*> TrackIdToParticle_P;
   if( plist.size() ) {
 
     std::vector<blipobj::ParticleInfo>& pinfo = fBlipAlg.pinfo;
@@ -1499,6 +1504,7 @@ void BlipAnaMC::analyze(const art::Event& evt)
       map_g4trkid_index[pPart->TrackId()] = i;
       total_depEnergy       += pinfo[i].depEnergy;
       total_depElectrons    += pinfo[i].depElectrons;
+      TrackIdToParticle_P[pPart->TrackId()] = pPart.get();
 
       // Save to TTree object
       if(i<kMaxG4){
@@ -2248,6 +2254,48 @@ void BlipAnaMC::analyze(const art::Event& evt)
     // here should we ask for ancester trk ID because ngenG4trkID anf anybkgID are only obtained from largeant assn product, it misses all secodnary particles G4 decides not to track
 
     std::cout << "DEBUG: Blip #" << i << " LeadG4ID = " << leadTrkID << std::endl;
+    // try get the particle and its process
+    if (leadTrkID != -9) {
+      const simb::MCParticle* p = TrackIdToParticle_P[leadTrkID];
+      //std::cout << "DEBUG: 1 " << std::endl;
+      std::string pr = p->Process();
+      //std::cout << "DEBUG: 2 " << std::endl;
+      std::string endpr = p->EndProcess();
+      //std::cout << "DEBUG: 3 " << std::endl;
+      int pdg = p->PdgCode();
+      //std::cout << "DEBUG: 4 " << std::endl;
+      geo::Point_t point{ p->EndX(), p->EndY(), p->EndZ() };
+      //std::cout << "DEBUG: 5 " << std::endl;
+      std::string endmaterialName = geo->MaterialName(point);
+      //std::cout << "DEBUG: 6 " << std::endl;
+      std::cout << "DEBUG:  blip truth particle pdg: " << pdg << ", process: " << pr << ", endprocess: " << endpr << " in material: " << endmaterialName << std::endl;
+      // look for process: nCapture, material: LAr
+      // typical capture gamma record:
+      //  trkID: 182692 PDG: 22         XYZ=   -16.1   285.5   273.5, dL=  30.41, Npts=   2, KE0=   0.167, Edep=   0.164, T=     -1.93, moth=182680,     nCapture, ND=0
+      // look up until mother id is 0, and it's a neutron (from ddg) and primaruy
+      //  trkID: 3093   PDG: 2112       XYZ=   287.3   865.0   860.4, dL=   0.00, Npts=   2, KE0= 158.511, Edep=   0.000, T=     -1.99, moth=    0,      primary, ND=6
+
+
+
+      const simb::MCParticle* mother = TrackIdToParticle_P[p->Mother()];
+      if (mother != nullptr) { // protects against null, e.g. in case of primary particle, no mother..
+        //std::cout << "DEBUG: 7 " << std::endl;
+        std::string motherpr = mother->Process();
+        //std::cout << "DEBUG: 8 " << std::endl;
+        std::string motherendpr = mother->EndProcess();
+        //std::cout << "DEBUG: 9 " << std::endl;
+        int motherpdg = mother->PdgCode();
+        //std::cout << "DEBUG: 10 " << std::endl;
+        geo::Point_t motherpoint{ mother->EndX(), mother->EndY(), mother->EndZ() };
+        //std::cout << "DEBUG: 11 " << std::endl;
+        std::string motherendmaterialName = geo->MaterialName(motherpoint);
+
+        std::cout << "DEBUG:  blip truth particle mother pdg: " << motherpdg << ", process: " << motherpr << ", endprocess: " << motherendpr << " in material: " << motherendmaterialName << std::endl;
+      }
+
+
+    }
+
 
     if (ngenG4trkID.count(leadTrkID))                   fData->blip_bt[i] = 0;   // ngen Signal
     else if (ar39G4trkID.count(leadTrkID))              fData->blip_bt[i] = 1;   // ar39
@@ -2436,13 +2484,16 @@ void BlipAnaMC::endJob(){
 //###################################################
 
 void BlipAnaMC::PrintParticleInfo(size_t i){
-  printf("  %5i  trkID: %-6i PDG: %-10i XYZ= %7.1f %7.1f %7.1f, dL=%7.2f, Npts=%4i, KE0=%8.3f, Edep=%8.3f, T=%10.2f, moth=%5i, %12s, ND=%i\n",
+  printf("  %5i  trkID: %-6i PDG: %-10i XYZ= %7.1f %7.1f %7.1f, PXYZ= %7.1f %7.1f %7.1f, dL=%7.2f, Npts=%4i, KE0=%8.3f, Edep=%8.3f, T=%10.2f, moth=%5i, %12s, ND=%i\n",
    (int)i,
    fData->part_trackID[i],
    fData->part_pdg[i],
    fData->part_startPointx[i],
    fData->part_startPointy[i],
    fData->part_startPointz[i],
+   fData->part_Px[i],
+   fData->part_Py[i],
+   fData->part_Pz[i],
    fData->part_pathlen[i],
    fData->part_numTrajPts[i],
    fData->part_KE[i],
