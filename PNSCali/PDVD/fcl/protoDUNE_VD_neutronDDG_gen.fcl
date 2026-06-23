@@ -198,7 +198,7 @@ physics.producers.ngen.SigmaP:  [ 0.0       ]
 physics.producers.ngen.X0:      [ -20.0 ]
 physics.producers.ngen.Y0:      [ -553.0 ]
 physics.producers.ngen.Z0:      [ 189.0  ]
-physics.producers.ngen.T0:      [ -200000.0 ]  # ns, center
+physics.producers.ngen.T0:      [ 200000.0 ]  # ns, center
 physics.producers.ngen.SigmaT:  [ 200000.0 ]  # half width time
 physics.producers.ngen.TDist:   0             # uniform in time, or use "uniform"
 physics.producers.ngen.SigmaX: [ 0.0 ] # x = (0, 256)
