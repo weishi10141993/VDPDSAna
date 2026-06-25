@@ -1274,7 +1274,7 @@ BlipAnaMC::BlipAnaMC(fhicl::ParameterSet const& pset) :
   fhicl::ParameterSet pset_blipalg = pset.get<fhicl::ParameterSet>("BlipAlg");
   fHitProducer    = pset_blipalg.get<std::string>   ("HitProducer",     "gaushit");
   fTrkProducer    = pset_blipalg.get<std::string>   ("TrkProducer",     "pandora");
-  fGeantProducer  = pset_blipalg.get<std::string>   ("GeantProducer",   "simplemerge");
+  fGeantProducer  = pset_blipalg.get<std::string>   ("GeantProducer",   "largeant");
   fSimDepProducer = pset_blipalg.get<std::string>   ("SimEDepProducer", "ionization");
   fCaloPlane      = pset_blipalg.get<int>           ("CaloPlane",       2);
   fSavePlaneInfo  = pset.get<std::vector<bool>>     ("SavePlaneInfo",   {true,true,true});
@@ -2254,6 +2254,22 @@ void BlipAnaMC::analyze(const art::Event& evt)
     // here should we ask for ancester trk ID because ngenG4trkID anf anybkgID are only obtained from largeant assn product, it misses all secodnary particles G4 decides not to track
 
     std::cout << "DEBUG: Blip #" << i << " LeadG4ID = " << leadTrkID << std::endl;
+
+    if (ngenG4trkID.count(leadTrkID))                   fData->blip_bt[i] = 0;   // ngen Signal
+    else if (ar39G4trkID.count(leadTrkID))              fData->blip_bt[i] = 1;   // ar39
+    else if (ar42G4trkID.count(leadTrkID))              fData->blip_bt[i] = 2;   // ar42
+    else if (kr85G4trkID.count(leadTrkID))              fData->blip_bt[i] = 3;   // kr85
+    else if (k42fromar42G4trkID.count(leadTrkID))       fData->blip_bt[i] = 4;   // k42fromar42
+    else if (k40cathodeG4trkID.count(leadTrkID))        fData->blip_bt[i] = 5;   // k40cathode
+    else if (th232cathodeG4trkID.count(leadTrkID))      fData->blip_bt[i] = 6;   // th232cathode
+    else if (u238cathodeG4trkID.count(leadTrkID))       fData->blip_bt[i] = 7;   // u238cathode
+    else if (k40anodeG4trkID.count(leadTrkID))          fData->blip_bt[i] = 8;   // k40anode
+    else if (th232anodeG4trkID.count(leadTrkID))        fData->blip_bt[i] = 9;   // th232anode
+    else if (u238anodeG4trkID.count(leadTrkID))         fData->blip_bt[i] = 10;  // u238anode
+    else if (cryostatfoamgammaG4trkID.count(leadTrkID)) fData->blip_bt[i] = 11;  // cryostatfoamgamma
+    else if (cosmicgenG4trkID.count(leadTrkID))         fData->blip_bt[i] = 12;  // cosmicgen
+    else                                                fData->blip_bt[i] = -999; // Unknown background / noise
+
     // try get the particle and its process
     if (leadTrkID != -9) {
       const simb::MCParticle* p = TrackIdToParticle_P[leadTrkID];
@@ -2268,7 +2284,7 @@ void BlipAnaMC::analyze(const art::Event& evt)
       //std::cout << "DEBUG: 5 " << std::endl;
       std::string endmaterialName = geo->MaterialName(point);
       //std::cout << "DEBUG: 6 " << std::endl;
-      std::cout << "DEBUG:  blip truth particle pdg: " << pdg << ", process: " << pr << ", endprocess: " << endpr << " in material: " << endmaterialName << std::endl;
+      std::cout << "DEBUG:  blip truth particle pdg: " << pdg << ", process: " << pr << ", endprocess: " << endpr << " in material: " << endmaterialName << " gen process: " << fData->blip_bt[i] << std::endl;
       // look for process: nCapture, material: LAr
       // typical capture gamma record:
       //  trkID: 182692 PDG: 22         XYZ=   -16.1   285.5   273.5, dL=  30.41, Npts=   2, KE0=   0.167, Edep=   0.164, T=     -1.93, moth=182680,     nCapture, ND=0
@@ -2295,22 +2311,6 @@ void BlipAnaMC::analyze(const art::Event& evt)
 
 
     }
-
-
-    if (ngenG4trkID.count(leadTrkID))                   fData->blip_bt[i] = 0;   // ngen Signal
-    else if (ar39G4trkID.count(leadTrkID))              fData->blip_bt[i] = 1;   // ar39
-    else if (ar42G4trkID.count(leadTrkID))              fData->blip_bt[i] = 2;   // ar42
-    else if (kr85G4trkID.count(leadTrkID))              fData->blip_bt[i] = 3;   // kr85
-    else if (k42fromar42G4trkID.count(leadTrkID))       fData->blip_bt[i] = 4;   // k42fromar42
-    else if (k40cathodeG4trkID.count(leadTrkID))        fData->blip_bt[i] = 5;   // k40cathode
-    else if (th232cathodeG4trkID.count(leadTrkID))      fData->blip_bt[i] = 6;   // th232cathode
-    else if (u238cathodeG4trkID.count(leadTrkID))       fData->blip_bt[i] = 7;   // u238cathode
-    else if (k40anodeG4trkID.count(leadTrkID))          fData->blip_bt[i] = 8;   // k40anode
-    else if (th232anodeG4trkID.count(leadTrkID))        fData->blip_bt[i] = 9;   // th232anode
-    else if (u238anodeG4trkID.count(leadTrkID))         fData->blip_bt[i] = 10;  // u238anode
-    else if (cryostatfoamgammaG4trkID.count(leadTrkID)) fData->blip_bt[i] = 11;  // cryostatfoamgamma
-    else if (cosmicgenG4trkID.count(leadTrkID))         fData->blip_bt[i] = 12;  // cosmicgen
-    else                                                fData->blip_bt[i] = -999; // Unknown background / noise
 
     // Fill cluster charge 2D histograms
     h_blip_charge   ->Fill(blp.Charge);

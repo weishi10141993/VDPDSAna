@@ -62,12 +62,9 @@ ninja install
 
 Produce sim samples
 ```
-cd np02pns_larsoft_fcls
-./runcode.sh
-
 # event dump
 lar -c eventdump.fcl <filename> -n 1
-#fcl dump
+# fcl dump
 fhicl-dump run_pdvd_blipana.fcl
 ```
 
@@ -92,6 +89,16 @@ cd ${MRB_BUILDDIR}
 mrbsetenv
 mrbslp     # required to configure wirecell properly
 ninja install
+```
+
+Jobs:
+```
+tar -cvf np02pnsAna.tar --exclude='./build_slf7.x86_64' --exclude='./srcs' .
+
+# in the same directory there is justin_profile.sh
+source justin_profile.sh
+
+sh launchscript_localdirectory.sh
 ```
 
 ## Test v5 ggd PNS geo LArsoft

@@ -2,14 +2,19 @@
 
 services.Geometry: @local::protodunevd_v5_pns_geo
 
-physics.producers.largeant.G4Commands: [ "/process/inactivate nKiller" ]
-physics.producers.simplemerge.G4Commands: [ "/process/inactivate nKiller" ]
 
-#services.LArG4Parameters.enableNeutronLimit: true
-#services.LArG4Parameters.NeutronTimeLimit: 1e9
-#services.LArG4Parameters.NeutronKinELimit: 0
+services.LArG4Detector.gdmlFileName_: "protodunevd_v5_ggd_PNS.gdml"
+services.LArG4Detector.volumeNames: [
+    "volDetEnclosure"
+]
+services.LArG4Detector.stepLimits: [ 1 ]
 
-#services.LArG4Parameters.KeepEMShowerDaughters: true
-#services.LArG4Parameters.G4Commands: [ "/process/inactivate nKiller" ]
-#physics.producers.largeant.G4Commands: [ "/physics_engine/neutron/timeLimit 1 s", "/physics_engine/neutron/energyLimit 0 MeV" ]
-#physics.producers.simplemerge.G4Commands: [ "/physics_engine/neutron/timeLimit 1 s","/physics_engine/neutron/energyLimit 0 MeV" ]
+services.LArG4Parameters.KeepEMShowerDaughters: true
+
+services.ParticleListAction.keepGenTrajectories: []
+# this needs to be empty to set keepEMShowerDaughters to true
+services.ParticleListAction.KeepDroppedParticlesInVolumes: []
+
+services.ParticleListAction.keepEMShowerDaughters: true
+
+physics.simulate: [ rns, largeant ]

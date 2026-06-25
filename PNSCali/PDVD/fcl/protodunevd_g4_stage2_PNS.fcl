@@ -1,3 +1,6 @@
 #include "protodunevd_g4_stage2.fcl"
 
 services.Geometry: @local::protodunevd_v5_pns_geo
+
+# since we kept all EM daughters from G4 stage1, there is no dropped particles
+physics.producers.mcreco.IncludeDroppedParticles: false

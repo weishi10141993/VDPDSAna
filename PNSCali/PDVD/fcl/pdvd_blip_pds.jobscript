@@ -1,0 +1,101 @@
+#!/bin/bash
+
+FCL_GEN=protoDUNE_VD_neutronDDG_gen.fcl
+FCL_G4STAGE1=protodunevd_g4_stage1_PNS.fcl
+FCL_G4STAGE2=protodunevd_g4_stage2_PNS.fcl
+FCL_DETSIM=protodunevd_detsim_PNS.fcl
+FCL_RECO=protodunevd_reco_PNS.fcl
+FCL_ANA=run_pdvd_blipana.fcl
+DUNE_VERSION=${DUNE_VERSION:-v10_20_09d00}
+DUNE_QUALIFIER=${DUNE_QUALIFIER:-e26:prof}
+
+# number of events to process from the input file
+if [ "$NUM_EVENTS" != "" ] ; then
+ events_option="-n $NUM_EVENTS"
+fi
+
+# First get an unprocessed file from this stage
+did_pfn_rse=`$JUSTIN_PATH/justin-get-file`
+
+if [ "$did_pfn_rse" = "" ] ; then
+  echo "Nothing to process - exit jobscript"
+  exit 0
+fi
+
+# Keep a record of all input DIDs, for pdjson2meta file -> DID mapping
+echo "$did_pfn_rse" | cut -f1 -d' ' >>all-input-dids.txt
+
+# pfn is also needed when creating justin-processed-pfns.txt
+pfn=`echo $did_pfn_rse | cut -f2 -d' '`
+echo "Input PFN = $pfn"
+
+# Setup DUNE environment
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+export PRODUCTS="${INPUT_TAR_DIR_LOCAL}/localProducts_larsoft_v10_20_09_e26_prof/:$PRODUCTS" #working
+setup dunesw "$DUNE_VERSION" -q "$DUNE_QUALIFIER"
+#mrbslp
+
+export FHICL_FILE_PATH=${INPUT_TAR_DIR_LOCAL}:${FHICL_FILE_PATH}
+export FW_SEARCH_PATH=${INPUT_TAR_DIR_LOCAL}:$FW_SEARCH_PATH
+
+# Construct output filenames safely from input filename + Justin DID + Jobsub ID
+now=$(date -u +"%Y-%m-%dT_%H%M%SZ")
+
+did=`echo $did_pfn_rse | cut -f1 -d' '`
+
+Ffname=`echo $pfn | awk -F/ '{print $NF}'`
+
+# Remove only the final extension, not everything after the first dot
+fname="${Ffname%.*}"
+
+# Make all pieces safe for filenames
+safe_fname=`echo "$fname" | sed 's/[^A-Za-z0-9._-]/_/g'`
+safe_did=`echo "$did" | sed 's/[^A-Za-z0-9._-]/_/g'`
+safe_jobsub=`echo "${JUSTIN_JOBSUB_ID:-nojobsub}" | sed 's/[^A-Za-z0-9._-]/_/g'`
+
+tag="${safe_fname}_${safe_did}_${safe_jobsub}_${now}"
+
+outFile_GEN=${tag}_gen.root
+outFile_G4Stage1=${tag}_g4_stage1.root
+outFile_G4Stage2=${tag}_g4_stage2.root
+outFile_Detsim=${tag}_detsim.root
+outFile_reco=${tag}_reco.root
+outFile_ana=${tag}_ana.root
+outFile_ana_hist=${tag}_ana_hist.root
+
+campaign="justIN.w${JUSTIN_WORKFLOW_ID}s${JUSTIN_STAGE_ID}"
+# Here is where the LArSoft command is call it
+(
+# Do the scary preload stuff in a subshell!
+export LD_PRELOAD=${XROOTD_LIB}/libXrdPosixPreload.so
+echo "$LD_PRELOAD"
+
+
+lar -c $FCL_GEN      -n 10         -o $outFile_GEN                      -T /dev/null                 > ${tag}_gen.log 2>&1
+lar -c $FCL_G4STAGE1 -n -1  -s $outFile_GEN      -o $outFile_G4Stage1    -T /dev/null                 > ${tag}_g4stage1.log 2>&1
+lar -c $FCL_G4STAGE2 -n -1  -s $outFile_G4Stage1 -o $outFile_G4Stage2    -T /dev/null                 > ${tag}_g4stage2.log 2>&1
+lar -c $FCL_DETSIM   -n -1  -s $outFile_G4Stage2 -o $outFile_Detsim      -T /dev/null                 > ${tag}_detsim.log 2>&1
+lar -c $FCL_RECO     -n -1  -s $outFile_Detsim   -o $outFile_reco        -T /dev/null                 > ${tag}_reco.log 2>&1
+lar -c $FCL_ANA      -n -1  -s $outFile_reco     -o $outFile_ana         -T $outFile_ana_hist        > ${tag}_ana.log 2>&1
+)
+
+echo '=== Start last 100 lines of lar log file ==='
+tail -100 ${tag}_ana.log
+echo '=== End last 100 lines of lar log file ==='
+
+# Subshell exits with exit code of last command
+larExit=$?
+echo "lar exit code $larExit"
+
+if [ $larExit -eq 0 ] ; then
+  # Success !
+  echo "$pfn" > justin-processed-pfns.txt
+  jobscriptExit=0
+else
+  # Oh :(
+  jobscriptExit=1
+fi
+
+# Create compressed tar file with all log files
+tar zcf `echo "$JUSTIN_JOBSUB_ID.logs.tgz" | sed 's/@/_/g'` *.log
+exit $jobscriptExit
