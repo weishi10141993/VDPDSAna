@@ -2253,8 +2253,61 @@ void BlipAnaMC::analyze(const art::Event& evt)
     // Question from Wei:
     // here should we ask for ancester trk ID because ngenG4trkID anf anybkgID are only obtained from largeant assn product, it misses all secodnary particles G4 decides not to track
 
-    std::cout << "DEBUG: Blip #" << i << " LeadG4ID = " << leadTrkID << std::endl;
+    //std::cout << "DEBUG: Blip #" << i << " LeadG4ID = " << leadTrkID << std::endl;
 
+    // Walk up the ancestry chain to find the primary generator-level ancestor.
+    // This is a no-op when keepEMShowerDaughters=true (all particles stored at G4)
+    // but proof against future changed G4 settings and handles any residual sub-threshold cases.
+    int ancestorTrkID = leadTrkID;
+    if (leadTrkID > 0) {
+      int current = leadTrkID;
+      int maxSteps = 1000; // safety guard against infinite loops
+      while (maxSteps-- > 0) {
+        // If this trackID is directly in a generator set, stop here, this is most cases
+        if (   ngenG4trkID.count(current)
+            || ar39G4trkID.count(current)
+            || ar42G4trkID.count(current)
+            || kr85G4trkID.count(current)
+            || k42fromar42G4trkID.count(current)
+            || k40cathodeG4trkID.count(current)
+            || th232cathodeG4trkID.count(current)
+            || u238cathodeG4trkID.count(current)
+            || k40anodeG4trkID.count(current)
+            || th232anodeG4trkID.count(current)
+            || u238anodeG4trkID.count(current)
+            || cryostatfoamgammaG4trkID.count(current)
+            || cosmicgenG4trkID.count(current)) {
+              ancestorTrkID = current;
+              break;
+        }
+        // Look up this particle's mother
+        auto it = TrackIdToParticle_P.find(current);
+        if (it == TrackIdToParticle_P.end()) break; // not in MCParticle list, stop
+        int motherID = it->second->Mother();
+        if (motherID == 0) break; // reached a primary with no match in any set
+        current = motherID;
+      }
+    }
+
+    std::cout << "DEBUG: Blip #" << i << " LeadG4ID = " << leadTrkID  << " ancestorID = " << ancestorTrkID << std::endl;
+
+    // Use ancestorTrkID for generator labeling
+    if      (ngenG4trkID.count(ancestorTrkID))                fData->blip_bt[i] = 0;
+    else if (ar39G4trkID.count(ancestorTrkID))                fData->blip_bt[i] = 1;
+    else if (ar42G4trkID.count(ancestorTrkID))                fData->blip_bt[i] = 2;
+    else if (kr85G4trkID.count(ancestorTrkID))                fData->blip_bt[i] = 3;
+    else if (k42fromar42G4trkID.count(ancestorTrkID))         fData->blip_bt[i] = 4;
+    else if (k40cathodeG4trkID.count(ancestorTrkID))          fData->blip_bt[i] = 5;
+    else if (th232cathodeG4trkID.count(ancestorTrkID))        fData->blip_bt[i] = 6;
+    else if (u238cathodeG4trkID.count(ancestorTrkID))         fData->blip_bt[i] = 7;
+    else if (k40anodeG4trkID.count(ancestorTrkID))            fData->blip_bt[i] = 8;
+    else if (th232anodeG4trkID.count(ancestorTrkID))          fData->blip_bt[i] = 9;
+    else if (u238anodeG4trkID.count(ancestorTrkID))           fData->blip_bt[i] = 10;
+    else if (cryostatfoamgammaG4trkID.count(ancestorTrkID))   fData->blip_bt[i] = 11;
+    else if (cosmicgenG4trkID.count(ancestorTrkID))           fData->blip_bt[i] = 12;
+    else                                                      fData->blip_bt[i] = -999;
+
+    /*
     if (ngenG4trkID.count(leadTrkID))                   fData->blip_bt[i] = 0;   // ngen Signal
     else if (ar39G4trkID.count(leadTrkID))              fData->blip_bt[i] = 1;   // ar39
     else if (ar42G4trkID.count(leadTrkID))              fData->blip_bt[i] = 2;   // ar42
@@ -2269,6 +2322,7 @@ void BlipAnaMC::analyze(const art::Event& evt)
     else if (cryostatfoamgammaG4trkID.count(leadTrkID)) fData->blip_bt[i] = 11;  // cryostatfoamgamma
     else if (cosmicgenG4trkID.count(leadTrkID))         fData->blip_bt[i] = 12;  // cosmicgen
     else                                                fData->blip_bt[i] = -999; // Unknown background / noise
+    */
 
     // try get the particle and its process
     if (leadTrkID != -9) {
