@@ -2250,10 +2250,6 @@ void BlipAnaMC::analyze(const art::Event& evt)
     // Extract the leading true particle Track ID
     int leadTrkID = blp.truth.LeadG4ID;
     fData->blip_leadTrkID[i] = leadTrkID;
-    // Question from Wei:
-    // here should we ask for ancester trk ID because ngenG4trkID anf anybkgID are only obtained from largeant assn product, it misses all secodnary particles G4 decides not to track
-
-    //std::cout << "DEBUG: Blip #" << i << " LeadG4ID = " << leadTrkID << std::endl;
 
     // Walk up the ancestry chain to find the primary generator-level ancestor.
     // This is a no-op when keepEMShowerDaughters=true (all particles stored at G4)
@@ -2289,40 +2285,67 @@ void BlipAnaMC::analyze(const art::Event& evt)
       }
     }
 
-    std::cout << "DEBUG: Blip #" << i << " LeadG4ID = " << leadTrkID  << " ancestorID = " << ancestorTrkID << std::endl;
+    //std::cout << "DEBUG: Blip #" << i << " LeadG4ID = " << leadTrkID  << " ancestorID = " << ancestorTrkID << std::endl;
+    // further check if blip is from ncapture on argon process
+    bool isNCaptureOnArBlip = false;
+    if (ngenG4trkID.count(ancestorTrkID) && leadTrkID > 0) {
+        int current = leadTrkID;
+        int maxSteps = 1000;
+        while (maxSteps-- > 0) {
+            auto it = TrackIdToParticle_P.find(current);
+            if (it == TrackIdToParticle_P.end()) break;
+            const simb::MCParticle* cp = it->second;
+
+            if (cp->Process() == "nCapture") {
+                // cp is the deexcitation gamma created by nCapture.
+                // The capture occurred at the neutron's (cp's mother's) endpoint.
+                // Check that the neutron ended (was captured) in LAr.
+                int capturedNeutronID = cp->Mother();
+                auto nit = TrackIdToParticle_P.find(capturedNeutronID);
+                if (nit != TrackIdToParticle_P.end()) {
+                    const simb::MCParticle* neutron = nit->second;
+                    geo::Point_t capturePoint{ neutron->EndX(),
+                                               neutron->EndY(),
+                                               neutron->EndZ() };
+                    std::string captureMaterial = geo->MaterialName(capturePoint);
+                    if (captureMaterial == "LAr") {
+                        isNCaptureOnArBlip = true;
+                    }
+                }
+                break; // found nCapture in chain regardless — stop walking
+            }
+
+            int motherID = cp->Mother();
+            if (motherID == 0) break;
+            current = motherID;
+        }
+    }
+
+    std::cout << "DEBUG: Blip #" << i
+          << " LeadG4ID = "   << leadTrkID
+          << " ancestorID = " << ancestorTrkID
+          << " nCapture = "   << isNCaptureOnArBlip << std::endl;
 
     // Use ancestorTrkID for generator labeling
-    if      (ngenG4trkID.count(ancestorTrkID))                fData->blip_bt[i] = 0;
-    else if (ar39G4trkID.count(ancestorTrkID))                fData->blip_bt[i] = 1;
-    else if (ar42G4trkID.count(ancestorTrkID))                fData->blip_bt[i] = 2;
-    else if (kr85G4trkID.count(ancestorTrkID))                fData->blip_bt[i] = 3;
-    else if (k42fromar42G4trkID.count(ancestorTrkID))         fData->blip_bt[i] = 4;
-    else if (k40cathodeG4trkID.count(ancestorTrkID))          fData->blip_bt[i] = 5;
-    else if (th232cathodeG4trkID.count(ancestorTrkID))        fData->blip_bt[i] = 6;
-    else if (u238cathodeG4trkID.count(ancestorTrkID))         fData->blip_bt[i] = 7;
-    else if (k40anodeG4trkID.count(ancestorTrkID))            fData->blip_bt[i] = 8;
-    else if (th232anodeG4trkID.count(ancestorTrkID))          fData->blip_bt[i] = 9;
-    else if (u238anodeG4trkID.count(ancestorTrkID))           fData->blip_bt[i] = 10;
-    else if (cryostatfoamgammaG4trkID.count(ancestorTrkID))   fData->blip_bt[i] = 11;
-    else if (cosmicgenG4trkID.count(ancestorTrkID))           fData->blip_bt[i] = 12;
+    // ngen is split into:
+    //   0 = ngen, n-capture on Ar (LAr) (deexcitation gamma chain)
+    //   1 = ngen, other (cpaute on other materials, direct neutron interaction, inelastic, elastic, etc.)
+    if (ngenG4trkID.count(ancestorTrkID)) {
+      fData->blip_bt[i] = isNCaptureOnArBlip ? 0 : 1;
+    }
+    else if (ar39G4trkID.count(ancestorTrkID))                fData->blip_bt[i] = 2;
+    else if (ar42G4trkID.count(ancestorTrkID))                fData->blip_bt[i] = 3;
+    else if (kr85G4trkID.count(ancestorTrkID))                fData->blip_bt[i] = 4;
+    else if (k42fromar42G4trkID.count(ancestorTrkID))         fData->blip_bt[i] = 5;
+    else if (k40cathodeG4trkID.count(ancestorTrkID))          fData->blip_bt[i] = 6;
+    else if (th232cathodeG4trkID.count(ancestorTrkID))        fData->blip_bt[i] = 7;
+    else if (u238cathodeG4trkID.count(ancestorTrkID))         fData->blip_bt[i] = 8;
+    else if (k40anodeG4trkID.count(ancestorTrkID))            fData->blip_bt[i] = 9;
+    else if (th232anodeG4trkID.count(ancestorTrkID))          fData->blip_bt[i] = 10;
+    else if (u238anodeG4trkID.count(ancestorTrkID))           fData->blip_bt[i] = 11;
+    else if (cryostatfoamgammaG4trkID.count(ancestorTrkID))   fData->blip_bt[i] = 12;
+    else if (cosmicgenG4trkID.count(ancestorTrkID))           fData->blip_bt[i] = 13;
     else                                                      fData->blip_bt[i] = -999;
-
-    /*
-    if (ngenG4trkID.count(leadTrkID))                   fData->blip_bt[i] = 0;   // ngen Signal
-    else if (ar39G4trkID.count(leadTrkID))              fData->blip_bt[i] = 1;   // ar39
-    else if (ar42G4trkID.count(leadTrkID))              fData->blip_bt[i] = 2;   // ar42
-    else if (kr85G4trkID.count(leadTrkID))              fData->blip_bt[i] = 3;   // kr85
-    else if (k42fromar42G4trkID.count(leadTrkID))       fData->blip_bt[i] = 4;   // k42fromar42
-    else if (k40cathodeG4trkID.count(leadTrkID))        fData->blip_bt[i] = 5;   // k40cathode
-    else if (th232cathodeG4trkID.count(leadTrkID))      fData->blip_bt[i] = 6;   // th232cathode
-    else if (u238cathodeG4trkID.count(leadTrkID))       fData->blip_bt[i] = 7;   // u238cathode
-    else if (k40anodeG4trkID.count(leadTrkID))          fData->blip_bt[i] = 8;   // k40anode
-    else if (th232anodeG4trkID.count(leadTrkID))        fData->blip_bt[i] = 9;   // th232anode
-    else if (u238anodeG4trkID.count(leadTrkID))         fData->blip_bt[i] = 10;  // u238anode
-    else if (cryostatfoamgammaG4trkID.count(leadTrkID)) fData->blip_bt[i] = 11;  // cryostatfoamgamma
-    else if (cosmicgenG4trkID.count(leadTrkID))         fData->blip_bt[i] = 12;  // cosmicgen
-    else                                                fData->blip_bt[i] = -999; // Unknown background / noise
-    */
 
     // try get the particle and its process
     if (leadTrkID != -9) {

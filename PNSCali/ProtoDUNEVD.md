@@ -15,6 +15,8 @@ source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 
 ups list -aK+ dunesw
 setup dunesw v10_20_09d00 -q e26:prof
+# new G4 version with improved Nuclear De-excitation (NUDEX) package for neutrons:
+#   v10_20_09_01d00 featuring Geant4 11.4 (LArSoft v10_20_09_01)
 
 mkdir dunesw_v102009d00
 cd dunesw_v102009d00/
@@ -81,6 +83,7 @@ setup dunesw v10_20_09d00 -q e26:prof
 source /exp/dune/app/users/weishi/np02pns_larsoft/dunesw_v102009d00/localProducts_larsoft_v10_20_09_e26_prof/setup
 
 mrbsetenv
+mrbslp
 ```
 
 Recompile:
