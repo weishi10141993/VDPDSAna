@@ -1,6 +1,8 @@
 #!/bin/bash
 
+#FCL_GEN=neutronddg.fcl
 FCL_GEN=protoDUNE_VD_neutronDDG_gen.fcl
+#FCL_GEN=neutronddg_nopns.fcl
 FCL_G4STAGE1=protodunevd_g4_stage1_PNS.fcl
 FCL_G4STAGE2=protodunevd_g4_stage2_PNS.fcl
 FCL_DETSIM=protodunevd_detsim_PNS.fcl
@@ -36,8 +38,9 @@ setup dunesw "$DUNE_VERSION" -q "$DUNE_QUALIFIER"
 #mrbslp
 
 export FHICL_FILE_PATH=${INPUT_TAR_DIR_LOCAL}:${FHICL_FILE_PATH}
-export FW_SEARCH_PATH=${INPUT_TAR_DIR_LOCAL}:$FW_SEARCH_PATH
-
+#export FW_SEARCH_PATH=${INPUT_TAR_DIR_LOCAL}:$FW_SEARCH_PATH
+#export FW_SEARCH_PATH=${INPUT_TAR_DIR_LOCAL}
+#export FW_SEARCH_PATH=${INPUT_TAR_DIR_LOCAL}:${INPUT_TAR_DIR_LOCAL}/macros:${FW_SEARCH_PATH}
 # Construct output filenames safely from input filename + Justin DID + Jobsub ID
 now=$(date -u +"%Y-%m-%dT_%H%M%SZ")
 
@@ -63,6 +66,12 @@ outFile_reco=${tag}_reco.root
 outFile_ana=${tag}_ana.root
 outFile_ana_hist=${tag}_ana_hist.root
 
+ln -sfn "${INPUT_TAR_DIR_LOCAL}/macros" ./macros
+
+export FW_SEARCH_PATH=${INPUT_TAR_DIR_LOCAL}:${INPUT_TAR_DIR_LOCAL}/macros:.:./macros:${FW_SEARCH_PATH}
+
+
+
 campaign="justIN.w${JUSTIN_WORKFLOW_ID}s${JUSTIN_STAGE_ID}"
 # Here is where the LArSoft command is call it
 (
@@ -71,7 +80,7 @@ export LD_PRELOAD=${XROOTD_LIB}/libXrdPosixPreload.so
 echo "$LD_PRELOAD"
 
 
-lar -c $FCL_GEN      -n 10         -o $outFile_GEN                      -T /dev/null                 > ${tag}_gen.log 2>&1
+lar -c $FCL_GEN      -n 5         -o $outFile_GEN                      -T /dev/null                 > ${tag}_gen.log 2>&1
 lar -c $FCL_G4STAGE1 -n -1  -s $outFile_GEN      -o $outFile_G4Stage1    -T /dev/null                 > ${tag}_g4stage1.log 2>&1
 lar -c $FCL_G4STAGE2 -n -1  -s $outFile_G4Stage1 -o $outFile_G4Stage2    -T /dev/null                 > ${tag}_g4stage2.log 2>&1
 lar -c $FCL_DETSIM   -n -1  -s $outFile_G4Stage2 -o $outFile_Detsim      -T /dev/null                 > ${tag}_detsim.log 2>&1

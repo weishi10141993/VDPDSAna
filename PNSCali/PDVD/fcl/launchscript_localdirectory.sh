@@ -3,8 +3,10 @@
 USERF=$USER
 FNALURL='https://fndcadoor.fnal.gov:2880/dune/scratch/users'
 
-htgettoken -a htvaultprod.fnal.gov -i dune
-INPUT_TAR_DIR_LOCAL=$(justin-cvmfs-upload np02pnsAna.tar)
+htgettoken -a htvaultprod.fnal.gov -i dune 
+#INPUT_TAR_DIR_LOCAL=$(justin-cvmfs-upload v102006_neutron.tar)
+#INPUT_TAR_DIR_LOCAL=$(justin-cvmfs-upload tarballname.tar)
+INPUT_TAR_DIR_LOCAL=$(justin-cvmfs-upload np02pnssim.tar)
 
 echo "INPUT_TAR_DIR_LOCAL: ${INPUT_TAR_DIR_LOCAL}"
 ls -l $INPUT_TAR_DIR_LOCAL
@@ -27,15 +29,15 @@ done
 justin-test-jobscript --monte-carlo 1 \ #--mql "$MQL_QUERY" \
  --jobscript pdvd_blip_pds.jobscript \
  --env INPUT_TAR_DIR_LOCAL="$INPUT_TAR_DIR_LOCAL" \
- --env NUM_EVENTS=1
+ --env NUM_EVENTS=1 
 exit
 '
 
 
-justin simple-workflow --monte-carlo 300 \
+justin simple-workflow --monte-carlo 50 \
  --jobscript pdvd_blip_pds.jobscript \
  --env INPUT_TAR_DIR_LOCAL="$INPUT_TAR_DIR_LOCAL" \
- --rss-mb 8000 --max-distance 30 \
- --wall-seconds 36000 \
+ --rss-mb 15000 --max-distance 30 \
+ --wall-seconds 54000 \
  --scope usertests \
- --output-pattern "*ana*.root:$FNALURL/$USERF"
+ --output-pattern "*ana_hist.root:$FNALURL/$USERF" 

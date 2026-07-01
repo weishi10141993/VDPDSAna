@@ -67,7 +67,9 @@ services:
 
 # ophit backtrack
 services.PhotonBackTrackerService.PhotonBackTracker.MinimumHitEnergyFraction: 0.1
-services.PhotonBackTrackerService.PhotonBackTracker.Delay: 0
+# to be consistent with G4RefTime for not missing OpDetBacktrackerRecord
+services.PhotonBackTrackerService.PhotonBackTracker.Delay: -250e3
+
 
 services.BackTrackerService.BackTracker.SimChannelModuleLabel: "tpcrawdecoder:simpleSC"
 
@@ -121,21 +123,21 @@ physics:
 
 # full list of G4 simb::MCParticle for blip truth matching
 # do not use largeant (default)!
-physics.analyzers.pdblipana.DebugMode:     "true"
+physics.analyzers.pdblipana.DebugMode:     "false"
 physics.analyzers.pdblipana.BlipAlg.GeantProducer:    "largeant"
 services.ParticleInventoryService.ParticleInventory.G4ModuleLabel: "largeant" # keep consistent with BlipAlg.GeantProducer
-physics.analyzers.pdblipana.SignalLabel:    "ngen"        # 0
+physics.analyzers.pdblipana.SignalLabel:    "ngen"
 physics.analyzers.pdblipana.BackgroundLabelVector: [
-                      "ar39",                             # 1
-                      "ar42",                             # 2
-                      "kr85",                             # 3
-                      "k42fromar42",                      # 4
-                      "k40cathode",                       # 5
-                      "th232cathode",                     # 6
-                      "u238cathode",                      # 7
-                      "k40anode",                         # 8
-                      "th232anode",                       # 9
-                      "u238anode",                        # 10
-                      "cryostatfoamgamma",                # 11
-                      "cosmicgen"                         # 12
+                      "ar39",
+                      "ar42",
+                      "kr85",
+                      "k42fromar42",
+                      "k40cathode",
+                      "th232cathode",
+                      "u238cathode",
+                      "k40anode",
+                      "th232anode",
+                      "u238anode",
+                      "cryostatfoamgamma",
+                      "cosmicgen"
 ]

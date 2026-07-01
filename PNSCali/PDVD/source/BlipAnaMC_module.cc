@@ -1880,13 +1880,11 @@ void BlipAnaMC::analyze(const art::Event& evt)
 
       // Retrieve the SimPhotonsLite or TrackSDPs associated with this hit
       auto const& sdp_vector = pbt->OpHitToTrackSDPs(*ophit);
+      int trackID = -9;
 
       if (!sdp_vector.empty()) {
         // Replicating QLMatchAna logic: check the track ID of the main contributing particle
-        int trackID = sdp_vector[0].trackID;
-        //std::cout << "DEBUG: ophit #" << i << " trackID = " << trackID << std::endl;
-        // Question from Wei:
-        // here should we ask for ancester trk ID because ngenG4trkID anf anybkgID are only obtained from largeant assn product, it misses all secodnary particles G4 decides not to track
+        trackID = sdp_vector[0].trackID;
 
         if (ngenG4trkID.count(trackID))                   fData->ophit_bt[i] = 0;  // ngen Signal
         else if (ar39G4trkID.count(trackID))              fData->ophit_bt[i] = 1;  // ar39
@@ -1903,9 +1901,10 @@ void BlipAnaMC::analyze(const art::Event& evt)
         else if (cosmicgenG4trkID.count(trackID))         fData->ophit_bt[i] = 12; // cosmicgen
         else                                              fData->ophit_bt[i] = -999; // Unmapped particle
       } else {
-        fData->ophit_bt[i] = -999; // No track SDP matching found
+        fData->ophit_bt[i] = -88; // No track SDP matching found
       }
 
+      std::cout << "DEBUG: ophit #" << i << " trackID = " << trackID << " gen process:" << fData->ophit_bt[i] << " channel: " << fData->ophit_opchannel[i] << " PE: " << fData->ophit_pe[i] << " time: " << fData->ophit_peak_time[i] << " us "<< std::endl;
 
     } // end loop ophit
   } // end if else no ophit
@@ -2286,7 +2285,13 @@ void BlipAnaMC::analyze(const art::Event& evt)
     }
 
     //std::cout << "DEBUG: Blip #" << i << " LeadG4ID = " << leadTrkID  << " ancestorID = " << ancestorTrkID << std::endl;
+
     // further check if blip is from ncapture on argon process
+    // look for process: nCapture, material: LAr
+    // typical capture gamma record:
+    //DEBUG: Blip #60 LeadG4ID = 89003 ancestorID = 89003 nCapture = 1
+    //DEBUG:  blip truth particle pdg: 11, process: compt, endprocess: eIoni in material: LAr gen process: 0
+    //DEBUG:  blip truth particle mother pdg: 22, process: nCapture, endprocess: phot in material: LAr
     bool isNCaptureOnArBlip = false;
     if (ngenG4trkID.count(ancestorTrkID) && leadTrkID > 0) {
         int current = leadTrkID;
@@ -2321,10 +2326,7 @@ void BlipAnaMC::analyze(const art::Event& evt)
         }
     }
 
-    std::cout << "DEBUG: Blip #" << i
-          << " LeadG4ID = "   << leadTrkID
-          << " ancestorID = " << ancestorTrkID
-          << " nCapture = "   << isNCaptureOnArBlip << std::endl;
+    //std::cout << "DEBUG: Blip #" << i << " LeadG4ID = "   << leadTrkID << " ancestorID = " << ancestorTrkID  << " nCapture = "   << isNCaptureOnArBlip << std::endl;
 
     // Use ancestorTrkID for generator labeling
     // ngen is split into:
@@ -2347,47 +2349,27 @@ void BlipAnaMC::analyze(const art::Event& evt)
     else if (cosmicgenG4trkID.count(ancestorTrkID))           fData->blip_bt[i] = 13;
     else                                                      fData->blip_bt[i] = -999;
 
-    // try get the particle and its process
+    // DEBUG use: try get the particle and its process
+    /*
     if (leadTrkID != -9) {
       const simb::MCParticle* p = TrackIdToParticle_P[leadTrkID];
-      //std::cout << "DEBUG: 1 " << std::endl;
       std::string pr = p->Process();
-      //std::cout << "DEBUG: 2 " << std::endl;
       std::string endpr = p->EndProcess();
-      //std::cout << "DEBUG: 3 " << std::endl;
       int pdg = p->PdgCode();
-      //std::cout << "DEBUG: 4 " << std::endl;
       geo::Point_t point{ p->EndX(), p->EndY(), p->EndZ() };
-      //std::cout << "DEBUG: 5 " << std::endl;
       std::string endmaterialName = geo->MaterialName(point);
-      //std::cout << "DEBUG: 6 " << std::endl;
-      std::cout << "DEBUG:  blip truth particle pdg: " << pdg << ", process: " << pr << ", endprocess: " << endpr << " in material: " << endmaterialName << " gen process: " << fData->blip_bt[i] << std::endl;
-      // look for process: nCapture, material: LAr
-      // typical capture gamma record:
-      //  trkID: 182692 PDG: 22         XYZ=   -16.1   285.5   273.5, dL=  30.41, Npts=   2, KE0=   0.167, Edep=   0.164, T=     -1.93, moth=182680,     nCapture, ND=0
-      // look up until mother id is 0, and it's a neutron (from ddg) and primaruy
-      //  trkID: 3093   PDG: 2112       XYZ=   287.3   865.0   860.4, dL=   0.00, Npts=   2, KE0= 158.511, Edep=   0.000, T=     -1.99, moth=    0,      primary, ND=6
-
-
+      //std::cout << "DEBUG:  blip truth particle pdg: " << pdg << ", process: " << pr << ", endprocess: " << endpr << " in material: " << endmaterialName << " gen process: " << fData->blip_bt[i] << std::endl;
 
       const simb::MCParticle* mother = TrackIdToParticle_P[p->Mother()];
       if (mother != nullptr) { // protects against null, e.g. in case of primary particle, no mother..
-        //std::cout << "DEBUG: 7 " << std::endl;
         std::string motherpr = mother->Process();
-        //std::cout << "DEBUG: 8 " << std::endl;
         std::string motherendpr = mother->EndProcess();
-        //std::cout << "DEBUG: 9 " << std::endl;
         int motherpdg = mother->PdgCode();
-        //std::cout << "DEBUG: 10 " << std::endl;
         geo::Point_t motherpoint{ mother->EndX(), mother->EndY(), mother->EndZ() };
-        //std::cout << "DEBUG: 11 " << std::endl;
         std::string motherendmaterialName = geo->MaterialName(motherpoint);
-
-        std::cout << "DEBUG:  blip truth particle mother pdg: " << motherpdg << ", process: " << motherpr << ", endprocess: " << motherendpr << " in material: " << motherendmaterialName << std::endl;
+        //std::cout << "DEBUG:  blip truth particle mother pdg: " << motherpdg << ", process: " << motherpr << ", endprocess: " << motherendpr << " in material: " << motherendmaterialName << std::endl;
       }
-
-
-    }
+    } */
 
     // Fill cluster charge 2D histograms
     h_blip_charge   ->Fill(blp.Charge);

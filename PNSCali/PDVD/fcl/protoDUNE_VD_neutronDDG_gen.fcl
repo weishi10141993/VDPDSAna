@@ -20,10 +20,6 @@ services:
   Geometry: @local::protodunevd_v5_pns_geo
 }
 
-#services.Geometry.GDML: "protodunevd_v5_ggd_PNS.gdml"
-#services.Geometry.Name: "protodunevd_v5_ggd_PNS"
-#services.Geometry.ROOT: "protodunevd_v5_ggd_PNS.gdml"
-
 #Start each new event with an empty event.
 source:
 {
