@@ -55,14 +55,14 @@ physics:
     rns:        { module_type: "RandomNumberSaver" }
   }
 
-  simulate: [ ngen ]
+  #simulate: [ ngen ]
 
-  #simulate: [ ngen,
-  #ar39, ar42, kr85, k42fromar42,
-  #k40cathode, th232cathode, u238cathode,
-  #k40anode,   th232anode,   u238anode,
-  #cryostatfoamgamma,
-  #cosmicgen ]
+  simulate: [ ngen,
+  ar39, ar42, kr85, k42fromar42,
+  k40cathode, th232cathode, u238cathode,
+  k40anode,   th232anode,   u238anode,
+  cryostatfoamgamma,
+  cosmicgen ]
 
   stream1:  [ out1 ]
   trigger_paths: [simulate]

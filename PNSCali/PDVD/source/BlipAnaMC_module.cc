@@ -450,6 +450,7 @@ class BlipAnaMCTreeDataStruct
   double ophit_max_time;
   int   ophit_opchannel[kMaxOpHits];
   int   ophit_bt[kMaxOpHits];
+  int   ophit_capturedNeutronID[kMaxOpHits];    // if belongs to ncaptureonAr, which neutron
   int   ophit_frame[kMaxOpHits];
   double ophit_peak_time[kMaxOpHits];
   double ophit_peak_time_abs[kMaxOpHits];
@@ -500,8 +501,8 @@ class BlipAnaMCTreeDataStruct
   int   blip_cryo[kMaxBlips];         // blip cryostat ID
   int   blip_tpc[kMaxBlips];          // blip TPC
   int   blip_nplanes[kMaxBlips];      // number of planes matched (2 or 3)
-  int   blip_leadTrkID[kMaxBlips];    // lead G4 trk id
   int   blip_bt[kMaxBlips];           // blip backtrack
+  int   blip_capturedNeutronID[kMaxBlips];           // if belongs to ncaptureonAr, which neutron
   float blip_time[kMaxBlips];         // drift time [us]
   float blip_x[kMaxBlips];            // X position [cm]
   float blip_y[kMaxBlips];            // Y position [cm]
@@ -650,6 +651,7 @@ class BlipAnaMCTreeDataStruct
 
     FillWith(ophit_opchannel,      -999);
     FillWith(ophit_bt,             -999);
+    FillWith(ophit_capturedNeutronID,  -9);
     FillWith(ophit_frame,          -999);
     FillWith(ophit_peak_time,      -999.);
     FillWith(ophit_peak_time_abs,  -999.);
@@ -692,8 +694,8 @@ class BlipAnaMCTreeDataStruct
     FillWith(blip_cryo,        -9);
     FillWith(blip_tpc,        -9);
     FillWith(blip_nplanes,    -9);
-    FillWith(blip_leadTrkID,  -9);
     FillWith(blip_bt,         -999);
+    FillWith(blip_capturedNeutronID,  -9);
     FillWith(blip_time,       -99);
     FillWith(blip_x,          -9999);
     FillWith(blip_y,          -9999);
@@ -812,6 +814,7 @@ class BlipAnaMCTreeDataStruct
     evtTree->Branch("ophit_max_time", &ophit_max_time, "ophit_max_time/D");
     evtTree->Branch("ophit_opchannel", ophit_opchannel, "ophit_opchannel[nophits]/I");
     evtTree->Branch("ophit_bt", ophit_bt, "ophit_bt[nophits]/I");
+    evtTree->Branch("ophit_capturedNeutronID",ophit_capturedNeutronID,"ophit_capturedNeutronID[nophits]/I");
     evtTree->Branch("ophit_frame", ophit_frame, "ophit_frame[nophits]/I");
     evtTree->Branch("ophit_peak_time", ophit_peak_time, "ophit_peak_time[nophits]/D");
     evtTree->Branch("ophit_peak_time_abs", ophit_peak_time_abs, "ophit_peak_time_abs[nophits]/D");
@@ -851,8 +854,8 @@ class BlipAnaMCTreeDataStruct
     evtTree->Branch("blip_cryo",blip_cryo,"blip_cryo[nblips]/I");
     evtTree->Branch("blip_tpc",blip_tpc,"blip_tpc[nblips]/I");
     evtTree->Branch("blip_nplanes",blip_nplanes,"blip_nplanes[nblips]/I");
-    evtTree->Branch("blip_leadTrkID",blip_leadTrkID,"blip_leadTrkID[nblips]/I");
     evtTree->Branch("blip_bt",blip_bt,"blip_bt[nblips]/I");
+    evtTree->Branch("blip_capturedNeutronID",blip_capturedNeutronID,"blip_capturedNeutronID[nblips]/I");
     evtTree->Branch("blip_time",blip_time,"blip_time[nblips]/F");
     evtTree->Branch("blip_x",blip_x,"blip_x[nblips]/F");
     evtTree->Branch("blip_y",blip_y,"blip_y[nblips]/F");
@@ -1881,30 +1884,106 @@ void BlipAnaMC::analyze(const art::Event& evt)
       // Retrieve the SimPhotonsLite or TrackSDPs associated with this hit
       auto const& sdp_vector = pbt->OpHitToTrackSDPs(*ophit);
       int trackID = -9;
+      int ancestorTrkID = -9;
 
       if (!sdp_vector.empty()) {
         // Replicating QLMatchAna logic: check the track ID of the main contributing particle
         trackID = sdp_vector[0].trackID;
 
-        if (ngenG4trkID.count(trackID))                   fData->ophit_bt[i] = 0;  // ngen Signal
-        else if (ar39G4trkID.count(trackID))              fData->ophit_bt[i] = 1;  // ar39
-        else if (ar42G4trkID.count(trackID))              fData->ophit_bt[i] = 2;  // ar42
-        else if (kr85G4trkID.count(trackID))              fData->ophit_bt[i] = 3;  // kr85
-        else if (k42fromar42G4trkID.count(trackID))       fData->ophit_bt[i] = 4;  // k42fromar42
-        else if (k40cathodeG4trkID.count(trackID))        fData->ophit_bt[i] = 5;  // k40cathode
-        else if (th232cathodeG4trkID.count(trackID))      fData->ophit_bt[i] = 6;  // th232cathode
-        else if (u238cathodeG4trkID.count(trackID))       fData->ophit_bt[i] = 7;  // u238cathode
-        else if (k40anodeG4trkID.count(trackID))          fData->ophit_bt[i] = 8;  // k40anode
-        else if (th232anodeG4trkID.count(trackID))        fData->ophit_bt[i] = 9;  // th232anode
-        else if (u238anodeG4trkID.count(trackID))         fData->ophit_bt[i] = 10; // u238anode
-        else if (cryostatfoamgammaG4trkID.count(trackID)) fData->ophit_bt[i] = 11; // cryostatfoamgamma
-        else if (cosmicgenG4trkID.count(trackID))         fData->ophit_bt[i] = 12; // cosmicgen
+        // Similar to blip bt, walk up the ancestry chain to find the primary generator-level ancestor.
+        // This is a no-op when keepEMShowerDaughters=true (all particles stored at G4)
+        // but proof against future changed G4 settings and handles any residual sub-threshold cases.
+        ancestorTrkID = trackID;
+        if (trackID > 0) {
+          int current = trackID;
+          int maxSteps = 1000; // safety guard against infinite loops
+          while (maxSteps-- > 0) {
+            // If this trackID is directly in a generator set, stop here, this is most cases
+            if (   ngenG4trkID.count(current)
+                || ar39G4trkID.count(current)
+                || ar42G4trkID.count(current)
+                || kr85G4trkID.count(current)
+                || k42fromar42G4trkID.count(current)
+                || k40cathodeG4trkID.count(current)
+                || th232cathodeG4trkID.count(current)
+                || u238cathodeG4trkID.count(current)
+                || k40anodeG4trkID.count(current)
+                || th232anodeG4trkID.count(current)
+                || u238anodeG4trkID.count(current)
+                || cryostatfoamgammaG4trkID.count(current)
+                || cosmicgenG4trkID.count(current)) {
+                  ancestorTrkID = current;
+                  break;
+            }
+            // Look up this particle's mother
+            auto it = TrackIdToParticle_P.find(current);
+            if (it == TrackIdToParticle_P.end()) break; // not in MCParticle list, stop
+            int motherID = it->second->Mother();
+            if (motherID == 0) break; // reached a primary with no match in any set
+            current = motherID;
+          }
+        }
+
+        // Similar to blips, further check if ophit is from ncapture on argon process
+        // look for process: nCapture, material: LAr
+        bool isNCaptureOnArOphit = false;
+        if (ngenG4trkID.count(ancestorTrkID) && trackID > 0) {
+            int current = trackID;
+            int maxSteps = 1000;
+            while (maxSteps-- > 0) {
+                auto it = TrackIdToParticle_P.find(current);
+                if (it == TrackIdToParticle_P.end()) break;
+                const simb::MCParticle* cp = it->second;
+
+                if (cp->Process() == "nCapture") {
+                    // cp is the deexcitation gamma created by nCapture.
+                    // The capture occurred at the neutron's (cp's mother's) endpoint.
+                    // Check that the neutron ended (was captured) in LAr.
+                    int capturedNeutronID = cp->Mother();
+                    auto nit = TrackIdToParticle_P.find(capturedNeutronID);
+                    if (nit != TrackIdToParticle_P.end()) {
+                        const simb::MCParticle* neutron = nit->second;
+                        geo::Point_t capturePoint{ neutron->EndX(),
+                                                   neutron->EndY(),
+                                                   neutron->EndZ() };
+                        std::string captureMaterial = geo->MaterialName(capturePoint);
+                        if (captureMaterial == "LAr") {
+                            isNCaptureOnArOphit = true;
+                            // save capture neutron id
+                            fData->ophit_capturedNeutronID[i] = capturedNeutronID;
+                        }
+                    }
+                    break; // found nCapture in chain regardless — stop walking
+                }
+
+                int motherID = cp->Mother();
+                if (motherID == 0) break;
+                current = motherID;
+            }
+        }
+
+        // use ancester id to be safe against future changes
+        if (ngenG4trkID.count(ancestorTrkID)) {
+          fData->ophit_bt[i] = isNCaptureOnArOphit ? 0 : 1;
+        }
+        else if (ar39G4trkID.count(trackID))              fData->ophit_bt[i] = 2;  // ar39
+        else if (ar42G4trkID.count(trackID))              fData->ophit_bt[i] = 3;  // ar42
+        else if (kr85G4trkID.count(trackID))              fData->ophit_bt[i] = 4;  // kr85
+        else if (k42fromar42G4trkID.count(trackID))       fData->ophit_bt[i] = 5;  // k42fromar42
+        else if (k40cathodeG4trkID.count(trackID))        fData->ophit_bt[i] = 6;  // k40cathode
+        else if (th232cathodeG4trkID.count(trackID))      fData->ophit_bt[i] = 7;  // th232cathode
+        else if (u238cathodeG4trkID.count(trackID))       fData->ophit_bt[i] = 8;  // u238cathode
+        else if (k40anodeG4trkID.count(trackID))          fData->ophit_bt[i] = 9;  // k40anode
+        else if (th232anodeG4trkID.count(trackID))        fData->ophit_bt[i] = 10;  // th232anode
+        else if (u238anodeG4trkID.count(trackID))         fData->ophit_bt[i] = 11; // u238anode
+        else if (cryostatfoamgammaG4trkID.count(trackID)) fData->ophit_bt[i] = 12; // cryostatfoamgamma
+        else if (cosmicgenG4trkID.count(trackID))         fData->ophit_bt[i] = 13; // cosmicgen
         else                                              fData->ophit_bt[i] = -999; // Unmapped particle
       } else {
         fData->ophit_bt[i] = -88; // No track SDP matching found
       }
 
-      std::cout << "DEBUG: ophit #" << i << " trackID = " << trackID << " gen process:" << fData->ophit_bt[i] << " channel: " << fData->ophit_opchannel[i] << " PE: " << fData->ophit_pe[i] << " time: " << fData->ophit_peak_time[i] << " us "<< std::endl;
+      //std::cout << "DEBUG: ophit #" << i << " trackID = " << trackID <<  " ancestorID = " << ancestorTrkID<< " gen process:" << fData->ophit_bt[i] << " channel: " << fData->ophit_opchannel[i] << " PE: " << fData->ophit_pe[i] << " time: " << fData->ophit_peak_time[i] << " us "<< std::endl;
 
     } // end loop ophit
   } // end if else no ophit
@@ -2248,7 +2327,6 @@ void BlipAnaMC::analyze(const art::Event& evt)
 
     // Extract the leading true particle Track ID
     int leadTrkID = blp.truth.LeadG4ID;
-    fData->blip_leadTrkID[i] = leadTrkID;
 
     // Walk up the ancestry chain to find the primary generator-level ancestor.
     // This is a no-op when keepEMShowerDaughters=true (all particles stored at G4)
@@ -2315,6 +2393,8 @@ void BlipAnaMC::analyze(const art::Event& evt)
                     std::string captureMaterial = geo->MaterialName(capturePoint);
                     if (captureMaterial == "LAr") {
                         isNCaptureOnArBlip = true;
+                        // here we want to save the capturedNeutronID in cases where we want to know if blips come from the same n cap
+                        fData->blip_capturedNeutronID[i] = capturedNeutronID;
                     }
                 }
                 break; // found nCapture in chain regardless — stop walking
