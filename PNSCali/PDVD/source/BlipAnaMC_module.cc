@@ -334,6 +334,10 @@ class BlipAnaMCTreeDataStruct
 
   // --- G4 information ---
   int   nparticles;                   // number of G4 particles
+  int   G4trueGamma_capturedNeutronID[kMaxG4];         // G4 track ID
+  float G4trueGamma_capturedNeutronEndX[kMaxG4];
+  float G4trueGamma_capturedNeutronEndY[kMaxG4];
+  float G4trueGamma_capturedNeutronEndZ[kMaxG4];
   bool  part_isPrimary[kMaxG4];       // is primary particle
   int   part_trackID[kMaxG4];         // G4 track ID
   int   part_pdg[kMaxG4];             // PDG
@@ -451,6 +455,9 @@ class BlipAnaMCTreeDataStruct
   int   ophit_opchannel[kMaxOpHits];
   int   ophit_bt[kMaxOpHits];
   int   ophit_capturedNeutronID[kMaxOpHits];    // if belongs to ncaptureonAr, which neutron
+  float ophit_capturedNeutronEndX[kMaxOpHits];
+  float ophit_capturedNeutronEndY[kMaxOpHits];
+  float ophit_capturedNeutronEndZ[kMaxOpHits];
   int   ophit_frame[kMaxOpHits];
   double ophit_peak_time[kMaxOpHits];
   double ophit_peak_time_abs[kMaxOpHits];
@@ -503,6 +510,9 @@ class BlipAnaMCTreeDataStruct
   int   blip_nplanes[kMaxBlips];      // number of planes matched (2 or 3)
   int   blip_bt[kMaxBlips];           // blip backtrack
   int   blip_capturedNeutronID[kMaxBlips];           // if belongs to ncaptureonAr, which neutron
+  float blip_capturedNeutronEndX[kMaxBlips];         // capture loaction
+  float blip_capturedNeutronEndY[kMaxBlips];
+  float blip_capturedNeutronEndZ[kMaxBlips];
   float blip_time[kMaxBlips];         // drift time [us]
   float blip_x[kMaxBlips];            // X position [cm]
   float blip_y[kMaxBlips];            // Y position [cm]
@@ -535,7 +545,6 @@ class BlipAnaMCTreeDataStruct
   float   acptrk_qratio_median;
   float   acptrk_qratio_mean;
 
-
   // === Function for resetting data ===
   void Clear(){
     event                 = -999; // --- event-wide info ---
@@ -547,6 +556,10 @@ class BlipAnaMCTreeDataStruct
     trigcode              = -9;
     timestamp             = -999;
     nparticles            = 0;    // --- G4 particles ---
+    FillWith(G4trueGamma_capturedNeutronID,     -999);
+    FillWith(G4trueGamma_capturedNeutronEndX,     -9999);
+    FillWith(G4trueGamma_capturedNeutronEndY,     -9999);
+    FillWith(G4trueGamma_capturedNeutronEndZ,     -9999);
     FillWith(part_isPrimary,   false);
     FillWith(part_trackID,     -999);
     FillWith(part_pdg,         -99999);
@@ -652,6 +665,9 @@ class BlipAnaMCTreeDataStruct
     FillWith(ophit_opchannel,      -999);
     FillWith(ophit_bt,             -999);
     FillWith(ophit_capturedNeutronID,  -9);
+    FillWith(ophit_capturedNeutronEndX,  -9999);
+    FillWith(ophit_capturedNeutronEndY,  -9999);
+    FillWith(ophit_capturedNeutronEndZ,  -9999);
     FillWith(ophit_frame,          -999);
     FillWith(ophit_peak_time,      -999.);
     FillWith(ophit_peak_time_abs,  -999.);
@@ -696,6 +712,9 @@ class BlipAnaMCTreeDataStruct
     FillWith(blip_nplanes,    -9);
     FillWith(blip_bt,         -999);
     FillWith(blip_capturedNeutronID,  -9);
+    FillWith(blip_capturedNeutronEndX,  -9999);
+    FillWith(blip_capturedNeutronEndY,  -9999);
+    FillWith(blip_capturedNeutronEndZ,  -9999);
     FillWith(blip_time,       -99);
     FillWith(blip_x,          -9999);
     FillWith(blip_y,          -9999);
@@ -815,6 +834,9 @@ class BlipAnaMCTreeDataStruct
     evtTree->Branch("ophit_opchannel", ophit_opchannel, "ophit_opchannel[nophits]/I");
     evtTree->Branch("ophit_bt", ophit_bt, "ophit_bt[nophits]/I");
     evtTree->Branch("ophit_capturedNeutronID",ophit_capturedNeutronID,"ophit_capturedNeutronID[nophits]/I");
+    evtTree->Branch("ophit_capturedNeutronEndX",ophit_capturedNeutronEndX,"ophit_capturedNeutronEndX[nophits]/F");
+    evtTree->Branch("ophit_capturedNeutronEndY",ophit_capturedNeutronEndY,"ophit_capturedNeutronEndY[nophits]/F");
+    evtTree->Branch("ophit_capturedNeutronEndZ",ophit_capturedNeutronEndZ,"ophit_capturedNeutronEndZ[nophits]/F");
     evtTree->Branch("ophit_frame", ophit_frame, "ophit_frame[nophits]/I");
     evtTree->Branch("ophit_peak_time", ophit_peak_time, "ophit_peak_time[nophits]/D");
     evtTree->Branch("ophit_peak_time_abs", ophit_peak_time_abs, "ophit_peak_time_abs[nophits]/D");
@@ -856,6 +878,9 @@ class BlipAnaMCTreeDataStruct
     evtTree->Branch("blip_nplanes",blip_nplanes,"blip_nplanes[nblips]/I");
     evtTree->Branch("blip_bt",blip_bt,"blip_bt[nblips]/I");
     evtTree->Branch("blip_capturedNeutronID",blip_capturedNeutronID,"blip_capturedNeutronID[nblips]/I");
+    evtTree->Branch("blip_capturedNeutronEndX",blip_capturedNeutronEndX,"blip_capturedNeutronEndX[nblips]/F");
+    evtTree->Branch("blip_capturedNeutronEndY",blip_capturedNeutronEndY,"blip_capturedNeutronEndY[nblips]/F");
+    evtTree->Branch("blip_capturedNeutronEndZ",blip_capturedNeutronEndZ,"blip_capturedNeutronEndZ[nblips]/F");
     evtTree->Branch("blip_time",blip_time,"blip_time[nblips]/F");
     evtTree->Branch("blip_x",blip_x,"blip_x[nblips]/F");
     evtTree->Branch("blip_y",blip_y,"blip_y[nblips]/F");
@@ -884,6 +909,10 @@ class BlipAnaMCTreeDataStruct
 
     if( saveTruthInfo ) {
       evtTree->Branch("nparticles",&nparticles,"nparticles/I");
+      evtTree->Branch("G4trueGamma_capturedNeutronID",G4trueGamma_capturedNeutronID,"G4trueGamma_capturedNeutronID[nparticles]/I");
+      evtTree->Branch("G4trueGamma_capturedNeutronEndX",G4trueGamma_capturedNeutronEndX,"G4trueGamma_capturedNeutronEndX[nparticles]/F");
+      evtTree->Branch("G4trueGamma_capturedNeutronEndY",G4trueGamma_capturedNeutronEndY,"G4trueGamma_capturedNeutronEndY[nparticles]/F");
+      evtTree->Branch("G4trueGamma_capturedNeutronEndZ",G4trueGamma_capturedNeutronEndZ,"G4trueGamma_capturedNeutronEndZ[nparticles]/F");
       evtTree->Branch("part_isPrimary",part_isPrimary,"part_isPrimary[nparticles]/O");
       evtTree->Branch("part_trackID",part_trackID,"part_trackID[nparticles]/I");
       evtTree->Branch("part_pdg",part_pdg,"part_pdg[nparticles]/I");
@@ -928,6 +957,7 @@ class BlipAnaMCTreeDataStruct
       evtTree->Branch("edep_dx",edep_dx,"edep_dx[nedeps]/F");
       evtTree->Branch("edep_dz",edep_dz,"edep_dz[nedeps]/F");
     }
+
   }
 
   void MakeCalibTree(){
@@ -1012,6 +1042,12 @@ class BlipAnaMC : public art::EDAnalyzer
   int   fNum3DBlipsTrue3P   = 0;
 
   // --- Histograms ---
+  // example: n-Ar capture released gamma intensity
+  art::ServiceHandle<art::TFileService> tfs;
+  art::TFileDirectory dir_pns = tfs->mkdir("PNSdiagnostics");
+  TH1D* h_nArCap_gamma_KE = dir_pns.make<TH1D>("h_nArCap_gamma_KE", "n-Ar capture released gamma spectrum;KE [MeV];Entries", 100, 0, 10);
+  std::map<int, const simb::MCParticle*> TrackIdToParticle_P;
+
   TH1D*   h_triggercodes;
 
   TH2D*   h_blipE_vs_hitamp[kNplanes];
@@ -1345,6 +1381,7 @@ void BlipAnaMC::analyze(const art::Event& evt)
   k42fromar42G4trkID.clear();   k40cathodeG4trkID.clear();    th232cathodeG4trkID.clear();
   u238cathodeG4trkID.clear();   k40anodeG4trkID.clear();      th232anodeG4trkID.clear();
   u238anodeG4trkID.clear();     cryostatfoamgammaG4trkID.clear(); cosmicgenG4trkID.clear();
+  TrackIdToParticle_P.clear();
 
   // Get timestamp
   unsigned long long int tsval = evt.time().value();
@@ -1495,19 +1532,47 @@ void BlipAnaMC::analyze(const art::Event& evt)
   // Save MCParticle information
   //====================================
   std::map<int,int> map_g4trkid_index;
-  std::map<int, const simb::MCParticle*> TrackIdToParticle_P;
+  //std::map<int, const simb::MCParticle*> TrackIdToParticle_P;
   if( plist.size() ) {
 
     std::vector<blipobj::ParticleInfo>& pinfo = fBlipAlg.pinfo;
 
     // Loop through the MCParticles
     if( fDebugMode ) std::cout<<"\nLooping over G4 MCParticles: \n";
+    if( fDebugMode ) std::cout<<"\n only saving to TTree first "<< kMaxG4<<" G4 MCParticles: \n";
     for(size_t i = 0; i<plist.size(); i++){
       auto& pPart = plist[i];
       map_g4trkid_index[pPart->TrackId()] = i;
       total_depEnergy       += pinfo[i].depEnergy;
       total_depElectrons    += pinfo[i].depElectrons;
       TrackIdToParticle_P[pPart->TrackId()] = pPart.get();
+
+      //  plot n-capture gamma intensity - cross check
+      //  example record of capture gamma
+      //  mother id <= 2000, process: nCapture
+      //    2077  trkID: 2078   PDG: 22         XYZ=   -56.3  -424.7   217.5, PXYZ=     0.7    -1.2    -0.4, dL=   0.00, Npts=  31, KE0=   1.469, Edep=   0.000, T=      0.84, moth= 1998,     nCapture, ND=14
+      if (pPart->PdgCode() == 22 && pPart->Process() == "nCapture" && pPart->Mother() <= 2000) {
+          // The capture occurred at the neutron's (cp's mother's) endpoint.
+          // Check that the neutron ended (was captured) in LAr.
+          int capturedNeutronID = pPart->Mother();
+          auto nit = TrackIdToParticle_P.find(capturedNeutronID);
+          if (nit != TrackIdToParticle_P.end()) {
+              const simb::MCParticle* neutron = nit->second;
+              geo::Point_t capturePoint{ neutron->EndX(),
+                                         neutron->EndY(),
+                                         neutron->EndZ() };
+              std::string captureMaterial = geo->MaterialName(capturePoint);
+              if (captureMaterial == "LAr") {
+                // fill gamma energy spectrum
+                h_nArCap_gamma_KE->Fill(pinfo[i].KE);
+                // save at truth level captured neutron id, position
+                fData->G4trueGamma_capturedNeutronID[i] = capturedNeutronID;
+                fData->G4trueGamma_capturedNeutronEndX[i] = neutron->EndX();
+                fData->G4trueGamma_capturedNeutronEndY[i] = neutron->EndY();
+                fData->G4trueGamma_capturedNeutronEndZ[i] = neutron->EndZ();
+              }
+          }
+      } // end nCapture check
 
       // Save to TTree object
       if(i<kMaxG4){
@@ -1541,6 +1606,7 @@ void BlipAnaMC::analyze(const art::Event& evt)
         if( fDebugMode ) PrintParticleInfo(i);
       }
     } // endloop over G4 particles
+    if( fDebugMode ) std::cout<<"\n end saving to TTree \n";
 
     if( fDebugMode ) std::cout<<"True total energy deposited: "<<total_depEnergy<<" MeV \n";
 
@@ -1951,6 +2017,9 @@ void BlipAnaMC::analyze(const art::Event& evt)
                             isNCaptureOnArOphit = true;
                             // save capture neutron id
                             fData->ophit_capturedNeutronID[i] = capturedNeutronID;
+                            fData->ophit_capturedNeutronEndX[i] = neutron->EndX();
+                            fData->ophit_capturedNeutronEndY[i] = neutron->EndY();
+                            fData->ophit_capturedNeutronEndZ[i] = neutron->EndZ();
                         }
                     }
                     break; // found nCapture in chain regardless — stop walking
@@ -2395,6 +2464,9 @@ void BlipAnaMC::analyze(const art::Event& evt)
                         isNCaptureOnArBlip = true;
                         // here we want to save the capturedNeutronID in cases where we want to know if blips come from the same n cap
                         fData->blip_capturedNeutronID[i] = capturedNeutronID;
+                        fData->blip_capturedNeutronEndX[i] = neutron->EndX();
+                        fData->blip_capturedNeutronEndY[i] = neutron->EndY();
+                        fData->blip_capturedNeutronEndZ[i] = neutron->EndZ();
                     }
                 }
                 break; // found nCapture in chain regardless — stop walking
