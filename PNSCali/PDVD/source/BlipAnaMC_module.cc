@@ -1547,33 +1547,6 @@ void BlipAnaMC::analyze(const art::Event& evt)
       total_depElectrons    += pinfo[i].depElectrons;
       TrackIdToParticle_P[pPart->TrackId()] = pPart.get();
 
-      //  plot n-capture gamma intensity - cross check
-      //  example record of capture gamma
-      //  mother id <= 2000, process: nCapture
-      //    2077  trkID: 2078   PDG: 22         XYZ=   -56.3  -424.7   217.5, PXYZ=     0.7    -1.2    -0.4, dL=   0.00, Npts=  31, KE0=   1.469, Edep=   0.000, T=      0.84, moth= 1998,     nCapture, ND=14
-      if (pPart->PdgCode() == 22 && pPart->Process() == "nCapture" && pPart->Mother() <= 2000) {
-          // The capture occurred at the neutron's (cp's mother's) endpoint.
-          // Check that the neutron ended (was captured) in LAr.
-          int capturedNeutronID = pPart->Mother();
-          auto nit = TrackIdToParticle_P.find(capturedNeutronID);
-          if (nit != TrackIdToParticle_P.end()) {
-              const simb::MCParticle* neutron = nit->second;
-              geo::Point_t capturePoint{ neutron->EndX(),
-                                         neutron->EndY(),
-                                         neutron->EndZ() };
-              std::string captureMaterial = geo->MaterialName(capturePoint);
-              if (captureMaterial == "LAr") {
-                // fill gamma energy spectrum
-                h_nArCap_gamma_KE->Fill(pinfo[i].KE);
-                // save at truth level captured neutron id, position
-                fData->G4trueGamma_capturedNeutronID[i] = capturedNeutronID;
-                fData->G4trueGamma_capturedNeutronEndX[i] = neutron->EndX();
-                fData->G4trueGamma_capturedNeutronEndY[i] = neutron->EndY();
-                fData->G4trueGamma_capturedNeutronEndZ[i] = neutron->EndZ();
-              }
-          }
-      } // end nCapture check
-
       // Save to TTree object
       if(i<kMaxG4){
         fData->part_trackID[i]         = pPart->TrackId();
@@ -1606,6 +1579,39 @@ void BlipAnaMC::analyze(const art::Event& evt)
         if( fDebugMode ) PrintParticleInfo(i);
       }
     } // endloop over G4 particles
+
+    //  plot n-capture gamma intensity - cross check
+    //  example record of capture gamma
+    //  mother id <= 2000, process: nCapture
+    //    2077  trkID: 2078   PDG: 22         XYZ=   -56.3  -424.7   217.5, PXYZ=     0.7    -1.2    -0.4, dL=   0.00, Npts=  31, KE0=   1.469, Edep=   0.000, T=      0.84, moth= 1998,     nCapture, ND=14
+    for(size_t i = 0; i<plist.size(); i++){
+      auto& pPart = plist[i];
+      //if (pPart->PdgCode() == 22 && pPart->Process() == "nCapture" && pPart->Mother() <= 2000) {
+      if (pPart->PdgCode() == 22 && pPart->Process() == "nCapture") {
+        // The capture occurred at the neutron's (cp's mother's) endpoint.
+        // Check that the neutron ended (was captured) in LAr.
+        int capturedNeutronID = pPart->Mother();
+        auto nit = TrackIdToParticle_P.find(capturedNeutronID);
+        if (nit != TrackIdToParticle_P.end()) {
+            const simb::MCParticle* neutron = nit->second;
+            geo::Point_t capturePoint{ neutron->EndX(),
+                                       neutron->EndY(),
+                                       neutron->EndZ() };
+            std::string captureMaterial = geo->MaterialName(capturePoint);
+            if (captureMaterial == "LAr") {
+              // fill gamma energy spectrum
+              h_nArCap_gamma_KE->Fill(pinfo[i].KE);
+              // save at truth level captured neutron id, position
+              fData->G4trueGamma_capturedNeutronID[i] = capturedNeutronID;
+              fData->G4trueGamma_capturedNeutronEndX[i] = neutron->EndX();
+              fData->G4trueGamma_capturedNeutronEndY[i] = neutron->EndY();
+              fData->G4trueGamma_capturedNeutronEndZ[i] = neutron->EndZ();
+            }
+        }
+      } // end nCapture check
+
+    } // end loop 
+
     if( fDebugMode ) std::cout<<"\n end saving to TTree \n";
 
     if( fDebugMode ) std::cout<<"True total energy deposited: "<<total_depEnergy<<" MeV \n";

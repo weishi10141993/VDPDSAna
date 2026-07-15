@@ -1,0 +1,26 @@
+#include "protodunevd_g4_stage1.fcl"
+
+services.Geometry: @local::protodunevd_v5_pns_geo
+
+# for G4 11.4 neutron sim
+services.PhysicsList.PhysicsListName: "QGSP_BIC_HP"
+
+services.LArG4Detector.gdmlFileName_: "protodunevd_v5_ggd_PNS.gdml"
+services.LArG4Detector.volumeNames: [
+    "volDetEnclosure"
+]
+services.LArG4Detector.stepLimits: [ 1 ]
+
+services.LArG4Parameters.KeepEMShowerDaughters: true
+
+services.ParticleListAction.keepGenTrajectories: []
+
+# this volumes list needs to be empty for keepEMShowerDaughters = true to take effect
+services.ParticleListAction.KeepDroppedParticlesInVolumes: []
+services.ParticleListAction.keepEMShowerDaughters: true
+
+# Provide a dummy string so the list is NOT empty.
+# This ugly fix will save all particles from all proceeses, need for blip backtrack
+services.ParticleListAction.NotStoredPhysics: ["GiveMeEverything"]
+
+physics.simulate: [ rns, largeant ]
