@@ -4,6 +4,7 @@ services.Geometry: @local::protodunevd_v5_pns_geo
 
 # for G4 11.4 neutron sim
 services.PhysicsList.PhysicsListName: "QGSP_BIC_HP"
+services.PhysicsList.enableNuDEX: true
 
 services.LArG4Detector.gdmlFileName_: "protodunevd_v5_ggd_PNS.gdml"
 services.LArG4Detector.volumeNames: [
